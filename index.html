@@ -127,6 +127,7 @@
         <div class="row">
           <label>Restrict category</label>
           <select id="rigCategory"></select>
+          <button id="rigClearCat">Clear</button>
           <button id="muteToggle">Toggle mute</button>
           <span id="muteState" class="hint"></span>
         </div>
@@ -145,7 +146,7 @@
           <label class="row" style="gap:6px"><input id="fastTagEnable" type="checkbox"> Enable tap-to-apply</label>
         </div>
         <div class="row" style="margin-top:8px">
-          <!-- Filters -->
+          <!-- Filters + Sort -->
           <label>Filter:</label>
           <select id="filterSelect">
             <option value="">All</option>
@@ -156,12 +157,18 @@
           <select id="filterCategory">
             <option value="">Category…</option>
           </select>
+          <select id="sortSelect" title="Sort">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name">Name A→Z</option>
+            <option value="category">Category A→Z</option>
+          </select>
           <button id="applySetCategory" class="pill">Set category for filtered</button>
           <button id="applyIncludeAll" class="pill">Include filtered (w=1)</button>
           <button id="applyExcludeAll" class="pill danger">Exclude filtered (w=0)</button>
         </div>
         <div style="margin-top:10px">
-          <div class="hint" style="margin-bottom:6px">Batch names (one per line) → applies in order to current filtered list</div>
+          <div class="hint" style="margin-bottom:6px">Batch names (one per line) → applies in order to current filtered + sorted list</div>
           <textarea id="batchNames" placeholder="e.g.&#10;Lotus&#10;Bridge&#10;Chair"></textarea>
           <div class="row" style="margin-top:6px">
             <button id="applyBatchNames">Apply names</button>
@@ -251,6 +258,7 @@ const fastTagName = document.getElementById('fastTagName');
 const fastTagEnable = document.getElementById('fastTagEnable');
 const filterSelect = document.getElementById('filterSelect');
 const filterCategory = document.getElementById('filterCategory');
+const sortSelect = document.getElementById('sortSelect');
 const applySetCategory = document.getElementById('applySetCategory');
 const applyIncludeAll = document.getElementById('applyIncludeAll');
 const applyExcludeAll = document.getElementById('applyExcludeAll');
@@ -300,13 +308,26 @@ function dbUpdate(item){
 (async function init(){
   db = await openDB();
 
-  // Populate selects
+  // Restrict Category dropdown: add All categories first
+  const allOpt = document.createElement('option');
+  allOpt.value = '';
+  allOpt.textContent = 'All categories';
+  rigCategorySel.appendChild(allOpt);
+
+  // Fast Tag + Filter Category pickers get Unassigned first
+  const unOpt = document.createElement('option');
+  unOpt.value = '';
+  unOpt.textContent = '— Unassigned —';
+  fastTagCategory.appendChild(unOpt.cloneNode(true));
+  filterCategory.appendChild(unOpt.cloneNode(true));
+
+  // Then the 12 categories
   CATEGORIES.forEach(c=>{
-    const ca=document.createElement('option'); ca.value=c; ca.textContent=c; rigCategorySel.appendChild(ca);
-    const cb=document.createElement('option'); cb.value=c; cb.textContent=c; fastTagCategory.appendChild(cb);
-    const cc=document.createElement('option'); cc.value=c; cc.textContent=c; filterCategory.appendChild(cc);
+    const a=document.createElement('option'); a.value=c; a.textContent=c; rigCategorySel.appendChild(a);
+    const b=document.createElement('option'); b.value=c; b.textContent=c; fastTagCategory.appendChild(b);
+    const c2=document.createElement('option'); c2.value=c; c2.textContent=c; filterCategory.appendChild(c2);
   });
-  if(rigCategory) rigCategorySel.value = rigCategory;
+  if(rigCategory !== undefined) rigCategorySel.value = rigCategory;
 
   // timer
   timerSelect.value = String(timerMinutes);
@@ -314,7 +335,7 @@ function dbUpdate(item){
 
   muteState.textContent = isMuted ? "Muted" : "Sound on";
 
-  // collapsible
+  // collapsible sections
   document.querySelectorAll('.toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const target = document.getElementById(btn.dataset.target);
@@ -322,6 +343,19 @@ function dbUpdate(item){
       const isHidden = target.classList.toggle('hidden');
       btn.textContent = isHidden ? '▲' : '▼';
     });
+  });
+
+  // filter live refresh
+  filterSelect.addEventListener('change', renderRig);
+  filterCategory.addEventListener('change', renderRig);
+  sortSelect.addEventListener('change', renderRig);
+
+  // clear restrict
+  document.getElementById('rigClearCat').addEventListener('click', ()=>{
+    rigCategory = '';
+    rigCategorySel.value = '';
+    lsSet(LSK.rigCat, rigCategory);
+    toast('Category restriction cleared');
   });
 
   await reloadImages();
@@ -335,8 +369,8 @@ async function reloadImages(){
   IMAGES = await dbGetAll();
   IMAGES.forEach(it=>{
     if(weightOverrides[it.id] != null) it.weight = weightOverrides[it.id];
-    if(categoryOverrides[it.id]) it.category = categoryOverrides[it.id];
-    if(descOverrides[it.id]) it.description = descOverrides[it.id];
+    if(categoryOverrides[it.id] !== undefined) it.category = categoryOverrides[it.id];
+    if(descOverrides[it.id] !== undefined) it.description = descOverrides[it.id];
   });
   OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
   IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
@@ -359,13 +393,31 @@ function buildReels(){
   });
 }
 function getFilteredImages(){
-  const f = filterSelect.value;
-  const cat = filterCategory.value;
+  const status = filterSelect.value;   // '', 'uncategorized', 'unnamed', 'excluded'
+  const cat    = filterCategory.value; // '' (Unassigned) or category
+  const sort   = sortSelect.value;
+
   let list = IMAGES.slice();
-  if(f==='uncategorized') list = list.filter(x=>!x.category);
-  if(f==='unnamed') list = list.filter(x=>!(x.description||'').trim());
-  if(f==='excluded') list = list.filter(x=>(x.weight??DEFAULT_WEIGHT)==0);
-  if(cat) list = list.filter(x=>x.category===cat);
+
+  // Status filter
+  if (status === 'uncategorized') list = list.filter(x => !(x.category || '').trim());
+  if (status === 'unnamed')       list = list.filter(x => !(x.description || '').trim());
+  if (status === 'excluded')      list = list.filter(x => (x.weight ?? DEFAULT_WEIGHT) == 0);
+
+  // Category filter (note: '' means Unassigned)
+  if (cat !== '' || cat === '') {
+    // If filterCategory was left at placeholder "Category…" it will be '', but we added Unassigned as '', so:
+    // Only apply category filter if user actually picked one OR picked Unassigned explicitly.
+    const picked = filterCategory.selectedIndex > 0 || cat === '';
+    if (picked) list = list.filter(x => (x.category || '') === cat);
+  }
+
+  // Sort
+  if (sort === 'newest')  list.sort((a,b)=> (b.ts||0) - (a.ts||0));
+  if (sort === 'oldest')  list.sort((a,b)=> (a.ts||0) - (b.ts||0));
+  if (sort === 'name')    list.sort((a,b)=> (a.description||'').localeCompare(b.description||''));
+  if (sort === 'category')list.sort((a,b)=> (a.category||'').localeCompare(b.category||''));
+
   return list;
 }
 function renderRig(){
@@ -376,16 +428,25 @@ function renderRig(){
     const card=document.createElement('div'); card.className='rig-item'; card.dataset.id=it.id;
 
     const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id);
-    const tag=document.createElement('span'); tag.className='tag'; tag.textContent=it.category||'—';
+    const tag=document.createElement('span'); tag.className='tag'; tag.textContent=(it.category||'—');
     const ex=document.createElement('button'); ex.className='exclude-btn pill'; ex.textContent=(it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude';
     ex.addEventListener('click', (e)=>{ e.stopPropagation(); toggleExclude(it); });
 
     const meta=document.createElement('div'); meta.className='meta';
     const idrow=document.createElement('div'); idrow.textContent=`ID: ${it.id}`;
-    const row1=document.createElement('div'); // category + weight
-    const sel=document.createElement('select'); CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
-    sel.value = it.category||'Missionary';
-    sel.onchange=async ()=>{ it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category; };
+    // category dropdown with Unassigned first
+    const row1=document.createElement('div');
+    const sel=document.createElement('select');
+    const un=document.createElement('option'); un.value=''; un.textContent='— Unassigned —'; sel.appendChild(un);
+    CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    sel.value = it.category || '';
+    sel.onchange=async ()=>{
+      it.category = sel.value;
+      categoryOverrides[it.id] = it.category;
+      lsSet(LSK.categories,categoryOverrides);
+      await dbUpdate(it);
+      tag.textContent = it.category || '—';
+    };
     const w=document.createElement('input'); w.type='number'; w.min='0'; w.step='0.1'; w.style.width='80px'; w.value=it.weight??DEFAULT_WEIGHT;
     w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'; };
     row1.append(sel,' ',w);
@@ -397,35 +458,32 @@ function renderRig(){
     card.append(img, tag, ex, meta);
 
     // Fast Tag Mode tap (live-sync chip + dropdown + name, no re-render)
-card.addEventListener('click', ()=>{
-  if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
+    card.addEventListener('click', ()=>{
+      if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
 
-  const cat = fastTagCategory.value || it.category || 'Missionary';
-  const name = (fastTagName.value||'').trim();
+      const pickedCat = fastTagCategory.value; // '' means Unassigned (or leave as '')
+      const name = (fastTagName.value||'').trim();
 
-  // Update in-memory + persist
-  it.category = cat;
-  categoryOverrides[it.id] = cat;
-  lsSet(LSK.categories, categoryOverrides);
+      // Set category if user picked something (including Unassigned)
+      if (filterCategory.selectedIndex >= 0 || pickedCat !== undefined) {
+        it.category = pickedCat;
+        categoryOverrides[it.id] = pickedCat;
+        lsSet(LSK.categories, categoryOverrides);
+        sel.value = pickedCat;
+        tag.textContent = pickedCat || '—';
+      }
 
-  if(name){
-    it.description = name;
-    descOverrides[it.id] = name;
-    lsSet(LSK.descriptions, descOverrides);
-  }
+      if (name){
+        it.description = name;
+        descOverrides[it.id] = name;
+        lsSet(LSK.descriptions, descOverrides);
+        d.value = name;
+      }
 
-  dbUpdate(it); // async, no await
-
-  // Live visual sync (no flicker)
-  tag.textContent = it.category; // chip
-  sel.value = it.category;       // dropdown under image
-  if(name){ d.value = it.description; } // name field
-
-  // Keep the queue-by-name dropdown up-to-date
-  refreshQueueDescOptions();
-
-  toast('Applied');
-});
+      dbUpdate(it); // async
+      refreshQueueDescOptions();
+      toast('Applied');
+    });
 
     rigGrid.appendChild(card);
   });
@@ -440,7 +498,7 @@ function toggleExclude(it){
 
 /* -------------------- Bulk actions -------------------- */
 applySetCategory.addEventListener('click', ()=>{
-  const cat = fastTagCategory.value; if(!cat){ toast('Pick a category'); return; }
+  const cat = fastTagCategory.value; if(cat===undefined){ toast('Pick a category'); return; }
   const list = getFilteredImages();
   list.forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); });
   lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set for filtered');
@@ -461,7 +519,7 @@ applyBatchNames.addEventListener('click', ()=>{
   list.forEach(it=>{
     if(i<names.length){ it.description = names[i++]; descOverrides[it.id]=it.description; dbUpdate(it); }
   });
-  lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied');
+  lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied in visible order');
 });
 
 /* -------------------- Upload -------------------- */
@@ -473,7 +531,8 @@ fileInput.addEventListener('change', async (ev)=>{
     if(!f.type.startsWith('image/')) continue;
     const id=crypto.randomUUID();
     const blob=f.slice(0, f.size, f.type);
-    const it={ id, blob, category:'Missionary', weight:DEFAULT_WEIGHT, ts:Date.now(), description:'' };
+    // Default category is Unassigned ('')
+    const it={ id, blob, category:'', weight:DEFAULT_WEIGHT, ts:Date.now(), description:'' };
     toAdd.push(it);
   }
   await dbAddMany(toAdd);
@@ -597,7 +656,7 @@ async function pickImage(){
     }
   }
   const filter = rigCategory || '';
-  const pool = filter ? IMAGES.filter(it=>it.category===filter) : IMAGES.slice();
+  const pool = filter ? IMAGES.filter(it=> (it.category||'')===filter) : IMAGES.slice();
   if(!pool.length) return IMAGES[0];
 
   const weights = pool.map(it=> Math.max(0.0001, it.weight??DEFAULT_WEIGHT));
