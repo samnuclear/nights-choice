@@ -396,18 +396,36 @@ function renderRig(){
     meta.append(idrow,row1,d);
     card.append(img, tag, ex, meta);
 
-    // Fast Tag Mode tap
-    card.addEventListener('click', ()=>{
-      if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
-      const cat = fastTagCategory.value || it.category || 'Missionary';
-      it.category = cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides);
-      const name = (fastTagName.value||'').trim();
-      if(name){ it.description = name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); }
-      dbUpdate(it); // fire and forget
-      tag.textContent = it.category;
-      d.value = it.description||'';
-      toast('Applied');
-    });
+    // Fast Tag Mode tap (live-sync chip + dropdown + name, no re-render)
+card.addEventListener('click', ()=>{
+  if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
+
+  const cat = fastTagCategory.value || it.category || 'Missionary';
+  const name = (fastTagName.value||'').trim();
+
+  // Update in-memory + persist
+  it.category = cat;
+  categoryOverrides[it.id] = cat;
+  lsSet(LSK.categories, categoryOverrides);
+
+  if(name){
+    it.description = name;
+    descOverrides[it.id] = name;
+    lsSet(LSK.descriptions, descOverrides);
+  }
+
+  dbUpdate(it); // async, no await
+
+  // Live visual sync (no flicker)
+  tag.textContent = it.category; // chip
+  sel.value = it.category;       // dropdown under image
+  if(name){ d.value = it.description; } // name field
+
+  // Keep the queue-by-name dropdown up-to-date
+  refreshQueueDescOptions();
+
+  toast('Applied');
+});
 
     rigGrid.appendChild(card);
   });
