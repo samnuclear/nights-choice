@@ -28,12 +28,16 @@
   .machine{margin-top:14px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
   .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .reel{height:160px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
-  .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;will-change:transform,filter}
+  .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:0; /* no gap to make landing exact */ will-change:transform,filter}
   .cell{height:160px;display:flex;align-items:center;justify-content:center}
   .cell img{height:100%;width:100%;object-fit:cover;border-radius:10px}
-  .reveal-name{margin-top:10px;text-align:center;font-weight:600;color:var(--accent)}
+  .reveal-name{margin-top:12px;text-align:center;font-weight:700;color:var(--accent)}
+  .reveal-big{margin-top:8px;border:1px solid #24253a;border-radius:14px;background:#0f0f15;min-height:42vh;display:grid;place-items:center;overflow:hidden}
+  .reveal-big img{max-width:100%;max-height:100%;display:block}
   .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
   .countdown{font-variant-numeric:tabular-nums}
+  .hidden{display:none !important}
+
   /* Hidden Rig dialog */
   dialog#rig{width:min(900px,96vw);border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
   #rig header{position:sticky;top:0;padding:14px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center}
@@ -81,9 +85,18 @@
       <div class="reel"><div class="strip"></div></div>
       <div class="reel"><div class="strip"></div></div>
     </div>
+
+    <!-- NAME ABOVE IMAGE -->
     <div id="revealName" class="reveal-name"></div>
+
+    <!-- BIG REVEAL IMAGE -->
+    <div id="revealBig" class="reveal-big hidden">
+      <img id="revealImg" alt="" />
+    </div>
+
     <div class="toolbar">
       <span id="countdown" class="countdown hint"></span>
+      <button id="skipBtn" class="pill" style="display:none">Skip</button>
     </div>
   </section>
 </div>
@@ -141,7 +154,7 @@ const CATEGORIES = [
  "69","Rear Entry","BDSM for Lovers","Adventurous"
 ];
 const DEFAULT_WEIGHT = 1;
-const SPIN_DURATION_MS = 6000; // 6s as requested
+const SPIN_DURATION_MS = 6000; // 6s
 const PIN = "1616";
 
 /* -------------------- Storage -------------------- */
@@ -202,7 +215,6 @@ function playReveal(){
 }
 function playTimerChime(){
   if(isMuted||!audioCtx) return;
-  // pleasant two-note chime
   const now=audioCtx.currentTime;
   [[660,0],[990,0.2]].forEach(([f,dt])=>{
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -219,7 +231,10 @@ const fileInput = document.getElementById('fileInput');
 const reelsEl = document.getElementById('reels');
 const spinBtn = document.getElementById('spinBtn');
 const revealNameEl = document.getElementById('revealName');
+const revealBig = document.getElementById('revealBig');
+const revealImg = document.getElementById('revealImg');
 const countdownEl = document.getElementById('countdown');
+const skipBtn = document.getElementById('skipBtn');
 const timerSelect = document.getElementById('timerSelect');
 const titleTap = document.getElementById('titleTap');
 const rigDlg = document.getElementById('rig');
@@ -306,19 +321,19 @@ async function reloadImages(){
   IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
 }
 function buildReels(){
-  // Build 10 placeholder cells per reel using current images (or blanks)
   const strips = reelsEl.querySelectorAll('.strip');
   strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    const pool = IMAGES.length ? IMAGES : new Array(6).fill(null);
-    for(let k=0;k<10;k++){
+    const pool = IMAGES.length ? IMAGES.slice() : [];
+    if(!pool.length){
+      const c=document.createElement('div'); c.className='cell'; c.innerHTML='—'; strip.appendChild(c);
+      return;
+    }
+    // preload some images for smoothness
+    for(let k=0;k<12;k++){
+      const it = pool[(k+i)%pool.length];
       const cell=document.createElement('div'); cell.className='cell';
-      if(IMAGES.length){
-        const it = pool[(k+i)%pool.length] || pool[0];
-        const img=document.createElement('img'); img.src = OBJECT_URLS.get(it.id); cell.appendChild(img);
-      }else{
-        cell.innerHTML='<div style="opacity:.5">—</div>';
-      }
+      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
       strip.appendChild(cell);
     }
   });
@@ -379,20 +394,24 @@ fileInput.addEventListener('change', async (ev)=>{
 
 /* -------------------- Spin / Animation -------------------- */
 let spinning=false, blockUntil=0, timerId=null;
+
 spinBtn.addEventListener('click', async ()=>{
   ensureAudio();
   if(spinning) return;
   const now=Date.now();
   if(now<blockUntil){ return; } // countdown active
   if(!IMAGES.length){ toast('Add images first'); return; }
+
   spinning=true;
   revealNameEl.textContent='';
+  revealBig.classList.add('hidden');
+  revealImg.removeAttribute('src');
   playSpinStart();
 
   // Decide the three final images: center = chosen, left/right = random others
   const chosen = await pickImage();
   let others = IMAGES.filter(x=>x.id!==chosen.id);
-  if(others.length<2) others = IMAGES.concat(IMAGES); // fallback if only one image
+  if(others.length<2) others = IMAGES.concat(IMAGES);
   shuffle(others);
   const leftImg = others[0], rightImg = others[1];
 
@@ -400,72 +419,81 @@ spinBtn.addEventListener('click', async ()=>{
   const strips = [...document.querySelectorAll('.strip')];
   const finals = [leftImg, chosen, rightImg];
 
-  // Build long strips with many items so we can scroll far, ending with finals[i]
+  // Build strips: many random cells + final as last cell; no gap => distance math exact
+  const BASE=20; // number of cells before final
+  const CELLH=160; // must match CSS .cell height
   strips.forEach((strip,i)=>{
     strip.innerHTML='';
     const pool = IMAGES.length ? IMAGES.slice() : [];
-    if(!pool.length){ const c=document.createElement('div'); c.className='cell'; c.innerHTML='—'; strip.appendChild(c); return; }
-    // Fill with shuffled items repeatedly to simulate rolling
-    for(let k=0;k<18;k++){
+    for(let k=0;k<BASE;k++){
       const it=pool[(k+i)%pool.length];
       const cell=document.createElement('div'); cell.className='cell';
       const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
       strip.appendChild(cell);
     }
-    // Append our final image as the last cell so it lands visible
+    // final landing cell
     const end=document.createElement('div'); end.className='cell';
     const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id);
     end.appendChild(endImg); strip.appendChild(end);
-    // Start position
+
+    // reset position
     strip.style.transition='none';
     strip.style.transform='translateY(0px)';
     strip.style.filter='blur(6px) brightness(0.9)';
   });
 
-  // Animate with easing and stagger so reels slow down one by one
-  const cellH=160+8; // height + gap approx
-  const distances=[cellH*22, cellH*24, cellH*26]; // different lengths
+  // Animate with easing + stagger so reels slow down one by one
   const offsets=[0, 250, 450]; // stagger starts
-  const total=SPIN_DURATION_MS;
   const ease='cubic-bezier(.12,.62,.22,.99)';
 
   strips.forEach((strip,i)=>{
+    const totalCells = BASE + 1; // include final
+    const distance = CELLH * (totalCells - 1); // land with final visible
     setTimeout(()=>{
-      strip.style.transition=`transform ${total/1000}s ${ease}, filter ${total/1000}s linear`;
-      strip.style.transform=`translateY(-${distances[i]}px)`;
+      strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`;
+      strip.style.transform=`translateY(-${distance}px)`;
     }, offsets[i]);
   });
 
   // ticks during first half
   for(let t=0;t<SPIN_DURATION_MS*0.6;t+=280){ playTick(t/1000); }
 
-  // After animation end, clear blur and show name
+  // After animation, reveal
   setTimeout(()=>{
     strips.forEach(s=>{ s.style.filter='none'; });
     playReveal();
     const name = (chosen.description||chosen.category||'');
     revealNameEl.textContent = name;
+    revealImg.src = OBJECT_URLS.get(chosen.id);
+    revealBig.classList.remove('hidden');
     spinning=false;
 
-    // Start countdown if timer set
     if(timerMinutes>0){
       startCountdown(timerMinutes);
     }
   }, SPIN_DURATION_MS + Math.max(...offsets) + 50);
 });
 
-/* -------------------- Countdown -------------------- */
+/* -------------------- Countdown + Skip -------------------- */
+function clearCountdownAndUnlock(){
+  if(timerId) clearInterval(timerId);
+  timerId = null;
+  blockUntil = 0;
+  spinBtn.disabled = false;
+  countdownEl.textContent = '';
+  skipBtn.style.display = 'none';
+}
 function startCountdown(mins){
   const duration = mins*60*1000;
   blockUntil = Date.now()+duration;
   spinBtn.disabled = true;
   if(timerId) clearInterval(timerId);
   updateCountdown();
+  skipBtn.style.display = 'inline-flex';
   timerId = setInterval(()=>{
     updateCountdown();
     if(Date.now()>=blockUntil){
-      clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent='';
-      playTimerChime();
+      clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; playTimerChime();
     }
   }, 250);
 }
@@ -475,6 +503,7 @@ function updateCountdown(){
   const m = Math.floor(s/60), ss = String(s%60).padStart(2,'0');
   countdownEl.textContent = `Next spin in ${m}:${ss}`;
 }
+skipBtn.addEventListener('click', clearCountdownAndUnlock);
 
 /* -------------------- Pick logic -------------------- */
 async function pickImage(){
@@ -482,7 +511,6 @@ async function pickImage(){
   if(rigQueue.length){
     const item = rigQueue.shift();
     lsSet(LSK.queue,rigQueue); renderQueue();
-    // queue can be either id OR special marker "desc::<text>"
     if(item.startsWith('desc::')){
       const d = item.slice(6);
       const found = IMAGES.find(x=>(x.description||'')===d);
@@ -560,6 +588,28 @@ function toast(msg, danger=false){
   document.body.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; },1200); setTimeout(()=>t.remove(),1600);
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+/* Minimal inline PIN prompt */
+function promptPIN(){
+  return new Promise((resolve)=>{
+    const d=document.createElement('dialog');
+    Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});
+    d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
+      <div style="font-weight:600">Enter PIN</div>
+      <input id="pinIn" type="password" inputmode="numeric" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus maxlength="8" />
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button value="cancel">Cancel</button>
+        <button value="ok" class="primary">OK</button>
+      </div>
+    </form>`;
+    document.body.appendChild(d);
+    d.addEventListener('close', ()=>{
+      const val = d.returnValue==='ok' ? d.querySelector('#pinIn').value : null;
+      resolve(val); d.remove();
+    });
+    d.showModal();
+  });
+}
 
 /* iOS audio unlock */
 document.addEventListener('touchend', ()=>ensureAudio(), {passive:true});
