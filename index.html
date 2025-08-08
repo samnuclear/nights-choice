@@ -12,37 +12,42 @@
     --bg:#0b0b0f; --panel:#13131a; --panel2:#181824;
     --accent:#d79ab8; --accent2:#7ad1cc;
     --text:#f2f2f5; --muted:#a9abbb; --line:#24253a;
+    --good:#7cd992; --warn:#ffcf6e; --bad:#ff6e8a;
   }
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
   header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
-  .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 14px 12px}
-  .title-tappable{font-weight:700;letter-spacing:.4px;font-size:20px;padding:8px 10px;border-radius:8px}
+  .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
+  .title-tappable{font-weight:700;letter-spacing:.3px;font-size:19px;padding:8px 10px;border-radius:8px}
   .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  label.upload{display:inline-flex;align-items:center;gap:8px;border:1px dashed #34354a;padding:8px 10px;border-radius:10px;background:var(--panel2)}
-  input[type=file]{display:none}
   button,select,textarea,input{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
   button.primary{background:linear-gradient(180deg,#272737,#1b1b28);border-color:#2b2c3d}
   button:disabled{opacity:.5}
   .pill{background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:6px 10px;font-size:12px;color:#ddd}
   .wrap{max-width:1100px;margin:0 auto;padding:0 14px 60px}
-  .machine{margin-top:14px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
-  .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .reel{height:160px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
+  .machine{margin-top:12px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
+  .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .reel{height:156px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
   .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:0;will-change:transform,filter}
-  .cell{height:160px;display:flex;align-items:center;justify-content:center}
+  .cell{height:156px;display:flex;align-items:center;justify-content:center}
   .cell img{height:100%;width:100%;object-fit:cover;border-radius:10px}
-  .reveal-name{margin-top:12px;text-align:center;font-weight:700;color:var(--accent)}
+  .reveal-name{margin-top:10px;text-align:center;font-weight:700;color:var(--accent)}
   .reveal-meta{margin-top:6px;text-align:center;color:var(--muted);font-size:13px}
   .reveal-big{margin-top:8px;border:1px solid #24253a;border-radius:14px;background:#0f0f15;min-height:42vh;display:grid;place-items:center;overflow:hidden}
   .reveal-big img{max-width:100%;max-height:100%;display:block}
-  .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
+  .bars{margin-top:8px;display:grid;gap:6px}
+  .bar{display:grid;grid-template-columns:98px 1fr;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .track{height:10px;border:1px solid #2a2b40;background:#12121b;border-radius:999px;overflow:hidden}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,#6aa7ff,#c38ad9);transition:width .25s}
+  .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px}
   .countdown{font-variant-numeric:tabular-nums}
   .hidden{display:none !important}
 
-  /* Rig dialog mobile-first */
-  dialog#rig{width:min(980px,98vw);max-height:90vh;border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  #rig header{position:sticky;top:0;padding:14px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
-  #rig .body{padding:12px 14px;display:block;max-height:calc(90vh - 56px);overflow:auto}
+  /* Rig dialog with safe-area padding */
+  dialog#rig{width:min(980px,98vw);max-height:92vh;border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  dialog#rig::backdrop{background:rgba(0,0,0,.6)}
+  #rig header{position:sticky;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 12px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
+  #rig .x{margin-left:auto;min-width:44px;min-height:38px;border-radius:10px}
+  #rig .body{padding:12px 14px;display:block;max-height:calc(92vh - 56px - env(safe-area-inset-top));overflow:auto}
   .section{background:#161625;border:1px solid #27283c;border-radius:12px;margin-bottom:10px}
   .section > .hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #27283c}
   .section > .hdr button.toggle{margin-left:auto}
@@ -54,15 +59,7 @@
   .rig-item .meta{padding:6px 8px;font-size:12px;display:grid;gap:6px}
   .tag{position:absolute;left:6px;top:6px;background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:2px 6px;font-size:11px}
   .exclude-btn{position:absolute;right:6px;top:6px;border-radius:999px;padding:2px 6px;font-size:11px}
-  .ok{color:#7cd992} .warn{color:#ffcf6e} .danger{color:#ff6e8a}
   .hint{font-size:12px;color:var(--muted)}
-  textarea{width:100%;min-height:110px;resize:vertical}
-  .star{font-size:16px;cursor:pointer;user-select:none}
-  .stars{display:flex;gap:2px;align-items:center}
-  .stars .star.off{opacity:.35}
-  .small{font-size:12px}
-  .sep{height:1px;background:#27283c;margin:8px 0}
-  .pill-mini{padding:4px 8px;border-radius:999px;border:1px solid #2a2b40;background:#1a1a28;font-size:12px}
 </style>
 </head>
 <body>
@@ -70,25 +67,17 @@
   <div class="topbar">
     <div id="titleTap" class="title-tappable">The Night’s Choice</div>
     <div class="controls">
-      <label class="upload">
-        <input id="fileInput" type="file" accept="image/*" multiple>
-        <span>➕ Upload</span>
-      </label>
+      <input id="fileInput" type="file" accept="image/*" multiple style="position:absolute;left:-9999px">
+      <button id="uploadBtn" class="pill">➕ Upload</button>
 
-      <!-- Timer -->
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         ⏱️
         <select id="timerSelect" title="Timer">
-          <option value="0">Off</option>
-          <option value="1">1 min</option>
-          <option value="2">2 min</option>
-          <option value="3">3 min</option>
-          <option value="4">4 min</option>
-          <option value="5">5 min</option>
+          <option value="0">Off</option><option value="1">1 min</option><option value="2">2 min</option>
+          <option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option>
         </select>
       </label>
 
-      <!-- Restrict on main -->
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         🎯
         <select id="mainRestrict" title="Restrict Category"></select>
@@ -111,7 +100,13 @@
     <div id="revealMeta" class="reveal-meta"></div>
 
     <div id="revealBig" class="reveal-big hidden">
-      <img id="revealImg" alt="" />
+      <img id="revealImg" alt="">
+    </div>
+
+    <div class="bars" id="revealBars" style="display:none">
+      <div class="bar"><div>Difficulty</div><div class="track"><div id="barDiff" class="fill"></div></div></div>
+      <div class="bar"><div>Her-O</div><div class="track"><div id="barHer" class="fill"></div></div></div>
+      <div class="bar"><div>His-O</div><div class="track"><div id="barHim" class="fill"></div></div></div>
     </div>
 
     <div class="toolbar">
@@ -121,980 +116,508 @@
   </section>
 </div>
 
-<!-- Rig: triple-tap title + PIN 1616 -->
+<!-- Rig (triple-tap title + PIN 1616) -->
 <dialog id="rig">
   <header>
     <strong>Rig Control</strong>
-    <span class="hint">Private</span>
-    <button id="rigClose" style="margin-left:auto">✕</button>
+    <button id="rigClose" class="x">✕</button>
   </header>
-  <div class="body">
-
-    <!-- Controls -->
-    <div class="section" id="secControls">
+  <div class="body" id="rigBody">
+    <div class="section">
       <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
       <div class="inner" id="controlsInner">
-        <div class="row small">
-          <button id="testChime" class="pill-mini">🔊 Test chime</button>
-          <button id="exportBtn" class="pill-mini">⬇️ Export metadata</button>
-          <label class="pill-mini" style="display:flex;align-items:center;gap:6px;cursor:pointer">
-            ⬆️ Import
-            <input id="importInput" type="file" accept=".json,.ncbackup,.ncbackup.json" style="display:none">
-          </label>
-          <button id="resetBtn" class="pill-mini danger">🗑 Reset (wipe local data)</button>
+        <div class="row">
+          <button id="muteToggle" class="pill">Toggle mute</button>
           <span id="muteState" class="hint">Sound on</span>
-          <button id="muteToggle" class="pill-mini">Toggle mute</button>
+          <button id="testChime" class="pill">🔊 Test chime</button>
         </div>
-
-        <div class="sep"></div>
-
-        <div class="row" style="margin-bottom:8px">
+        <div class="row" style="margin-top:8px">
+          <button id="exportCopy" class="pill">📋 Export → Copy</button>
+          <button id="importPaste" class="pill">📥 Import → Paste</button>
+          <button id="resetBtn" class="pill" style="border-color:#4b1c28;color:#ffb3c0">🗑 Reset (wipe local)</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label>Restrict</label>
+          <select id="rigCategory"></select>
+          <button id="rigClearCat" class="pill">Clear</button>
+        </div>
+        <div class="row" style="margin-top:8px">
           <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1;min-width:160px">
-          <button id="queueAddId">Add</button>
+          <button id="queueAddId" class="pill">Add</button>
           <select id="queueByDesc" style="flex:1;min-width:160px"></select>
-          <button id="queueAddDesc">Add by Name</button>
-          <button id="queueClear" class="warn">Clear active queue</button>
+          <button id="queueAddDesc" class="pill">Add by Name</button>
+          <button id="queueClear" class="pill">Clear queue</button>
         </div>
         <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
-
-        <div class="row">
-          <label>Restrict category</label>
-          <select id="rigCategory"></select>
-          <button id="rigClearCat">Clear</button>
-        </div>
       </div>
     </div>
 
-    <!-- Profiles -->
-    <div class="section" id="secProfiles">
-      <div class="hdr"><strong>Rig Profiles</strong><button class="toggle" data-target="profilesInner">▼</button></div>
+    <div class="section">
+      <div class="hdr"><strong>Profiles</strong><button class="toggle" data-target="profilesInner">▼</button></div>
       <div class="inner" id="profilesInner">
-        <div class="row small" style="gap:12px">
-          <label>Active profile</label>
-          <select id="profileActive">
-            <option value="">None</option>
-            <option value="A">Profile A</option>
-            <option value="B">Profile B</option>
-            <option value="C">Profile C</option>
-          </select>
-          <label class="row" style="gap:6px"><input id="profileAutofill" type="checkbox"> Auto-refill queue when empty</label>
-          <button id="profileFillNow" class="pill-mini">Fill queue from active profile</button>
+        <div class="row">
+          <label>Active</label>
+          <select id="profileActive"><option value="">None</option><option>A</option><option>B</option><option>C</option></select>
+          <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="profileAutofill" type="checkbox"> Auto-refill queue</label>
+          <button id="profileFillNow" class="pill">Fill queue now</button>
         </div>
-
-        <div class="sep"></div>
-
-        <div class="row small" style="gap:12px">
-          <div class="pill-mini">Profile A</div>
-          <input id="profAAddId" type="text" placeholder="Add ID" style="min-width:120px">
-          <button id="profAAddIdBtn">Add</button>
-          <select id="profAByDesc" style="min-width:140px"></select>
-          <button id="profAAddDescBtn">Add by Name</button>
-          <button id="profAClear" class="pill-mini danger">Clear A</button>
+        <div class="row" style="margin-top:8px">
+          <div class="pill">Profile A</div>
+          <input id="profAAddId" placeholder="Add ID">
+          <button id="profAAddIdBtn" class="pill">Add</button>
+          <select id="profAByDesc"></select>
+          <button id="profAAddDescBtn" class="pill">Add by Name</button>
+          <button id="profAClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear A</button>
         </div>
         <div id="profAView" class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
 
-        <div class="row small" style="gap:12px">
-          <div class="pill-mini">Profile B</div>
-          <input id="profBAddId" type="text" placeholder="Add ID" style="min-width:120px">
-          <button id="profBAddIdBtn">Add</button>
-          <select id="profBByDesc" style="min-width:140px"></select>
-          <button id="profBAddDescBtn">Add by Name</button>
-          <button id="profBClear" class="pill-mini danger">Clear B</button>
+        <div class="row">
+          <div class="pill">Profile B</div>
+          <input id="profBAddId" placeholder="Add ID">
+          <button id="profBAddIdBtn" class="pill">Add</button>
+          <select id="profBByDesc"></select>
+          <button id="profBAddDescBtn" class="pill">Add by Name</button>
+          <button id="profBClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear B</button>
         </div>
         <div id="profBView" class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
 
-        <div class="row small" style="gap:12px">
-          <div class="pill-mini">Profile C</div>
-          <input id="profCAddId" type="text" placeholder="Add ID" style="min-width:120px">
-          <button id="profCAddIdBtn">Add</button>
-          <select id="profCByDesc" style="min-width:140px"></select>
-          <button id="profCAddDescBtn">Add by Name</button>
-          <button id="profCClear" class="pill-mini danger">Clear C</button>
+        <div class="row">
+          <div class="pill">Profile C</div>
+          <input id="profCAddId" placeholder="Add ID">
+          <button id="profCAddIdBtn" class="pill">Add</button>
+          <select id="profCByDesc"></select>
+          <button id="profCAddDescBtn" class="pill">Add by Name</button>
+          <button id="profCClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear C</button>
         </div>
         <div id="profCView" class="row" style="gap:6px;flex-wrap:wrap"></div>
-        <div class="hint" style="margin-top:8px">Each profile holds up to 6 items. Profiles are saved; the active queue can be cleared without losing profiles.</div>
+        <div class="hint">Each profile holds up to 6 items and persists. Queue is separate and can be cleared.</div>
       </div>
     </div>
 
-    <!-- Bulk tools -->
-    <div class="section" id="secBulk">
+    <div class="section">
       <div class="hdr"><strong>Bulk tools</strong><button class="toggle" data-target="bulkInner">▼</button></div>
       <div class="inner" id="bulkInner">
         <div class="row">
-          <label class="hint">Fast Tag:</label>
-          <select id="fastTagCategory"></select>
-          <input id="fastTagName" type="text" placeholder="Name (optional)">
-          <label class="row" style="gap:6px"><input id="fastTagEnable" type="checkbox"> Enable tap-to-apply</label>
-        </div>
-        <div class="row" style="margin-top:8px">
           <label>Filter:</label>
           <select id="filterSelect">
-            <option value="">All</option>
-            <option value="uncategorized">Uncategorized</option>
-            <option value="unnamed">Unnamed</option>
-            <option value="excluded">Excluded (w=0)</option>
+            <option value="">All</option><option value="uncategorized">Uncategorized</option>
+            <option value="unnamed">Unnamed</option><option value="excluded">Excluded (w=0)</option>
           </select>
-          <select id="filterCategory">
-            <option value="">Category…</option>
-          </select>
-          <select id="sortSelect" title="Sort">
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="name">Name A→Z</option>
-            <option value="category">Category A→Z</option>
-          </select>
-          <button id="applySetCategory" class="pill">Set category for filtered</button>
-          <button id="applyIncludeAll" class="pill">Include filtered (w=1)</button>
-          <button id="applyExcludeAll" class="pill danger">Exclude filtered (w=0)</button>
+          <select id="filterCategory"><option value="">Category…</option></select>
+          <select id="sortSelect"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="name">Name A→Z</option><option value="category">Category A→Z</option></select>
         </div>
-        <div class="row small" style="gap:12px;margin-top:8px">
-          <div>Difficulty</div>
-          <select id="bulkDiff"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-          <button id="applyDiff" class="pill-mini">Apply to filtered</button>
-          <div>Her</div>
-          <select id="bulkHer"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-          <button id="applyHer" class="pill-mini">Apply</button>
-          <div>Him</div>
-          <select id="bulkHim"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-          <button id="applyHim" class="pill-mini">Apply</button>
+        <div class="row" style="margin-top:6px">
+          <label>Set category:</label>
+          <select id="fastTagCategory"></select>
+          <button id="applySetCategory" class="pill">Apply to filtered</button>
+          <button id="applyIncludeAll" class="pill">Include (w=1)</button>
+          <button id="applyExcludeAll" class="pill">Exclude (w=0)</button>
         </div>
-        <div style="margin-top:10px">
-          <div class="hint" style="margin-bottom:6px">Batch names (one per line) → applies in order to current filtered + sorted list</div>
-          <textarea id="batchNames" placeholder="e.g.&#10;Lotus&#10;Bridge&#10;Chair"></textarea>
-          <div class="row" style="margin-top:6px">
-            <button id="applyBatchNames">Apply names</button>
-          </div>
+        <div class="row" style="margin-top:6px">
+          <input id="fastTagName" placeholder="Name (optional)">
+          <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="fastTagEnable" type="checkbox"> Tap cards to apply</label>
+        </div>
+        <div style="margin-top:8px">
+          <div class="hint">Batch names (one per line) apply in current visible order</div>
+          <textarea id="batchNames" style="width:100%;min-height:110px"></textarea>
+          <div class="row" style="margin-top:6px"><button id="applyBatchNames" class="pill">Apply names</button></div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label>Difficulty</label><select id="bulkDiff"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyDiff" class="pill">Apply</button>
+          <label>Her-O</label><select id="bulkHer"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyHer" class="pill">Apply</button>
+          <label>His-O</label><select id="bulkHim"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyHim" class="pill">Apply</button>
         </div>
       </div>
     </div>
 
-    <!-- Image Grid -->
     <div class="section">
       <div class="hdr"><strong>Images</strong><span class="hint" id="gridCount"></span></div>
-      <div class="inner">
-        <div id="rigGrid" class="rig-grid"></div>
-      </div>
+      <div class="inner"><div id="rigGrid" class="rig-grid"></div></div>
     </div>
   </div>
 </dialog>
 
 <script>
-/* -------------------- Config -------------------- */
-const CATEGORIES = [
- "Missionary","Woman-on-top","Oral for Her","Oral for Him",
- "Sitting","Standing","Side-by-Side","Deep Penetration",
- "69","Rear Entry","BDSM for Lovers","Adventurous"
-];
-const DEFAULT_WEIGHT = 1;
-const SPIN_DURATION_MS = 6000;
-const PIN = "1616";
-const MAX_PROFILE_ITEMS = 6;
+/* ===== Config ===== */
+const CATEGORIES=["Missionary","Woman-on-top","Oral for Her","Oral for Him","Sitting","Standing","Side-by-Side","Deep Penetration","69","Rear Entry","BDSM for Lovers","Adventurous"];
+const DEFAULT_WEIGHT=1, SPIN_DURATION_MS=6000, PIN="1616", MAX_PROFILE_ITEMS=6;
 
-/* -------------------- Storage Keys -------------------- */
-const DB_NAME = 'nights-choice-db';
-const DB_STORE = 'images';
-const LSK = {
-  mute:'nc_mute',
-  rigCat:'nc_rigCat',                 // '' (all), '__UNASSIGNED__', or category string
-  weights:'nc_weights',
-  queue:'nc_queue',
-  categories:'nc_categories',
-  descriptions:'nc_desc',
-  timer:'nc_timer',
-  ratings:'nc_ratings',               // {id:{diff,her,him}}
-  profiles:'nc_profiles',             // {A:[ids or desc::name], B:[...], C:[...]}
-  profileActive:'nc_profile_active',  // 'A'|'B'|'C'|''
-  profileAutofill:'nc_profile_autofill', // bool
-  pwaInit:'nc_pwa_initialized'        // first-run wipe flag for standalone
-};
+/* ===== Storage Keys ===== */
+const DB_NAME='nights-choice-db', DB_STORE='images';
+const LSK={ mute:'nc_mute', rigCat:'nc_rigCat', weights:'nc_weights', queue:'nc_queue', categories:'nc_categories', descriptions:'nc_desc', timer:'nc_timer', ratings:'nc_ratings', profiles:'nc_profiles', profileActive:'nc_profile_active', profileAutofill:'nc_profile_autofill', pwaInit:'nc_pwa_initialized' };
 
+/* ===== State ===== */
 let db, IMAGES=[], OBJECT_URLS=new Map();
-let isMuted = !!lsGet(LSK.mute,false);
-let rigCategory = lsGet(LSK.rigCat,'')||'';
-let rigQueue = lsGet(LSK.queue,[])||[];
-let weightOverrides = lsGet(LSK.weights,{})||{};
-let categoryOverrides = lsGet(LSK.categories,{})||{};
-let descOverrides = lsGet(LSK.descriptions,{})||{};
-let ratings = lsGet(LSK.ratings,{})||{};
-let profiles = lsGet(LSK.profiles,{A:[],B:[],C:[]})||{A:[],B:[],C:[]};
-let profileActive = lsGet(LSK.profileActive,'')||'';
-let profileAutofill = !!lsGet(LSK.profileAutofill,false);
-let timerMinutes = +lsGet(LSK.timer,0)||0;
+let isMuted=!!lsGet(LSK.mute,false);
+let rigCategory=lsGet(LSK.rigCat,'')||'';
+let rigQueue=lsGet(LSK.queue,[])||[];
+let weightOverrides=lsGet(LSK.weights,{})||{};
+let categoryOverrides=lsGet(LSK.categories,{})||{};
+let descOverrides=lsGet(LSK.descriptions,{})||{};
+let ratings=lsGet(LSK.ratings,{})||{};
+let profiles=lsGet(LSK.profiles,{A:[],B:[],C:[]})||{A:[],B:[],C:[]};
+let profileActive=lsGet(LSK.profileActive,'')||'';
+let profileAutofill=!!lsGet(LSK.profileAutofill,false);
+let timerMinutes=+lsGet(LSK.timer,0)||0;
 
-/* -------------------- Audio -------------------- */
+/* ===== Audio ===== */
 let audioCtx=null;
 function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch{} } }
 async function resumeAudio(){ try{ ensureAudio(); if(audioCtx && audioCtx.state!=='running') await audioCtx.resume(); }catch{} }
-function tone(freq, dur=0.4, type='sine', gain=0.5, when=0){
-  if(isMuted||!audioCtx) return;
-  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.type=type; o.frequency.setValueAtTime(freq,audioCtx.currentTime+when);
-  g.gain.setValueAtTime(0.0001,audioCtx.currentTime+when);
-  g.gain.exponentialRampToValueAtTime(gain,audioCtx.currentTime+when+0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+when+dur);
-  o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime+when); o.stop(audioCtx.currentTime+when+dur+0.05);
-}
+function tone(freq,dur=0.4,type='sine',gain=0.5,when=0){ if(isMuted||!audioCtx)return; const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime+when); g.gain.setValueAtTime(0.0001,audioCtx.currentTime+when); g.gain.exponentialRampToValueAtTime(gain,audioCtx.currentTime+when+0.02); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+when+dur); o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime+when); o.stop(audioCtx.currentTime+when+dur+0.05);}
 function playSpinStart(){ tone(220,0.65,'sawtooth',0.35); tone(660,0.2,'sawtooth',0.2,0.2); }
 function playTick(t=0){ tone(700,0.12,'triangle',0.3,t); }
 function playReveal(){ tone(330,0.5,'sine',0.5); tone(880,0.45,'sine',0.4,0.1); }
 async function playTimerChime(){ await resumeAudio(); tone(660,0.35,'sine',0.5,0); tone(990,0.35,'sine',0.5,0.2); }
 
-/* -------------------- UI refs -------------------- */
-const fileInput = document.getElementById('fileInput');
-const reelsEl = document.getElementById('reels');
-const spinBtn = document.getElementById('spinBtn');
-const revealNameEl = document.getElementById('revealName');
-const revealMetaEl = document.getElementById('revealMeta');
-const revealBig = document.getElementById('revealBig');
-const revealImg = document.getElementById('revealImg');
-const countdownEl = document.getElementById('countdown');
-const skipBtn = document.getElementById('skipBtn');
-const timerSelect = document.getElementById('timerSelect');
-const titleTap = document.getElementById('titleTap');
-const rigDlg = document.getElementById('rig');
-const rigClose = document.getElementById('rigClose');
-const rigGrid = document.getElementById('rigGrid');
-const rigCategorySel = document.getElementById('rigCategory');
-const mainRestrict = document.getElementById('mainRestrict');
-const queueView = document.getElementById('queueView');
-const queueId = document.getElementById('queueId');
-const queueAddId = document.getElementById('queueAddId');
-const queueByDesc = document.getElementById('queueByDesc');
-const queueAddDesc = document.getElementById('queueAddDesc');
-const queueClear = document.getElementById('queueClear');
-const muteToggle = document.getElementById('muteToggle');
-const muteState = document.getElementById('muteState');
-const testChime = document.getElementById('testChime');
-const exportBtn = document.getElementById('exportBtn');
-const importInput = document.getElementById('importInput');
-const resetBtn = document.getElementById('resetBtn');
+/* ===== UI Refs ===== */
+const fileInput=q('#fileInput'), uploadBtn=q('#uploadBtn');
+const reelsEl=q('#reels'), spinBtn=q('#spinBtn');
+const revealNameEl=q('#revealName'), revealMetaEl=q('#revealMeta');
+const revealBig=q('#revealBig'), revealImg=q('#revealImg');
+const barDiff=q('#barDiff'), barHer=q('#barHer'), barHim=q('#barHim'), revealBars=q('#revealBars');
+const countdownEl=q('#countdown'), skipBtn=q('#skipBtn');
+const timerSelect=q('#timerSelect'), mainRestrict=q('#mainRestrict');
+const titleTap=q('#titleTap'), rigDlg=q('#rig'), rigClose=q('#rigClose');
+const rigGrid=q('#rigGrid'), rigCategorySel=q('#rigCategory'), queueView=q('#queueView');
+const queueId=q('#queueId'), queueAddId=q('#queueAddId'), queueByDesc=q('#queueByDesc'), queueAddDesc=q('#queueAddDesc'), queueClear=q('#queueClear');
+const muteToggle=q('#muteToggle'), muteState=q('#muteState'), testChime=q('#testChime');
+const exportCopy=q('#exportCopy'), importPaste=q('#importPaste'), resetBtn=q('#resetBtn');
+const fastTagCategory=q('#fastTagCategory'), fastTagName=q('#fastTagName'), fastTagEnable=q('#fastTagEnable');
+const filterSelect=q('#filterSelect'), filterCategory=q('#filterCategory'), sortSelect=q('#sortSelect');
+const applySetCategory=q('#applySetCategory'), applyIncludeAll=q('#applyIncludeAll'), applyExcludeAll=q('#applyExcludeAll');
+const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames'), gridCount=q('#gridCount');
+const bulkDiff=q('#bulkDiff'), bulkHer=q('#bulkHer'), bulkHim=q('#bulkHim'), applyDiff=q('#applyDiff'), applyHer=q('#applyHer'), applyHim=q('#applyHim');
+const profileActiveSel=q('#profileActive'), profileAutofillChk=q('#profileAutofill'), profileFillNow=q('#profileFillNow');
+const profAView=q('#profAView'), profBView=q('#profBView'), profCView=q('#profCView');
+const profAByDesc=q('#profAByDesc'), profBByDesc=q('#profBByDesc'), profCByDesc=q('#profCByDesc');
+const profAAddId=q('#profAAddId'), profBAddId=q('#profBAddId'), profCAddId=q('#profCAddId');
+const profAAddIdBtn=q('#profAAddIdBtn'), profBAddIdBtn=q('#profBAddIdBtn'), profCAddIdBtn=q('#profCAddIdBtn');
+const profAAddDescBtn=q('#profAAddDescBtn'), profBAddDescBtn=q('#profBAddDescBtn'), profCAddDescBtn=q('#profCAddDescBtn');
+const profAClear=q('#profAClear'), profBClear=q('#profBClear'), profCClear=q('#profCClear');
 
-const fastTagCategory = document.getElementById('fastTagCategory');
-const fastTagName = document.getElementById('fastTagName');
-const fastTagEnable = document.getElementById('fastTagEnable');
-const filterSelect = document.getElementById('filterSelect');
-const filterCategory = document.getElementById('filterCategory');
-const sortSelect = document.getElementById('sortSelect');
-const applySetCategory = document.getElementById('applySetCategory');
-const applyIncludeAll = document.getElementById('applyIncludeAll');
-const applyExcludeAll = document.getElementById('applyExcludeAll');
-const batchNames = document.getElementById('batchNames');
-const applyBatchNames = document.getElementById('applyBatchNames');
-const gridCount = document.getElementById('gridCount');
+/* ===== DB ===== */
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result; if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'}); s.createIndex('category','category'); s.createIndex('ts','ts'); s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE); if(!s.indexNames.contains('hash')) s.createIndex('hash','hash');}}; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
+function dbAddMany(items){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite'),st=tx.objectStore(DB_STORE);items.forEach(it=>st.put(it));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+function dbGetAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readonly'),st=tx.objectStore(DB_STORE),rq=st.getAll();rq.onsuccess=()=>res(rq.result||[]);rq.onerror=()=>rej(rq.error);});}
+function dbUpdate(item){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(item);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+function dbClearAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
 
-const bulkDiff = document.getElementById('bulkDiff');
-const bulkHer = document.getElementById('bulkHer');
-const bulkHim = document.getElementById('bulkHim');
-const applyDiff = document.getElementById('applyDiff');
-const applyHer = document.getElementById('applyHer');
-const applyHim = document.getElementById('applyHim');
+/* ===== Helpers ===== */
+function q(s,sc=document){return sc.querySelector(s)}
+function lsGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
+function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function toast(msg,danger=false){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s'},1200);setTimeout(()=>t.remove(),1600)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function stars(n){return '★'.repeat(n||0)+'☆'.repeat(5-(n||0))}
+async function sha256(blob){const buf=await blob.arrayBuffer();const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 
-const profileActiveSel = document.getElementById('profileActive');
-const profileAutofillChk = document.getElementById('profileAutofill');
-const profileFillNow = document.getElementById('profileFillNow');
-const profAView = document.getElementById('profAView');
-const profBView = document.getElementById('profBView');
-const profCView = document.getElementById('profCView');
-const profAByDesc = document.getElementById('profAByDesc');
-const profBByDesc = document.getElementById('profBByDesc');
-const profCByDesc = document.getElementById('profCByDesc');
-const profAAddId = document.getElementById('profAAddId');
-const profBAddId = document.getElementById('profBAddId');
-const profCAddId = document.getElementById('profCAddId');
-const profAAddIdBtn = document.getElementById('profAAddIdBtn');
-const profBAddIdBtn = document.getElementById('profBAddIdBtn');
-const profCAddIdBtn = document.getElementById('profCAddIdBtn');
-const profAAddDescBtn = document.getElementById('profAAddDescBtn');
-const profBAddDescBtn = document.getElementById('profBAddDescBtn');
-const profCAddDescBtn = document.getElementById('profCAddDescBtn');
-const profAClear = document.getElementById('profAClear');
-const profBClear = document.getElementById('profBClear');
-const profCClear = document.getElementById('profCClear');
-
-/* -------------------- DB -------------------- */
-function openDB(){
-  return new Promise((resolve,reject)=>{
-    const req = indexedDB.open(DB_NAME,2);
-    req.onupgradeneeded = (ev)=>{
-      const db=ev.target.result;
-      if(!db.objectStoreNames.contains(DB_STORE)){
-        const store = db.createObjectStore(DB_STORE,{keyPath:'id'});
-        store.createIndex('category','category',{unique:false});
-        store.createIndex('ts','ts',{unique:false});
-        store.createIndex('hash','hash',{unique:false});
-      } else {
-        const store=ev.target.transaction.objectStore(DB_STORE);
-        if(!store.indexNames.contains('hash')) store.createIndex('hash','hash',{unique:false});
-      }
-    };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
-  });
-}
-function dbTx(mode){ return db.transaction(DB_STORE,mode).objectStore(DB_STORE); }
-function dbAddMany(items){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    const st=tx.objectStore(DB_STORE);
-    items.forEach(it=>st.put(it));
-    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
-  });
-}
-function dbGetAll(){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readonly');
-    const st=tx.objectStore(DB_STORE);
-    const rq=st.getAll(); rq.onsuccess=()=>resolve(rq.result||[]); rq.onerror=()=>reject(rq.error);
-  });
-}
-function dbUpdate(item){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite'); tx.objectStore(DB_STORE).put(item);
-    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
-  });
-}
-function dbClearAll(){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).clear();
-    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
-  });
-}
-
-/* -------------------- Helpers -------------------- */
-function lsGet(k,f){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):f;}catch{ return f; } }
-function lsSet(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-function toast(msg, danger=false){
-  const t=document.createElement('div'); t.textContent=msg;
-  Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});
-  document.body.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; },1200); setTimeout(()=>t.remove(),1600);
-}
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
-function stars(n){ const full='★'.repeat(n||0), empty='☆'.repeat(5-(n||0)); return full+empty; }
-async function sha256(blob){
-  const buf = await blob.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-/* -------------------- First-run PWA wipe -------------------- */
+/* ===== First-run PWA wipe (start empty) ===== */
 async function maybeFirstRunWipe(){
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(!isStandalone) return;
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  if(!standalone) return;
   if(!localStorage.getItem(LSK.pwaInit)){
-    // wipe image DB + all app keys except the flag
-    await openDB();
-    await dbClearAll();
-    const keep=[LSK.pwaInit];
-    Object.keys(localStorage).forEach(k=>{ if(!keep.includes(k)) localStorage.removeItem(k); });
-    localStorage.setItem(LSK.pwaInit, JSON.stringify(true));
-    toast('App initialized (empty). Import your metadata to restore.');
+    await openDB(); await dbClearAll();
+    const keep=[LSK.pwaInit]; Object.keys(localStorage).forEach(k=>{ if(!keep.includes(k)) localStorage.removeItem(k); });
+    localStorage.setItem(LSK.pwaInit,JSON.stringify(true));
+    toast('Initialized empty — import or upload to begin');
   }
 }
 
-/* -------------------- Init -------------------- */
+/* ===== Init ===== */
 (async function init(){
   await maybeFirstRunWipe();
+  db=await openDB();
 
-  db = await openDB();
-
-  // Build Restrict dropdowns
+  // Build Restrict selects
   function fillRestrict(sel){
-    sel.innerHTML='';
-    const all=document.createElement('option'); all.value=''; all.textContent='All categories'; sel.appendChild(all);
-    const un=document.createElement('option'); un.value='__UNASSIGNED__'; un.textContent='— Unassigned —'; sel.appendChild(un);
-    CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    sel.innerHTML=''; const all=new Option('All categories',''); sel.appendChild(all);
+    const un=new Option('— Unassigned —','__UNASSIGNED__'); sel.appendChild(un);
+    CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
   }
   fillRestrict(mainRestrict);
-  const rigAll=document.createElement('option'); rigAll.value=''; rigAll.textContent='All categories'; rigCategorySel.appendChild(rigAll);
-  CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; rigCategorySel.appendChild(o); });
+  rigCategorySel.appendChild(new Option('All categories',''));
+  CATEGORIES.forEach(c=>rigCategorySel.appendChild(new Option(c,c)));
 
-  // FastTag & Filter category pickers
+  // Category pickers (with Unassigned)
   function addUnassignedFirst(sel){
-    sel.innerHTML='';
-    const un=document.createElement('option'); un.value=''; un.textContent='— Unassigned —'; sel.appendChild(un);
-    CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    sel.innerHTML=''; sel.appendChild(new Option('— Unassigned —',''));
+    CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
   }
-  addUnassignedFirst(fastTagCategory);
-  addUnassignedFirst(filterCategory);
+  addUnassignedFirst(fastTagCategory); addUnassignedFirst(filterCategory);
 
-  // Restore restriction
-  rigCategory = rigCategory||''; // '' or '__UNASSIGNED__' or category
-  mainRestrict.value = rigCategory;
-  rigCategorySel.value = (rigCategory === '__UNASSIGNED__') ? '' : rigCategory;
+  // Restore
+  mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;
+  timerSelect.value=String(timerMinutes);
+  q('#muteState').textContent=isMuted?'Muted':'Sound on';
 
-  // Timer
-  timerSelect.value = String(timerMinutes);
-  timerSelect.addEventListener('change', ()=>{ timerMinutes = +timerSelect.value; lsSet(LSK.timer,timerMinutes); });
+  // Listeners
+  uploadBtn.addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',handleUpload);
+  timerSelect.addEventListener('change',()=>{timerMinutes=+timerSelect.value;lsSet(LSK.timer,timerMinutes)});
+  qAll(['#filterSelect','#filterCategory','#sortSelect']).forEach(el=>el.addEventListener('change',renderRig));
+  q('#rigClearCat').addEventListener('click',()=>{rigCategory='';rigCategorySel.value='';mainRestrict.value='';lsSet(LSK.rigCat,rigCategory);toast('Restriction cleared')});
+  rigCategorySel.addEventListener('change',()=>{rigCategory=rigCategorySel.value||'';mainRestrict.value=rigCategory;lsSet(LSK.rigCat,rigCategory)});
+  mainRestrict.addEventListener('change',()=>{rigCategory=mainRestrict.value;rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;lsSet(LSK.rigCat,rigCategory)});
 
-  // Profiles
-  profileActiveSel.value = profileActive;
-  profileAutofillChk.checked = profileAutofill;
-
-  // Mute text
-  muteState.textContent = isMuted ? "Muted" : "Sound on";
-
-  // Collapsible sections
-  document.querySelectorAll('.toggle').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const target = document.getElementById(btn.dataset.target);
-      if(!target) return;
-      const isHidden = target.classList.toggle('hidden');
-      btn.textContent = isHidden ? '▲' : '▼';
-    });
-  });
-
-  // Live filter refresh
-  filterSelect.addEventListener('change', renderRig);
-  filterCategory.addEventListener('change', renderRig);
-  sortSelect.addEventListener('change', renderRig);
-
-  // Restrict sync
-  document.getElementById('rigClearCat').addEventListener('click', ()=>{
-    rigCategory = '';
-    rigCategorySel.value = '';
-    mainRestrict.value = '';
-    lsSet(LSK.rigCat, rigCategory);
-    toast('Category restriction cleared');
-  });
-  rigCategorySel.addEventListener('change', ()=>{
-    rigCategory = rigCategorySel.value || '';
-    mainRestrict.value = rigCategory;
-    lsSet(LSK.rigCat, rigCategory);
-  });
-  mainRestrict.addEventListener('change', ()=>{
-    rigCategory = mainRestrict.value;
-    rigCategorySel.value = (rigCategory === '__UNASSIGNED__') ? '' : rigCategory;
-    lsSet(LSK.rigCat, rigCategory);
-  });
+  // Rig dialog open/close (triple-tap or long-press)
+  secretAccess();
+  rigClose.addEventListener('click',()=>rigDlg.close());
+  rigDlg.addEventListener('click',e=>{ if(e.target===rigDlg) rigDlg.close(); }); // tap backdrop to close
 
   // Buttons
-  muteToggle.addEventListener('click', ()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent = isMuted?'Muted':'Sound on'; });
-  testChime.addEventListener('click', ()=>{ ensureAudio(); resumeAudio().then(()=>playTimerChime()); });
-  exportBtn.addEventListener('click', exportMetadata);
-  importInput.parentElement.addEventListener('click', ()=>importInput.click());
-  importInput.addEventListener('change', importMetadata);
-  resetBtn.addEventListener('click', async ()=>{
-    if(!confirm('Wipe all local images and settings? (Cannot be undone)')) return;
-    await dbClearAll();
-    weightOverrides={}; categoryOverrides={}; descOverrides={}; ratings={};
-    profiles={A:[],B:[],C:[]}; profileActive=''; profileAutofill=false; rigQueue=[];
-    lsSet(LSK.weights,weightOverrides); lsSet(LSK.categories,categoryOverrides);
-    lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings);
-    lsSet(LSK.profiles,profiles); lsSet(LSK.profileActive,profileActive); lsSet(LSK.profileAutofill,profileAutofill);
-    lsSet(LSK.queue,rigQueue);
-    await reloadImages(); buildReels(); renderRig(); renderQueue(); renderProfiles();
-    toast('Reset complete');
-  });
+  muteToggle.addEventListener('click',()=>{isMuted=!isMuted;lsSet(LSK.mute,isMuted);q('#muteState').textContent=isMuted?'Muted':'Sound on'});
+  testChime.addEventListener('click',()=>{ensureAudio();resumeAudio().then(()=>playTimerChime())});
+  exportCopy.addEventListener('click',exportToClipboardDialog);
+  importPaste.addEventListener('click',importFromPasteDialog);
+  resetBtn.addEventListener('click',resetAll);
 
-  // Profile UI events
-  profileActiveSel.addEventListener('change', ()=>{ profileActive = profileActiveSel.value; lsSet(LSK.profileActive, profileActive); });
-  profileAutofillChk.addEventListener('change', ()=>{ profileAutofill = !!profileAutofillChk.checked; lsSet(LSK.profileAutofill, profileAutofill); });
-  profileFillNow.addEventListener('click', ()=>{ fillQueueFromActiveProfile(); });
+  // Queue
+  queueAddId.addEventListener('click',()=>{const id=queueId.value.trim(); if(!id)return; rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue();});
+  queueAddDesc.addEventListener('click',()=>{const v=queueByDesc.value; if(!v)return; rigQueue.push('desc::'+v); lsSet(LSK.queue,rigQueue); renderQueue();});
+  queueClear.addEventListener('click',()=>{rigQueue.length=0;lsSet(LSK.queue,rigQueue);renderQueue()});
 
-  // Profile add/clear handlers
-  function setupProfileControls(letter, view, byDescSel, addIdInput, addIdBtn, addDescBtn, clearBtn){
-    addIdBtn.addEventListener('click', ()=>{
-      const v=addIdInput.value.trim(); if(!v) return;
-      addToProfile(letter, v); addIdInput.value='';
-    });
-    addDescBtn.addEventListener('click', ()=>{
-      const v=byDescSel.value; if(!v) return;
-      addToProfile(letter, 'desc::'+v);
-    });
-    clearBtn.addEventListener('click', ()=>{ profiles[letter]=[]; persistProfiles(); renderProfiles(); });
-  }
-  setupProfileControls('A', profAView, profAByDesc, profAAddId, profAAddIdBtn, profAAddDescBtn, profAClear);
-  setupProfileControls('B', profBView, profBByDesc, profBAddId, profBAddIdBtn, profBAddDescBtn, profBClear);
-  setupProfileControls('C', profCView, profCByDesc, profCAddId, profCAddIdBtn, profCAddDescBtn, profCClear);
+  // Profiles
+  profileActiveSel.value=profileActive; profileAutofillChk.checked=profileAutofill;
+  profileActiveSel.addEventListener('change',()=>{profileActive=profileActiveSel.value;lsSet(LSK.profileActive,profileActive)});
+  profileAutofillChk.addEventListener('change',()=>{profileAutofill=!!profileAutofillChk.checked;lsSet(LSK.profileAutofill,profileAutofill)});
+  profileFillNow.addEventListener('click',fillQueueFromActiveProfile);
+  setupProfileControls('A',profAView,profAByDesc,profAAddId,profAAddIdBtn,profAAddDescBtn,profAClear);
+  setupProfileControls('B',profBView,profBByDesc,profBAddId,profBAddIdBtn,profBAddDescBtn,profBClear);
+  setupProfileControls('C',profCView,profCByDesc,profCAddId,profCAddIdBtn,profCAddDescBtn,profCClear);
 
-  await reloadImages();
-  buildReels();
-  renderRig();
-  renderQueue();
-  renderProfiles();
+  // Bulk actions
+  applySetCategory.addEventListener('click',()=>{const cat=fastTagCategory.value; getFilteredImages().forEach(it=>{it.category=cat;categoryOverrides[it.id]=cat;dbUpdate(it)}); lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set');});
+  applyIncludeAll.addEventListener('click',()=>{getFilteredImages().forEach(it=>{it.weight=1;weightOverrides[it.id]=1;dbUpdate(it)}); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included')});
+  applyExcludeAll.addEventListener('click',()=>{getFilteredImages().forEach(it=>{it.weight=0;weightOverrides[it.id]=0;dbUpdate(it)}); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded')});
+  applyBatchNames.addEventListener('click',()=>{const names=batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); if(!names.length){toast('No names');return} let i=0; getFilteredImages().forEach(it=>{if(i<names.length){it.description=names[i++];descOverrides[it.id]=it.description;dbUpdate(it)}}); lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied')});
+  applyDiff.addEventListener('click',()=>bulkApplyRating('diff',+bulkDiff.value));
+  applyHer.addEventListener('click',()=>bulkApplyRating('her',+bulkHer.value));
+  applyHim.addEventListener('click',()=>bulkApplyRating('him',+bulkHim.value));
+
+  await reloadImages(); buildReels(); renderRig(); renderQueue(); renderProfiles();
 })();
 
-/* -------------------- Load/Render -------------------- */
-async function reloadImages(){
-  IMAGES = await dbGetAll();
-  IMAGES.forEach(it=>{
-    if(weightOverrides[it.id] != null) it.weight = weightOverrides[it.id];
-    if(categoryOverrides[it.id] !== undefined) it.category = categoryOverrides[it.id];
-    if(descOverrides[it.id] !== undefined) it.description = descOverrides[it.id];
-    if(ratings[it.id]) Object.assign(it, ratings[it.id]);
-  });
-  OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
-  IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
-  refreshQueueDescOptions();
-  refreshProfileDescOptions();
-}
-function buildReels(){
-  const strips = reelsEl.querySelectorAll('.strip');
-  strips.forEach((strip,i)=>{
-    strip.innerHTML='';
-    const pool = IMAGES.length ? IMAGES.slice() : [];
-    if(!pool.length){
-      const c=document.createElement('div'); c.className='cell'; c.innerHTML='—'; strip.appendChild(c);
-      return;
-    }
-    for(let k=0;k<12;k++){
-      const it = pool[(k+i)%pool.length];
-      const cell=document.createElement('div'); cell.className='cell';
-      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
-      strip.appendChild(cell);
-    }
-  });
-}
-function getFilteredImages(){
-  const status = filterSelect.value;   // '', 'uncategorized', 'unnamed', 'excluded'
-  const cat    = filterCategory.value; // '' (Unassigned) or category
-  const sort   = sortSelect.value;
-
-  let list = IMAGES.slice();
-
-  if (status === 'uncategorized') list = list.filter(x => !(x.category || '').trim());
-  if (status === 'unnamed')       list = list.filter(x => !(x.description || '').trim());
-  if (status === 'excluded')      list = list.filter(x => (x.weight ?? DEFAULT_WEIGHT) == 0);
-
-  if (filterCategory.selectedIndex > 0 || cat === '') {
-    list = list.filter(x => (x.category || '') === cat);
-  }
-
-  if (sort === 'newest')  list.sort((a,b)=> (b.ts||0) - (a.ts||0));
-  if (sort === 'oldest')  list.sort((a,b)=> (a.ts||0) - (b.ts||0));
-  if (sort === 'name')    list.sort((a,b)=> (a.description||'').localeCompare(b.description||''));
-  if (sort === 'category')list.sort((a,b)=> (a.category||'').localeCompare(b.category||''));
-
-  return list;
-}
-function renderRig(){
-  const list = getFilteredImages();
-  gridCount.textContent = `(${list.length} shown of ${IMAGES.length})`;
-  rigGrid.innerHTML='';
-  list.forEach(it=>{
-    const card=document.createElement('div'); card.className='rig-item'; card.dataset.id=it.id;
-
-    const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id);
-    const tag=document.createElement('span'); tag.className='tag'; tag.textContent=(it.category||'—');
-    const ex=document.createElement('button'); ex.className='exclude-btn pill'; ex.textContent=(it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude';
-    ex.addEventListener('click', (e)=>{ e.stopPropagation(); toggleExclude(it); });
-
-    const meta=document.createElement('div'); meta.className='meta';
-    const idrow=document.createElement('div'); idrow.textContent=`ID: ${it.id}`;
-
-    // category dropdown
-    const row1=document.createElement('div');
-    const sel=document.createElement('select');
-    const un=document.createElement('option'); un.value=''; un.textContent='— Unassigned —'; sel.appendChild(un);
-    CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
-    sel.value = it.category || '';
-    sel.onchange=async ()=>{ it.category = sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent = it.category || '—'; };
-
-    const w=document.createElement('input'); w.type='number'; w.min='0'; w.step='0.1'; w.style.width='80px'; w.value=it.weight??DEFAULT_WEIGHT;
-    w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'; };
-    row1.append(sel,' ',w);
-
-    const d=document.createElement('input'); d.type='text'; d.placeholder='Description / Name'; d.value=it.description||''; d.onchange=()=>{ it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); refreshProfileDescOptions(); };
-
-    // ratings
-    const r1=document.createElement('div'); r1.className='row small';
-    const diffLabel=document.createElement('span'); diffLabel.textContent='Diff:';
-    const diffStars=makeStarRow(it,'diff'); r1.append(diffLabel,diffStars);
-    const r2=document.createElement('div'); r2.className='row small';
-    const herLabel=document.createElement('span'); herLabel.textContent='Her:';
-    const herStars=makeStarRow(it,'her'); r2.append(herLabel,herStars);
-    const r3=document.createElement('div'); r3.className='row small';
-    const himLabel=document.createElement('span'); himLabel.textContent='Him:';
-    const himStars=makeStarRow(it,'him'); r3.append(himLabel,himStars);
-
-    meta.append(idrow,row1,d,r1,r2,r3);
-    card.append(img, tag, ex, meta);
-
-    // Fast Tag tap
-    card.addEventListener('click', ()=>{
-      if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
-      const pickedCat = fastTagCategory.value; const name=(fastTagName.value||'').trim();
-      it.category=pickedCat; categoryOverrides[it.id]=pickedCat; lsSet(LSK.categories,categoryOverrides); sel.value=pickedCat; tag.textContent=pickedCat||'—';
-      if(name){ it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); refreshProfileDescOptions(); }
-      dbUpdate(it); toast('Applied');
-    });
-
-    rigGrid.appendChild(card);
-  });
-}
-function makeStarRow(it,key){
-  const wrap=document.createElement('div'); wrap.className='stars';
-  const current = (it[key]||0);
-  for(let i=1;i<=5;i++){
-    const s=document.createElement('span'); s.className='star'+(i<=current?'':' off'); s.textContent='★';
-    s.addEventListener('click', ()=>{ it[key]=i; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=i; lsSet(LSK.ratings,ratings); dbUpdate(it); [...wrap.children].forEach((c,idx)=>{ c.classList.toggle('off', idx+1>i); }); });
-    wrap.appendChild(s);
-  }
-  return wrap;
-}
-function toggleExclude(it){
-  const newW = (it.weight??DEFAULT_WEIGHT)==0 ? 1 : 0;
-  it.weight = newW;
-  weightOverrides[it.id]=newW; lsSet(LSK.weights,weightOverrides);
-  renderRig();
-}
-
-/* -------------------- Bulk actions -------------------- */
-applySetCategory.addEventListener('click', ()=>{
-  const cat = fastTagCategory.value;
-  const list = getFilteredImages(); list.forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); });
-  lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set for filtered');
-});
-applyIncludeAll.addEventListener('click', ()=>{
-  const list = getFilteredImages(); list.forEach(it=>{ it.weight=1; weightOverrides[it.id]=1; dbUpdate(it); });
-  lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included filtered');
-});
-applyExcludeAll.addEventListener('click', ()=>{
-  const list = getFilteredImages(); list.forEach(it=>{ it.weight=0; weightOverrides[it.id]=0; dbUpdate(it); });
-  lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded filtered');
-});
-applyBatchNames.addEventListener('click', ()=>{
-  const names = batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  if(!names.length){ toast('No names provided'); return; }
-  const list = getFilteredImages();
-  let i=0; list.forEach(it=>{ if(i<names.length){ it.description = names[i++]; descOverrides[it.id]=it.description; dbUpdate(it); } });
-  lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied in visible order');
-});
-applyDiff.addEventListener('click', ()=>{ const v=+bulkDiff.value||0; if(!v){ toast('Pick difficulty'); return; } getFilteredImages().forEach(it=>{ it.diff=v; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id].diff=v; dbUpdate(it); }); lsSet(LSK.ratings,ratings); renderRig(); toast('Difficulty applied'); });
-applyHer.addEventListener('click', ()=>{ const v=+bulkHer.value||0; if(!v){ toast('Pick her rating'); return; } getFilteredImages().forEach(it=>{ it.her=v; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id].her=v; dbUpdate(it); }); lsSet(LSK.ratings,ratings); renderRig(); toast('Her rating applied'); });
-applyHim.addEventListener('click', ()=>{ const v=+bulkHim.value||0; if(!v){ toast('Pick his rating'); return; } getFilteredImages().forEach(it=>{ it.him=v; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id].him=v; dbUpdate(it); }); lsSet(LSK.ratings,ratings); renderRig(); toast('His rating applied'); });
-
-/* -------------------- Upload -------------------- */
-fileInput.addEventListener('change', async (ev)=>{
+/* ===== Upload ===== */
+async function handleUpload(ev){
   const files=[...ev.target.files]; if(!files.length) return;
   ensureAudio();
   const toAdd=[];
   for(const f of files){
     if(!f.type.startsWith('image/')) continue;
-    const id=crypto.randomUUID();
-    const blob=f.slice(0, f.size, f.type);
-    const hash=await sha256(blob);
-    const it={ id, blob, hash, category:'', weight:DEFAULT_WEIGHT, ts:Date.now(), description:'', diff:0, her:0, him:0 };
+    const id=crypto.randomUUID(), blob=f.slice(0,f.size,f.type), hash=await sha256(blob);
+    const it={id,blob,hash,category:'',weight:DEFAULT_WEIGHT,ts:Date.now(),description:'',diff:0,her:0,him:0};
     toAdd.push(it);
   }
   await dbAddMany(toAdd);
-  toAdd.forEach(it=>{
-    categoryOverrides[it.id]=it.category; weightOverrides[it.id]=it.weight; descOverrides[it.id]=it.description; ratings[it.id]={diff:0,her:0,him:0};
-  });
-  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings);
+  toAdd.forEach(it=>{categoryOverrides[it.id]='';descOverrides[it.id]='';weightOverrides[it.id]=DEFAULT_WEIGHT;ratings[it.id]={diff:0,her:0,him:0};});
+  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
   await reloadImages(); buildReels(); renderRig(); fileInput.value='';
-});
+}
 
-/* -------------------- Spin / Animation -------------------- */
+/* ===== Load/Render ===== */
+async function reloadImages(){
+  IMAGES=await dbGetAll();
+  IMAGES.forEach(it=>{
+    if(weightOverrides[it.id]!=null) it.weight=weightOverrides[it.id];
+    if(categoryOverrides[it.id]!==undefined) it.category=categoryOverrides[it.id];
+    if(descOverrides[it.id]!==undefined) it.description=descOverrides[it.id];
+    if(ratings[it.id]) Object.assign(it,ratings[it.id]);
+  });
+  OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
+  IMAGES.forEach(it=>OBJECT_URLS.set(it.id,URL.createObjectURL(it.blob)));
+  refreshQueueDescOptions(); refreshProfileDescOptions();
+}
+function buildReels(){
+  qAll('.strip').forEach((strip,i)=>{
+    strip.innerHTML=''; const pool=IMAGES.length?IMAGES.slice():[];
+    if(!pool.length){const c=div('cell'); c.textContent='—'; strip.appendChild(c); return;}
+    for(let k=0;k<12;k++){ const it=pool[(k+i)%pool.length]; const cell=div('cell'); const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img); strip.appendChild(cell); }
+  });
+}
+function getFilteredImages(){
+  const status=filterSelect.value, cat=filterCategory.value, sort=sortSelect.value;
+  let list=IMAGES.slice();
+  if(status==='uncategorized') list=list.filter(x=>!(x.category||'').trim());
+  if(status==='unnamed') list=list.filter(x=>!(x.description||'').trim());
+  if(status==='excluded') list=list.filter(x=>(x.weight??DEFAULT_WEIGHT)==0);
+  if(filterCategory.selectedIndex>0 || cat==='') list=list.filter(x=>(x.category||'')===cat);
+  if(sort==='newest') list.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(sort==='oldest') list.sort((a,b)=>(a.ts||0)-(b.ts||0));
+  if(sort==='name') list.sort((a,b)=>(a.description||'').localeCompare(b.description||''));
+  if(sort==='category') list.sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  return list;
+}
+function renderRig(){
+  const list=getFilteredImages(); gridCount.textContent=`(${list.length} shown of ${IMAGES.length})`; rigGrid.innerHTML='';
+  list.forEach(it=>{
+    const card=div('rig-item'); card.dataset.id=it.id;
+    const img=new Image(); img.src=OBJECT_URLS.get(it.id);
+    const tag=span('tag'); tag.textContent=it.category||'—';
+    const ex=button('exclude-btn pill', (it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude');
+    ex.onclick=(e)=>{e.stopPropagation();toggleExclude(it)};
+    const meta=div('meta');
+    const idrow=div(); idrow.textContent=`ID: ${it.id}`;
+    const row1=div(); const sel=document.createElement('select'); sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c))); sel.value=it.category||''; sel.onchange=async ()=>{it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category||'—'};
+    const w=inputNumber(it.weight??DEFAULT_WEIGHT); w.onchange=()=>{const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'};
+    row1.append(sel,' ',w);
+    const d=document.createElement('input'); d.placeholder='Name'; d.value=it.description||''; d.onchange=()=>{it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); refreshProfileDescOptions();};
+    const r1=starRow(it,'diff','Diff'), r2=starRow(it,'her','Her-O'), r3=starRow(it,'him','His-O');
+    meta.append(idrow,row1,d,r1,r2,r3);
+    card.append(img,tag,ex,meta);
+    card.addEventListener('click',()=>{ if(!fastTagEnable.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return;} const cat=fastTagCategory.value, name=(fastTagName.value||'').trim(); it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—'; if(name){it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); refreshProfileDescOptions();} dbUpdate(it); toast('Applied'); });
+    rigGrid.appendChild(card);
+  });
+}
+function starRow(it,key,label){
+  const row=div('row'); const lbl=span(); lbl.textContent=label+':'; row.append(lbl);
+  for(let i=1;i<=5;i++){ const s=span(); s.textContent='★'; s.style.cursor='pointer'; s.style.opacity= (i<=(it[key]||0)) ? '1':'0.35'; s.onclick=()=>{ it[key]=i; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=i; lsSet(LSK.ratings,ratings); dbUpdate(it); [...row.querySelectorAll('span')].slice(1).forEach((el,idx)=>el.style.opacity=((idx+1)<=i)?'1':'0.35'); }; row.append(s); }
+  return row;
+}
+function toggleExclude(it){ const nw=(it.weight??DEFAULT_WEIGHT)==0?1:0; it.weight=nw; weightOverrides[it.id]=nw; lsSet(LSK.weights,weightOverrides); renderRig(); }
+
+/* ===== Bulk ===== */
+function bulkApplyRating(key,val){ if(!val){toast('Pick a value');return} getFilteredImages().forEach(it=>{it[key]=val; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=val; dbUpdate(it)}); lsSet(LSK.ratings,ratings); renderRig(); toast('Applied'); }
+
+/* ===== Spin / Animation ===== */
 let spinning=false, blockUntil=0, timerId=null;
-
-spinBtn.addEventListener('click', async ()=>{
+spinBtn.addEventListener('click',async ()=>{
   ensureAudio(); await resumeAudio();
-  if(spinning) return;
-  if(Date.now()<blockUntil){ return; }
-  if(!IMAGES.length){ toast('Add images first'); return; }
-
-  // Auto-refill from active profile if queue empty and enabled
+  if(spinning||Date.now()<blockUntil){return}
+  if(!IMAGES.length){toast('Add images first');return}
   if(!rigQueue.length && profileActive && profileAutofill) fillQueueFromActiveProfile();
 
-  spinning=true;
-  revealNameEl.textContent=''; revealMetaEl.textContent='';
-  revealBig.classList.add('hidden'); revealImg.removeAttribute('src');
+  spinning=true; revealNameEl.textContent=''; revealMetaEl.textContent=''; revealBig.classList.add('hidden'); revealBars.style.display='none'; revealImg.removeAttribute('src');
   playSpinStart();
 
-  const chosen = await pickImage();
-  let others = IMAGES.filter(x=>x.id!==chosen.id); if(others.length<2) others = IMAGES.concat(IMAGES);
-  shuffle(others);
-  const leftImg = others[0], rightImg = others[1];
+  const chosen=await pickImage();
+  let others=IMAGES.filter(x=>x.id!==chosen.id); if(others.length<2) others=IMAGES.concat(IMAGES); shuffle(others);
+  const finals=[others[0],chosen,others[1]];
 
-  const strips = [...document.querySelectorAll('.strip')];
-  const finals = [leftImg, chosen, rightImg];
-
-  const BASE=20, CELLH=160;
+  const strips=[...document.querySelectorAll('.strip')];
+  const BASE=20, CELLH=156;
   strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    const pool = IMAGES.length ? IMAGES.slice() : [];
-    for(let k=0;k<BASE;k++){
-      const it=pool[(k+i)%pool.length];
-      const cell=document.createElement('div'); cell.className='cell';
-      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
-      strip.appendChild(cell);
-    }
-    const end=document.createElement('div'); end.className='cell';
-    const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id);
-    end.appendChild(endImg); strip.appendChild(end);
-
-    strip.style.transition='none'; strip.style.transform='translateY(0px)'; strip.style.filter='blur(6px) brightness(0.9)';
+    const pool=IMAGES.length?IMAGES.slice():[];
+    for(let k=0;k<BASE;k++){ const it=pool[(k+i)%pool.length]; const cell=div('cell'); const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img); strip.appendChild(cell); }
+    const end=div('cell'); const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id); end.appendChild(endImg); strip.appendChild(end);
+    strip.style.transition='none'; strip.style.transform='translateY(0)'; strip.style.filter='blur(6px) brightness(0.9)';
   });
-
-  const offsets=[0, 250, 450], ease='cubic-bezier(.12,.62,.22,.99)';
-  strips.forEach((strip,i)=>{
-    const distance = CELLH * (BASE);
-    setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, offsets[i]);
-  });
+  const offsets=[0,250,450], ease='cubic-bezier(.12,.62,.22,.99)';
+  strips.forEach((strip)=>{ const distance=CELLH*BASE; setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, 0); });
   for(let t=0;t<SPIN_DURATION_MS*0.6;t+=280){ playTick(t/1000); }
-
   setTimeout(()=>{
-    strips.forEach(s=>{ s.style.filter='none'; });
-    playReveal();
-    const name = (chosen.description||chosen.category||'');
-    revealNameEl.textContent = name;
-    const md = `Diff ${stars(chosen.diff||0)} · Her ${stars(chosen.her||0)} · Him ${stars(chosen.him||0)}`;
-    revealMetaEl.textContent = md;
-    revealImg.src = OBJECT_URLS.get(chosen.id);
+    strips.forEach(s=>s.style.filter='none'); playReveal();
+    revealNameEl.textContent=chosen.description||chosen.category||'';
+    revealMetaEl.textContent=`Diff ${stars(chosen.diff||0)} · Her ${stars(chosen.her||0)} · Him ${stars(chosen.him||0)}`;
+    revealImg.src=OBJECT_URLS.get(chosen.id);
     revealBig.classList.remove('hidden');
-    spinning=false;
-
-    if(timerMinutes>0){ startCountdown(timerMinutes); }
+    setBars(chosen); spinning=false; if(timerMinutes>0) startCountdown(timerMinutes);
   }, SPIN_DURATION_MS + Math.max(...offsets) + 50);
 });
+function setBars(it){
+  revealBars.style.display='grid';
+  barDiff.style.width = ((it.diff||0)/5*100)+'%';
+  barHer.style.width  = ((it.her ||0)/5*100)+'%';
+  barHim.style.width  = ((it.him ||0)/5*100)+'%';
+}
 
-/* -------------------- Countdown + Skip -------------------- */
-function clearCountdownAndUnlock(){
-  if(timerId) clearInterval(timerId);
-  timerId = null;
-  blockUntil = 0;
-  spinBtn.disabled = false;
-  countdownEl.textContent = '';
-  skipBtn.style.display = 'none';
-}
-function startCountdown(mins){
-  const duration = mins*60*1000;
-  blockUntil = Date.now()+duration;
-  spinBtn.disabled = true;
-  if(timerId) clearInterval(timerId);
-  updateCountdown();
-  skipBtn.style.display = 'inline-flex';
-  timerId = setInterval(async ()=>{
-    updateCountdown();
-    if(Date.now()>=blockUntil){
-      clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; await playTimerChime();
-    }
-  }, 250);
-}
-function updateCountdown(){
-  const remain = Math.max(0, blockUntil - Date.now());
-  const s = Math.ceil(remain/1000);
-  const m = Math.floor(s/60), ss = String(s%60).padStart(2,'0');
-  countdownEl.textContent = `Next spin in ${m}:${ss}`;
-}
-skipBtn.addEventListener('click', clearCountdownAndUnlock);
+/* ===== Countdown + Skip ===== */
+function clearCountdownAndUnlock(){ if(timerId) clearInterval(timerId); timerId=null; blockUntil=0; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; }
+function startCountdown(mins){ const dur=mins*60*1000; blockUntil=Date.now()+dur; spinBtn.disabled=true; if(timerId)clearInterval(timerId); updateCountdown(); skipBtn.style.display='inline-flex'; timerId=setInterval(async ()=>{updateCountdown(); if(Date.now()>=blockUntil){clearInterval(timerId);timerId=null;spinBtn.disabled=false;countdownEl.textContent='';skipBtn.style.display='none'; await playTimerChime();}},250); }
+function updateCountdown(){ const r=Math.max(0,blockUntil-Date.now()); const s=Math.ceil(r/1000), m=Math.floor(s/60), ss=String(s%60).padStart(2,'0'); countdownEl.textContent=`Next spin in ${m}:${ss}`; }
+skipBtn.addEventListener('click',clearCountdownAndUnlock);
 
-/* -------------------- Pick logic -------------------- */
+/* ===== Pick logic ===== */
 async function pickImage(){
-  // Use queue if exists
-  if(rigQueue.length){
-    const item = rigQueue.shift();
-    lsSet(LSK.queue,rigQueue); renderQueue();
-    const it = findByQueueItem(item);
-    if(it) return it;
-  }
-  // After queue is consumed, just pick weighted random (restriction applies)
-  let pool = IMAGES.slice();
-  if (rigCategory){
-    if (rigCategory === '__UNASSIGNED__') pool = pool.filter(it => !(it.category||''));
-    else pool = pool.filter(it => (it.category||'')===rigCategory);
-  }
+  if(rigQueue.length){ const item=rigQueue.shift(); lsSet(LSK.queue,rigQueue); renderQueue(); const it=findByQueueItem(item); if(it) return it; }
+  let pool=IMAGES.slice();
+  if(rigCategory){ if(rigCategory==='__UNASSIGNED__') pool=pool.filter(it=>!(it.category||'')); else pool=pool.filter(it=>(it.category||'')===rigCategory); }
   if(!pool.length) return IMAGES[0];
-  const weights = pool.map(it=> Math.max(0.0001, it.weight??DEFAULT_WEIGHT));
-  const total = weights.reduce((a,b)=>a+b,0);
-  let r = Math.random()*total;
-  for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
+  const weights=pool.map(it=>Math.max(0.0001,it.weight??DEFAULT_WEIGHT)), total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total; for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
   return pool[pool.length-1];
 }
-function findByQueueItem(item){
-  if(item.startsWith('desc::')){
-    const d = item.slice(6);
-    return IMAGES.find(x=>(x.description||'')===d) || null;
-  }else{
-    return IMAGES.find(x=>x.id===item) || null;
+function findByQueueItem(item){ if(item.startsWith('desc::')){ const d=item.slice(6); return IMAGES.find(x=>(x.description||'')===d)||null; } return IMAGES.find(x=>x.id===item)||null; }
+
+/* ===== Queue UI ===== */
+function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1);lsSet(LSK.queue,rigQueue);renderQueue()}; queueView.appendChild(pill); }); }
+function refreshQueueDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; queueByDesc.innerHTML=''; queueByDesc.appendChild(new Option('Select name…','')); names.forEach(n=>queueByDesc.appendChild(new Option(n,n))); }
+
+/* ===== Profiles ===== */
+function setupProfileControls(letter,view,byDesc,addIdInput,addIdBtn,addDescBtn,clearBtn){
+  addIdBtn.addEventListener('click',()=>{const v=addIdInput.value.trim(); if(!v)return; addToProfile(letter,v); addIdInput.value='';});
+  addDescBtn.addEventListener('click',()=>{const v=byDesc.value; if(!v)return; addToProfile(letter,'desc::'+v);});
+  clearBtn.addEventListener('click',()=>{profiles[letter]=[];persistProfiles();renderProfiles()});
+}
+function addToProfile(letter,item){ const list=profiles[letter]; if(list.length>=MAX_PROFILE_ITEMS){toast(`Profile ${letter} full`,true);return} list.push(item); persistProfiles(); renderProfiles(); }
+function persistProfiles(){ lsSet(LSK.profiles,profiles); }
+function renderProfiles(){ drawProfile(profiles.A,profAView); drawProfile(profiles.B,profBView); drawProfile(profiles.C,profCView); refreshProfileDescOptions(); }
+function drawProfile(list,view){ view.innerHTML=''; list.forEach((q,i)=>{const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{list.splice(i,1);persistProfiles();renderProfiles()}; view.appendChild(pill); }); }
+function fillQueueFromActiveProfile(){ const p=profiles[profileActiveSel.value||profileActive]; if(!p||!p.length){toast('Active profile empty');return} rigQueue=p.slice(); lsSet(LSK.queue,rigQueue); renderQueue(); toast('Queue filled'); }
+function refreshProfileDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; [q('#profAByDesc'),q('#profBByDesc'),q('#profCByDesc')].forEach(sel=>{ sel.innerHTML=''; sel.appendChild(new Option('Select name…','')); names.forEach(n=>sel.appendChild(new Option(n,n))); }); }
+
+/* ===== Export / Import (text only) ===== */
+async function exportToClipboardDialog(){
+  // ensure hashes
+  for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
+  const items=IMAGES.map(it=>({hash:it.hash, category:it.category||'', description:it.description||'', weight:it.weight??DEFAULT_WEIGHT, diff:it.diff||0, her:it.her||0, him:it.him||0}));
+  const data={version:1, created:new Date().toISOString(), restriction:rigCategory, timer:timerMinutes, items, profiles};
+  const json=JSON.stringify(data,null,2);
+  try{ await navigator.clipboard.writeText(json); toast('Copied to clipboard'); }catch{ /* ignore */ }
+  showTextDialog('Metadata (copy / save this text)', json, false, true);
+}
+function importFromPasteDialog(){ showTextDialog('Paste metadata JSON', '', true, false, async (text)=>{ try{ const data=JSON.parse(text); await importMetadataObject(data); toast('Imported'); }catch{ toast('Invalid JSON',true) } }); }
+async function importMetadataObject(data){
+  if(!data.items) throw new Error('bad');
+  for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
+  const byHash=new Map(IMAGES.map(it=>[it.hash,it]));
+  for(const m of data.items){
+    const it=byHash.get(m.hash); if(!it) continue;
+    it.category=m.category||''; it.description=m.description||''; it.weight=(m.weight!=null)?m.weight:DEFAULT_WEIGHT; it.diff=m.diff||0; it.her=m.her||0; it.him=m.him||0;
+    categoryOverrides[it.id]=it.category; descOverrides[it.id]=it.description; weightOverrides[it.id]=it.weight; ratings[it.id]={diff:it.diff,her:it.her,him:it.him};
+    await dbUpdate(it);
   }
+  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
+  if(data.profiles){ profiles=data.profiles; lsSet(LSK.profiles,profiles); }
+  if(data.restriction!==undefined){ rigCategory=data.restriction; lsSet(LSK.rigCat,rigCategory); mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; }
+  if(data.timer!==undefined){ timerMinutes=+data.timer||0; timerSelect.value=String(timerMinutes); lsSet(LSK.timer,timerMinutes); }
+  await reloadImages(); buildReels(); renderRig(); renderProfiles();
+}
+function showTextDialog(title, initialText, allowInput, readOnly, onImport){
+  const d=document.createElement('dialog'); Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff',width:'min(640px,96vw)'}); d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
+    <div style="font-weight:600">${title}</div>
+    <textarea id="txt" style="width:100%;min-height:260px;background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" ${readOnly?'readonly':''}></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button value="cancel">Close</button>
+      ${allowInput?'<button value="import" class="primary">Import</button>':''}
+    </div></form>`;
+  document.body.appendChild(d); const box=d.querySelector('#txt'); box.value=initialText||''; d.addEventListener('close',async()=>{ if(d.returnValue==='import' && onImport){ await onImport(box.value) } d.remove(); }); d.showModal();
 }
 
-/* -------------------- Rig queue controls -------------------- */
-queueAddId.addEventListener('click', ()=>{
-  const id = queueId.value.trim(); if(!id) return;
-  rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue();
-});
-queueAddDesc.addEventListener('click', ()=>{
-  const val = queueByDesc.value; if(!val) return;
-  rigQueue.push('desc::'+val); lsSet(LSK.queue,rigQueue); renderQueue();
-});
-queueClear.addEventListener('click', ()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
-
-function renderQueue(){
-  queueView.innerHTML='';
-  rigQueue.forEach((q,idx)=>{
-    const pill=document.createElement('span'); pill.className='pill';
-    pill.textContent = q.startsWith('desc::') ? `#${idx+1} ${q.slice(6)}` : `#${idx+1} ${q}`;
-    pill.style.cursor='pointer'; pill.title='Tap to remove';
-    pill.onclick=()=>{ rigQueue.splice(idx,1); lsSet(LSK.queue,rigQueue); renderQueue(); };
-    queueView.appendChild(pill);
-  });
+/* ===== Secret access (PIN) ===== */
+function secretAccess(){
+  const TAP_WINDOW=800, LONG_MS=900; let taps=[],press=null;
+  function isTriple(){const now=Date.now();taps=taps.filter(t=>now-t<TAP_WINDOW);taps.push(now);return taps.length>=3}
+  async function tryOpen(){ const pin=await promptPIN(); if(pin!==PIN){toast('Wrong PIN',true); return;} rigDlg.showModal(); }
+  titleTap.addEventListener('touchend',async()=>{ if(isTriple()){taps=[]; await tryOpen()} },{passive:true});
+  titleTap.addEventListener('click',async()=>{ if(isTriple()){taps=[]; await tryOpen()} });
+  titleTap.addEventListener('touchstart',()=>{ clearTimeout(press); press=setTimeout(()=>{taps=[]; tryOpen()},LONG_MS) },{passive:true});
+  titleTap.addEventListener('touchend',()=>clearTimeout(press),{passive:true});
+  titleTap.addEventListener('mousedown',()=>{ clearTimeout(press); press=setTimeout(()=>{taps=[]; tryOpen()},LONG_MS) });
+  titleTap.addEventListener('mouseup',()=>clearTimeout(press));
 }
+function promptPIN(){return new Promise(res=>{const d=document.createElement('dialog');Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});d.innerHTML=`<form method="dialog" style="display:grid;gap:10px"><div style="font-weight:600">Enter PIN</div><input id="pin" type="password" inputmode="numeric" maxlength="8" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px"><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel">Cancel</button><button value="ok" class="primary">OK</button></div></form>`;document.body.appendChild(d);d.addEventListener('close',()=>{const v=d.returnValue==='ok'?d.querySelector('#pin').value:null;res(v);d.remove()});d.showModal()})}
 
-/* -------------------- Profiles -------------------- */
-function persistProfiles(){ lsSet(LSK.profiles, profiles); }
-function renderProfiles(){
-  function draw(list, view){
-    view.innerHTML='';
-    list.forEach((q,idx)=>{
-      const pill=document.createElement('span'); pill.className='pill';
-      pill.textContent = q.startsWith('desc::') ? `#${idx+1} ${q.slice(6)}` : `#${idx+1} ${q}`;
-      pill.style.cursor='pointer'; pill.title='Tap to remove';
-      pill.onclick=()=>{ list.splice(idx,1); persistProfiles(); renderProfiles(); };
-      view.appendChild(pill);
-    });
-  }
-  draw(profiles.A, profAView);
-  draw(profiles.B, profBView);
-  draw(profiles.C, profCView);
-  // refresh name dropdowns
-  refreshProfileDescOptions();
-}
-function addToProfile(letter, item){
-  const list = profiles[letter];
-  if(list.length>=MAX_PROFILE_ITEMS){ toast(`Profile ${letter} is full (max ${MAX_PROFILE_ITEMS})`,true); return; }
-  list.push(item); persistProfiles(); renderProfiles();
-}
-function fillQueueFromActiveProfile(){
-  const p = profiles[profileActiveSel.value||profileActive];
-  if(!p || !p.length){ toast('Active profile is empty'); return; }
-  rigQueue = p.slice(); // copy, DO NOT clear profile
-  lsSet(LSK.queue, rigQueue);
-  renderQueue();
-  toast('Queue filled from profile');
-}
-function refreshProfileDescOptions(){
-  const names = IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b));
-  const uniq=[...new Set(names)];
-  [profAByDesc, profBByDesc, profCByDesc].forEach(sel=>{
-    sel.innerHTML=''; const empty=document.createElement('option'); empty.value=''; empty.textContent='Select name…'; sel.appendChild(empty);
-    uniq.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
-  });
-}
-
-/* -------------------- Queue-by-name options -------------------- */
-function refreshQueueDescOptions(){
-  const names = IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b));
-  const uniq=[...new Set(names)];
-  queueByDesc.innerHTML=''; const empty=document.createElement('option'); empty.value=''; empty.textContent='Select a name…'; queueByDesc.appendChild(empty);
-  uniq.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; queueByDesc.appendChild(o); });
-}
-
-/* -------------------- Export / Import (metadata only) -------------------- */
-async function exportMetadata(){
-  // ensure hashes for all images
-  for(const it of IMAGES){ if(!it.hash){ it.hash = await sha256(it.blob); await dbUpdate(it); } }
-  const items = IMAGES.map(it=>({
-    hash: it.hash,
-    category: it.category||'',
-    description: it.description||'',
-    weight: it.weight??DEFAULT_WEIGHT,
-    diff: it.diff||0,
-    her: it.her||0,
-    him: it.him||0
-  }));
-  const data = {
-    version: 1,
-    created: new Date().toISOString(),
-    restriction: rigCategory,
-    timer: timerMinutes,
-    items,
-    profiles
-  };
-  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download = `nights-choice-metadata-${Date.now()}.ncbackup.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-  toast('Metadata exported');
-}
-async function importMetadata(ev){
-  const file = ev.target.files?.[0]; if(!file) return;
-  try{
-    const txt = await file.text();
-    const data = JSON.parse(txt);
-    if(!data.items){ toast('Invalid file',true); return; }
-
-    // Map hashes to local images
-    // Compute any missing hashes
-    for(const it of IMAGES){ if(!it.hash){ it.hash = await sha256(it.blob); await dbUpdate(it); } }
-    const byHash = new Map(IMAGES.map(it=>[it.hash, it]));
-
-    // Apply items
-    for(const m of data.items){
-      const it = byHash.get(m.hash);
-      if(!it) continue;
-      it.category = m.category||'';
-      it.description = m.description||'';
-      it.weight = (m.weight!=null)?m.weight:DEFAULT_WEIGHT;
-      it.diff = m.diff||0; it.her=m.her||0; it.him=m.him||0;
-
-      // persist overrides
-      categoryOverrides[it.id]=it.category;
-      descOverrides[it.id]=it.description;
-      weightOverrides[it.id]=it.weight;
-      ratings[it.id]={diff:it.diff, her:it.her, him:it.him};
-
-      await dbUpdate(it);
-    }
-    lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides);
-    lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
-
-    // Profiles & settings
-    if(data.profiles){ profiles = data.profiles; lsSet(LSK.profiles,profiles); }
-    if(data.restriction !== undefined){ rigCategory = data.restriction; lsSet(LSK.rigCat,rigCategory); mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; }
-    if(data.timer !== undefined){ timerMinutes = +data.timer||0; timerSelect.value=String(timerMinutes); lsSet(LSK.timer,timerMinutes); }
-
-    await reloadImages(); buildReels(); renderRig(); renderProfiles();
-    toast('Metadata imported');
-  }catch(e){ console.error(e); toast('Import failed',true); }
-  importInput.value='';
-}
-
-/* -------------------- Secret access (triple-tap + long-press) -------------------- */
-(function secret(){
-  const TAP_WINDOW = 800, LONG_PRESS_MS = 900;
-  let taps = [], pressTimer=null;
-
-  function isTriple(){ const now=Date.now(); taps=taps.filter(t=>now-t<TAP_WINDOW); taps.push(now); return taps.length>=3; }
-  async function tryOpenRig(){ const pin = await promptPIN(); if(pin!==PIN){ toast('Wrong PIN', true); return; } rigDlg.showModal(); }
-
-  titleTap.addEventListener('touchend', async ()=>{ if(isTriple()) { taps=[]; await tryOpenRig(); } }, {passive:true});
-  titleTap.addEventListener('click',     async ()=>{ if(isTriple()) { taps=[]; await tryOpenRig(); } });
-  titleTap.addEventListener('touchstart', ()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ taps=[]; tryOpenRig(); }, LONG_PRESS_MS); }, {passive:true});
-  titleTap.addEventListener('touchend',   ()=> clearTimeout(pressTimer), {passive:true});
-  titleTap.addEventListener('mousedown',  ()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ taps=[]; tryOpenRig(); }, LONG_PRESS_MS); });
-  titleTap.addEventListener('mouseup',    ()=> clearTimeout(pressTimer));
-})();
-rigClose.addEventListener('click', ()=>rigDlg.close());
-
-/* -------------------- PIN prompt -------------------- */
-function promptPIN(){
-  return new Promise((resolve)=>{
-    const d=document.createElement('dialog');
-    Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});
-    d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
-      <div style="font-weight:600">Enter PIN</div>
-      <input id="pinIn" type="password" inputmode="numeric" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus maxlength="8" />
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button value="cancel">Cancel</button>
-        <button value="ok" class="primary">OK</button>
-      </div>
-    </form>`;
-    document.body.appendChild(d);
-    d.addEventListener('close', ()=>{
-      const val = d.returnValue==='ok' ? d.querySelector('#pinIn').value : null;
-      resolve(val); d.remove();
-    });
-    d.showModal();
-  });
-}
+/* ===== Small helpers ===== */
+function div(c){const e=document.createElement('div'); if(c)e.className=c; return e}
+function span(c){const e=document.createElement('span'); if(c)e.className=c; return e}
+function button(c,t){const e=document.createElement('button'); if(c)e.className=c; if(t)e.textContent=t; return e}
+function inputNumber(val){const e=document.createElement('input'); e.type='number'; e.min='0'; e.step='0.1'; e.style.width='80px'; e.value=val; return e}
+function qAll(arr){return arr.map(s=>q(s))}
 
 /* iOS audio unlock */
-document.addEventListener('touchend', ()=>ensureAudio(), {passive:true});
+document.addEventListener('touchend',()=>ensureAudio(),{passive:true});
 </script>
 </body>
 </html>
