@@ -7,94 +7,69 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0f">
-
 <style>
   :root{
-    --bg:#0b0b0f;
-    --panel:#13131a;
-    --panel-2:#181824;
-    --accent:#d79ab8; /* romantic rose */
-    --accent-2:#7ad1cc; /* soft teal */
-    --text:#f2f2f5;
-    --muted:#a9abbb;
-    --chip:#262636;
-    --good:#7cd992;
-    --warn:#ffcf6e;
-    --danger:#ff6e8a;
-    --glow:0 0 20px rgba(215,154,184,.35);
+    --bg:#0b0b0f; --panel:#13131a; --panel2:#181824;
+    --accent:#d79ab8; --accent2:#7ad1cc;
+    --text:#f2f2f5; --muted:#a9abbb; --line:#24253a;
   }
-  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-  .wrap{max-width:1100px;margin:0 auto;padding:env(safe-area-inset-top) 16px 64px}
-  header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,11,15,.95),rgba(11,11,15,.8) 70%,rgba(11,11,15,0));backdrop-filter:blur(6px);z-index:5}
-  .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 4px}
-  .title-tappable{font-weight:700;letter-spacing:.5px;font-size:20px;color:var(--text);text-shadow:0 0 14px rgba(122,209,204,.12);padding:8px 10px;border-radius:8px}
-  .title-tappable:active{transform:scale(.98)}
-  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  select,button,.btn{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
-  select{appearance:none}
-  button.primary{background:linear-gradient(180deg,#272737,#1b1b28);border-color:#2b2c3d;box-shadow:var(--glow)}
-  button.primary:active{transform:scale(.99)}
-  .upload-label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:1px dashed #34354a;padding:10px 12px;border-radius:10px;background:var(--panel-2)}
-  .upload-label:hover{border-color:#4a4c66}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
+  .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 14px 12px}
+  .title-tappable{font-weight:700;letter-spacing:.4px;font-size:20px;padding:8px 10px;border-radius:8px}
+  .controls{display:flex;gap:8px;align-items:center}
+  label.upload{display:inline-flex;align-items:center;gap:8px;border:1px dashed #34354a;padding:8px 10px;border-radius:10px;background:var(--panel2)}
   input[type=file]{display:none}
-
-  .machine{margin-top:16px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid #24253a;border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
-  .reels{display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin:8px 0 14px}
-  .reel{height:120px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
-  .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;filter:blur(0);will-change:transform}
-  .cell{height:120px;display:flex;align-items:center;justify-content:center;opacity:.9}
-  .cell img{height:100%;object-fit:cover;border-radius:8px}
-  .reveal{position:relative;margin-top:8px;border-radius:14px;overflow:hidden;border:1px solid #23243a;background:#0f0f15;min-height:48vh;display:grid;place-items:center}
-  .reveal img{max-width:100%;max-height:100%;display:block}
-  .watermark{position:absolute;bottom:8px;right:10px;font-size:12px;color:#fff8;border-radius:6px;padding:4px 6px;background:linear-gradient(180deg,#181826AA,#0f0f15AA);backdrop-filter:blur(4px)}
-  .spinbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
-  .thumbs{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-  .thumb{position:relative;border:1px solid #23243a;background:#12121a;border-radius:10px;overflow:hidden}
-  .thumb img{width:100%;height:100px;object-fit:cover;display:block}
-  .chip{position:absolute;left:6px;top:6px;background:var(--chip);color:var(--text);font-size:11px;padding:4px 6px;border-radius:999px;border:1px solid #343652}
-  .weight-tag{position:absolute;right:6px;top:6px;font-size:11px;background:#1f1f2c;border:1px solid #343652;color:var(--accent);padding:2px 6px;border-radius:8px}
-
-  /* Hidden rig panel (only via triple tap + PIN) */
+  button,select{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
+  button.primary{background:linear-gradient(180deg,#272737,#1b1b28);border-color:#2b2c3d}
+  button:disabled{opacity:.5}
+  .pill{background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:6px 10px;font-size:12px;color:#ddd}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 14px 60px}
+  .machine{margin-top:14px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
+  .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .reel{height:160px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
+  .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;will-change:transform,filter}
+  .cell{height:160px;display:flex;align-items:center;justify-content:center}
+  .cell img{height:100%;width:100%;object-fit:cover;border-radius:10px}
+  .reveal-name{margin-top:10px;text-align:center;font-weight:600;color:var(--accent)}
+  .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
+  .countdown{font-variant-numeric:tabular-nums}
+  /* Hidden Rig dialog */
   dialog#rig{width:min(900px,96vw);border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  #rig header{position:sticky;top:0;padding:14px;border-bottom:1px solid #27283c;background:#12121b}
-  #rig .body{padding:12px 14px;display:grid;grid-template-columns:260px 1fr;gap:12px}
-  .rig-left{display:flex;flex-direction:column;gap:10px}
+  #rig header{position:sticky;top:0;padding:14px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center}
+  #rig .body{padding:12px 14px;display:grid;grid-template-columns:260px 1fr;gap:12px;max-height:70vh;overflow:auto}
   .rig-card{background:#161625;border:1px solid #27283c;border-radius:12px;padding:10px}
   .rig-card h4{margin:0 0 6px 0;font-size:13px;color:var(--muted);font-weight:600}
   .rig-input{display:flex;gap:8px;align-items:center;margin-bottom:6px}
-  .rig-input input[type=number], .rig-input input[type=text]{width:100%;background:#0e0e16;color:var(--text);border:1px solid #2a2b40;border-radius:8px;padding:8px}
-  .rig-input button{white-space:nowrap}
-  .rig-queue{display:flex;gap:6px;flex-wrap:wrap}
-  .rig-queue .pill{background:#1a1a28;border:1px solid #2a2b40;color:#ddd;padding:6px 8px;border-radius:999px;font-size:12px}
-  .rig-right{display:flex;flex-direction:column;gap:10px}
   .rig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
   .rig-item{border:1px solid #2a2b40;background:#12121b;border-radius:10px;overflow:hidden}
   .rig-item img{width:100%;height:110px;object-fit:cover;display:block}
   .rig-item .meta{padding:6px 8px;font-size:12px;display:grid;gap:6px}
-  .rig-item select, .rig-item input{width:100%;background:#0e0e16;color:var(--text);border:1px solid #2a2b40;border-radius:8px;padding:6px}
-  .close-x{margin-left:auto}
-  .hidden{display:none !important}
-
   .hint{font-size:12px;color:var(--muted)}
-  .note{font-size:12px;color:var(--warn)}
-  .danger{color:var(--danger)}
-  .ok{color:var(--good)}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap topbar">
+  <div class="topbar">
     <div id="titleTap" class="title-tappable">The Night’s Choice</div>
     <div class="controls">
-      <label class="upload-label">
+      <label class="upload">
         <input id="fileInput" type="file" accept="image/*" multiple>
-        <span>➕ Upload images</span>
+        <span>➕ Upload</span>
       </label>
-      <select id="categoryFilter">
-        <option value="">All categories</option>
-      </select>
+      <!-- tiny on-screen timer control (non-blocking) -->
+      <label class="pill" style="display:flex;align-items:center;gap:6px">
+        ⏱️
+        <select id="timerSelect" title="Timer">
+          <option value="0">Off</option>
+          <option value="1">1 min</option>
+          <option value="2">2 min</option>
+          <option value="3">3 min</option>
+          <option value="4">4 min</option>
+          <option value="5">5 min</option>
+        </select>
+      </label>
       <button id="spinBtn" class="primary">🎰 Spin</button>
-      <button id="clearBtn" title="Remove all images">Reset</button>
     </div>
   </div>
 </header>
@@ -106,50 +81,52 @@
       <div class="reel"><div class="strip"></div></div>
       <div class="reel"><div class="strip"></div></div>
     </div>
-    <div class="reveal" id="reveal"><div class="watermark">Tap 🎰 Spin</div></div>
-    <div class="spinbar">
-      <span id="status" class="hint"></span>
+    <div id="revealName" class="reveal-name"></div>
+    <div class="toolbar">
+      <span id="countdown" class="countdown hint"></span>
     </div>
   </section>
-
-  <section class="thumbs" id="thumbs"></section>
 </div>
 
-<!-- Hidden Rig Panel (only via triple-tap + PIN 1616) -->
+<!-- Hidden Rig Panel (triple-tap title + PIN 1616) -->
 <dialog id="rig">
-  <header style="display:flex;align-items:center;gap:10px">
+  <header>
     <strong>Rig Control</strong>
-    <span class="hint">Keep this our little secret.</span>
-    <button class="close-x" id="rigClose">✕</button>
+    <span class="hint">Private controls</span>
+    <button id="rigClose" style="margin-left:auto">✕</button>
   </header>
   <div class="body">
     <div class="rig-left">
       <div class="rig-card">
-        <h4>Quick rig queue (next 5 picks)</h4>
+        <h4>Rig queue</h4>
         <div class="rig-input">
-          <input id="queueId" type="text" placeholder="Paste Image ID">
-          <button id="queueAdd">Add</button>
-          <button id="queueClear">Clear</button>
+          <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1">
+          <button id="queueAddId">Add</button>
         </div>
-        <div id="queueView" class="rig-queue"></div>
-        <div class="hint">Tip: tap an image in the grid to copy its ID.</div>
+        <div class="rig-input">
+          <select id="queueByDesc" style="flex:1"></select>
+          <button id="queueAddDesc">Add by Name</button>
+        </div>
+        <div id="queueView" class="rig-input" style="flex-wrap:wrap"></div>
+        <div class="rig-input">
+          <button id="queueClear">Clear queue</button>
+        </div>
+        <div class="hint">Tap any image card to copy its ID.</div>
       </div>
       <div class="rig-card">
         <h4>Category restriction</h4>
         <select id="rigCategory"></select>
-        <div class="hint">Restrict spins to this category until changed.</div>
+        <div class="hint">Restrict spins to a category until changed.</div>
       </div>
       <div class="rig-card">
         <h4>Sound</h4>
-        <div class="rig-input">
-          <button id="muteToggle">Mute</button>
-          <span id="muteState" class="hint"></span>
-        </div>
+        <button id="muteToggle">Toggle mute</button>
+        <span id="muteState" class="hint"></span>
       </div>
     </div>
     <div class="rig-right">
       <div class="rig-card">
-        <h4>Image controls (weights & categories)</h4>
+        <h4>Images (category • weight • name)</h4>
         <div id="rigGrid" class="rig-grid"></div>
       </div>
     </div>
@@ -157,517 +134,435 @@
 </dialog>
 
 <script>
-/* ========= Constants & Categories ========= */
+/* -------------------- Config -------------------- */
 const CATEGORIES = [
  "Missionary","Woman-on-top","Oral for Her","Oral for Him",
  "Sitting","Standing","Side-by-Side","Deep Penetration",
  "69","Rear Entry","BDSM for Lovers","Adventurous"
 ];
-
 const DEFAULT_WEIGHT = 1;
-const SPIN_DURATION_MS = 3000;
+const SPIN_DURATION_MS = 6000; // 6s as requested
 const PIN = "1616";
 
-/* ========= Storage Layer =========
-   Images -> IndexedDB (Blob + metadata)
-   Small settings -> localStorage
-*/
+/* -------------------- Storage -------------------- */
 const DB_NAME = 'nights-choice-db';
 const DB_STORE = 'images';
-let db;
-
-/* IndexedDB helpers */
-function openDB(){
-  return new Promise((resolve,reject)=>{
-    const req = indexedDB.open(DB_NAME,1);
-    req.onupgradeneeded = (ev)=>{
-      const db = ev.target.result;
-      if(!db.objectStoreNames.contains(DB_STORE)){
-        const store = db.createObjectStore(DB_STORE,{ keyPath:'id' });
-        store.createIndex('category','category',{unique:false});
-        store.createIndex('ts','ts',{unique:false});
-      }
-    };
-    req.onsuccess = ()=>resolve(req.result);
-    req.onerror = ()=>reject(req.error);
-  });
-}
-async function dbAddMany(items){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction(DB_STORE,'readwrite');
-    const store = tx.objectStore(DB_STORE);
-    items.forEach(it=>store.put(it));
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error);
-  });
-}
-async function dbGetAll(){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction(DB_STORE,'readonly');
-    const store = tx.objectStore(DB_STORE);
-    const req = store.getAll();
-    req.onsuccess=()=>resolve(req.result||[]);
-    req.onerror=()=>reject(req.error);
-  });
-}
-async function dbUpdate(item){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).put(item);
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error);
-  });
-}
-async function dbGet(id){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction(DB_STORE,'readonly');
-    const req = tx.objectStore(DB_STORE).get(id);
-    req.onsuccess=()=>resolve(req.result||null);
-    req.onerror=()=>reject(req.error);
-  });
-}
-async function dbClear(){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).clear();
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error);
-  });
-}
-
-/* ========= Settings in localStorage ========= */
 const LSK = {
   mute:'nc_mute',
   rigCat:'nc_rigCat',
-  weights:'nc_weights',      // {id:number}
-  queue:'nc_queue',          // [id,...]
-  categories:'nc_categories' // {id:category}
+  weights:'nc_weights',
+  queue:'nc_queue',
+  categories:'nc_categories',
+  descriptions:'nc_desc',
+  timer:'nc_timer'
 };
-function lsGet(k, fallback){ try{ const v = localStorage.getItem(k); return v?JSON.parse(v):fallback; }catch{ return fallback; } }
-function lsSet(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-/* ========= State ========= */
-let IMAGES = []; // {id, blob, category, weight, ts}
-let OBJECT_URLS = new Map(); // id -> objectURL
+let db, IMAGES=[], OBJECT_URLS=new Map();
 let isMuted = !!lsGet(LSK.mute,false);
 let rigCategory = lsGet(LSK.rigCat,'')||'';
 let rigQueue = lsGet(LSK.queue,[])||[];
 let weightOverrides = lsGet(LSK.weights,{})||{};
 let categoryOverrides = lsGet(LSK.categories,{})||{};
+let descOverrides = lsGet(LSK.descriptions,{})||{};
+let timerMinutes = +lsGet(LSK.timer,0)||0;
 
-/* ========= Audio (WebAudio, iOS-safe) ========= */
-let audioCtx = null;
-function ensureAudio(){
-  if(!audioCtx){
-    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
-    catch(e){ /* ignore */ }
-  }
-}
+/* -------------------- Audio -------------------- */
+let audioCtx=null;
+function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch{} } }
 function playSpinStart(){
   if(isMuted||!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
   o.type='sawtooth';
   o.frequency.setValueAtTime(220,audioCtx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(440,audioCtx.currentTime+0.2);
+  o.frequency.exponentialRampToValueAtTime(660,audioCtx.currentTime+0.4);
   g.gain.setValueAtTime(0.0001,audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.4,audioCtx.currentTime+0.05);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.5);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(); o.stop(audioCtx.currentTime+0.5);
+  g.gain.exponentialRampToValueAtTime(0.35,audioCtx.currentTime+0.05);
+  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.6);
+  o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.65);
 }
 function playTick(t=0){
   if(isMuted||!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type='triangle';
-  o.frequency.setValueAtTime(660,audioCtx.currentTime);
-  g.gain.setValueAtTime(0.0001,audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.3,audioCtx.currentTime+0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.1);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + 0.12);
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(700,audioCtx.currentTime+t);
+  g.gain.setValueAtTime(0.0001,audioCtx.currentTime+t);
+  g.gain.exponentialRampToValueAtTime(0.3,audioCtx.currentTime+t+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+t+0.1);
+  o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+0.12);
 }
 function playReveal(){
   if(isMuted||!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
   o.type='sine';
-  o.frequency.setValueAtTime(523,audioCtx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(880,audioCtx.currentTime+0.25);
+  o.frequency.setValueAtTime(330,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(880,audioCtx.currentTime+0.35);
   g.gain.setValueAtTime(0.0001,audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.5,audioCtx.currentTime+0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.4);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(); o.stop(audioCtx.currentTime+0.45);
+  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.45);
+  o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5);
+}
+function playTimerChime(){
+  if(isMuted||!audioCtx) return;
+  // pleasant two-note chime
+  const now=audioCtx.currentTime;
+  [[660,0],[990,0.2]].forEach(([f,dt])=>{
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(f,now+dt);
+    g.gain.setValueAtTime(0.0001,now+dt);
+    g.gain.exponentialRampToValueAtTime(0.5,now+dt+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+dt+0.35);
+    o.connect(g).connect(audioCtx.destination); o.start(now+dt); o.stop(now+dt+0.4);
+  });
 }
 
-/* ========= UI Elements ========= */
+/* -------------------- UI refs -------------------- */
 const fileInput = document.getElementById('fileInput');
-const thumbsEl = document.getElementById('thumbs');
-const revealEl = document.getElementById('reveal');
 const reelsEl = document.getElementById('reels');
 const spinBtn = document.getElementById('spinBtn');
-const clearBtn = document.getElementById('clearBtn');
-const statusEl = document.getElementById('status');
-const filterSel = document.getElementById('categoryFilter');
+const revealNameEl = document.getElementById('revealName');
+const countdownEl = document.getElementById('countdown');
+const timerSelect = document.getElementById('timerSelect');
 const titleTap = document.getElementById('titleTap');
 const rigDlg = document.getElementById('rig');
 const rigClose = document.getElementById('rigClose');
-const rigCategorySel = document.getElementById('rigCategory');
 const rigGrid = document.getElementById('rigGrid');
+const rigCategorySel = document.getElementById('rigCategory');
 const queueView = document.getElementById('queueView');
 const queueId = document.getElementById('queueId');
-const queueAdd = document.getElementById('queueAdd');
-const queueClear = document.getElementById('queueClear');
+const queueAddId = document.getElementById('queueAddId');
+const queueByDesc = document.getElementById('queueByDesc');
+const queueAddDesc = document.getElementById('queueAddDesc');
 const muteToggle = document.getElementById('muteToggle');
 const muteState = document.getElementById('muteState');
 
-/* ========= Init ========= */
+/* -------------------- DB -------------------- */
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded = (ev)=>{
+      const db=ev.target.result;
+      if(!db.objectStoreNames.contains(DB_STORE)){
+        const store = db.createObjectStore(DB_STORE,{keyPath:'id'});
+        store.createIndex('category','category',{unique:false});
+        store.createIndex('ts','ts',{unique:false});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+function dbAddMany(items){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    const st=tx.objectStore(DB_STORE);
+    items.forEach(it=>st.put(it));
+    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
+  });
+}
+function dbGetAll(){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readonly');
+    const st=tx.objectStore(DB_STORE);
+    const rq=st.getAll(); rq.onsuccess=()=>resolve(rq.result||[]); rq.onerror=()=>reject(rq.error);
+  });
+}
+function dbUpdate(item){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite'); tx.objectStore(DB_STORE).put(item);
+    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
+  });
+}
+
+/* -------------------- Init -------------------- */
 (async function init(){
   db = await openDB();
-  CATEGORIES.forEach(c=>{
-    const o = document.createElement('option'); o.value=c; o.textContent=c; filterSel.appendChild(o);
+  // rig category select
+  CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; rigCategorySel.appendChild(o); });
+  if(rigCategory) rigCategorySel.value = rigCategory;
+
+  // timer select
+  timerSelect.value = String(timerMinutes);
+  timerSelect.addEventListener('change', ()=>{
+    timerMinutes = +timerSelect.value;
+    lsSet(LSK.timer,timerMinutes);
   });
-  CATEGORIES.forEach(c=>{
-    const o = document.createElement('option'); o.value=c; o.textContent=c; rigCategorySel.appendChild(o);
-  });
-  if(rigCategory){ rigCategorySel.value = rigCategory; }
+
   muteState.textContent = isMuted ? "Muted" : "Sound on";
 
   await reloadImages();
-  renderThumbs();
-  renderReelStrips();
-  renderRigGrid();
+  buildReels();
+  renderRig();
   renderQueue();
-
-  status("Ready. Add images and spin ✨");
 })();
 
-/* ========= Loading & Rendering ========= */
+/* -------------------- Load/Render -------------------- */
 async function reloadImages(){
   IMAGES = await dbGetAll();
-  // apply overrides (weights/categories) persisted in localStorage
   IMAGES.forEach(it=>{
     if(weightOverrides[it.id] != null) it.weight = weightOverrides[it.id];
     if(categoryOverrides[it.id]) it.category = categoryOverrides[it.id];
+    if(descOverrides[it.id]) it.description = descOverrides[it.id];
   });
-  // populate object URLs
   OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
   IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
-  // build filter counts (optional)
 }
-function renderThumbs(){
-  thumbsEl.innerHTML = '';
-  if(!IMAGES.length){
-    const p = document.createElement('div');
-    p.className='hint'; p.textContent = "No images yet. Use “Upload images” to add up to ~100 (device storage permitting).";
-    thumbsEl.appendChild(p); return;
-  }
-  IMAGES.forEach(it=>{
-    const d=document.createElement('div'); d.className='thumb'; d.dataset.id=it.id;
-    const img=document.createElement('img'); img.loading='lazy'; img.src = OBJECT_URLS.get(it.id);
-    const chip=document.createElement('div'); chip.className='chip'; chip.textContent=it.category||'Unassigned';
-    const wt=document.createElement('div'); wt.className='weight-tag'; wt.textContent = `w${it.weight??DEFAULT_WEIGHT}`;
-    d.appendChild(img); d.appendChild(chip); d.appendChild(wt);
-    d.addEventListener('click', ()=>{
-      // copy id for rig queue convenience
-      navigator.clipboard?.writeText(it.id);
-      status("Copied ID: "+it.id);
-    });
-    thumbsEl.appendChild(d);
-  });
-}
-function renderReelStrips(){
-  const reels = [...reelsEl.querySelectorAll('.reel .strip')];
-  reels.forEach((strip,i)=>{
+function buildReels(){
+  // Build 10 placeholder cells per reel using current images (or blanks)
+  const strips = reelsEl.querySelectorAll('.strip');
+  strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    // Build 10 cells (thumbnails or placeholders)
     const pool = IMAGES.length ? IMAGES : new Array(6).fill(null);
     for(let k=0;k<10;k++){
-      const cell = document.createElement('div'); cell.className='cell';
+      const cell=document.createElement('div'); cell.className='cell';
       if(IMAGES.length){
         const it = pool[(k+i)%pool.length] || pool[0];
-        const img = document.createElement('img'); img.src = OBJECT_URLS.get(it.id); cell.appendChild(img);
+        const img=document.createElement('img'); img.src = OBJECT_URLS.get(it.id); cell.appendChild(img);
       }else{
-        cell.innerHTML = `<div style="opacity:.6">—</div>`;
+        cell.innerHTML='<div style="opacity:.5">—</div>';
       }
       strip.appendChild(cell);
     }
   });
 }
-function renderRigGrid(){
+function renderRig(){
+  // grid
   rigGrid.innerHTML='';
   IMAGES.forEach(it=>{
     const card=document.createElement('div'); card.className='rig-item'; card.dataset.id=it.id;
     const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id);
     const meta=document.createElement('div'); meta.className='meta';
-    const idrow=document.createElement('div'); idrow.textContent = `ID: ${it.id}`;
+    const idrow=document.createElement('div'); idrow.textContent=`ID: ${it.id}`;
+    // category
     const sel=document.createElement('select');
     CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
     sel.value = it.category||'Missionary';
-    sel.onchange = async ()=>{
-      it.category = sel.value;
-      categoryOverrides[it.id] = it.category;
-      lsSet(LSK.categories, categoryOverrides);
-      await dbUpdate(it); renderThumbs();
-    };
-    const weightInput=document.createElement('input'); weightInput.type='number'; weightInput.min='0'; weightInput.step='0.1';
-    weightInput.value = it.weight ?? DEFAULT_WEIGHT;
-    weightInput.onchange = ()=>{
-      const w = parseFloat(weightInput.value)||0;
-      it.weight = Math.max(0,w);
-      weightOverrides[it.id] = it.weight;
-      lsSet(LSK.weights,weightOverrides);
-      renderThumbs();
-    };
-    meta.append(idrow, sel, weightInput);
+    sel.onchange = async ()=>{ it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); };
+    // weight
+    const w=document.createElement('input'); w.type='number'; w.min='0'; w.step='0.1'; w.value=it.weight??DEFAULT_WEIGHT;
+    w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); };
+    // description (custom name)
+    const d=document.createElement('input'); d.type='text'; d.placeholder='Description / Name'; d.value=it.description||'';
+    d.onchange=()=>{ it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); };
+    meta.append(idrow, sel, w, d);
     card.append(img, meta);
-    card.addEventListener('click', ()=>{
-      navigator.clipboard?.writeText(it.id);
-      toast("ID copied");
-    });
+    card.addEventListener('click', ()=>{ navigator.clipboard?.writeText(it.id); toast('ID copied'); });
     rigGrid.appendChild(card);
   });
-}
-function renderQueue(){
-  queueView.innerHTML='';
-  rigQueue.forEach((id,idx)=>{
-    const p=document.createElement('div'); p.className='pill'; p.textContent=`${idx+1}: ${id}`;
-    p.title='Tap to remove';
-    p.addEventListener('click', ()=>{
-      rigQueue.splice(idx,1);
-      lsSet(LSK.queue,rigQueue);
-      renderQueue();
-    });
-    queueView.appendChild(p);
-  });
+  refreshQueueDescOptions();
 }
 
-/* ========= Upload Handling ========= */
+/* -------------------- Upload -------------------- */
 fileInput.addEventListener('change', async (ev)=>{
-  const files = [...ev.target.files];
-  if(!files.length) return;
+  const files=[...ev.target.files]; if(!files.length) return;
   ensureAudio();
-  status(`Importing ${files.length} image(s)…`);
   const toAdd=[];
   for(const f of files){
     if(!f.type.startsWith('image/')) continue;
-    // Keep original blob
-    const id = crypto.randomUUID();
-    const blob = f.slice(0, f.size, f.type);
-    const it = {
-      id, blob,
-      category: 'Missionary', // default; user can change
-      weight: DEFAULT_WEIGHT,
-      ts: Date.now()
-    };
+    const id=crypto.randomUUID();
+    const blob=f.slice(0, f.size, f.type);
+    const it={ id, blob, category:'Missionary', weight:DEFAULT_WEIGHT, ts:Date.now(), description:'' };
     toAdd.push(it);
   }
   await dbAddMany(toAdd);
-  // Track overrides for categories/weights
   toAdd.forEach(it=>{
-    categoryOverrides[it.id] = it.category;
-    weightOverrides[it.id] = it.weight;
+    categoryOverrides[it.id]=it.category;
+    weightOverrides[it.id]=it.weight;
+    descOverrides[it.id]=it.description;
   });
   lsSet(LSK.categories,categoryOverrides);
   lsSet(LSK.weights,weightOverrides);
-
+  lsSet(LSK.descriptions,descOverrides);
   await reloadImages();
-  renderThumbs();
-  renderReelStrips();
-  renderRigGrid();
-  status(`Added ${toAdd.length} image(s).`);
+  buildReels();
+  renderRig();
   fileInput.value='';
 });
 
-/* ========= Spinner Logic ========= */
-let spinning=false;
+/* -------------------- Spin / Animation -------------------- */
+let spinning=false, blockUntil=0, timerId=null;
 spinBtn.addEventListener('click', async ()=>{
   ensureAudio();
   if(spinning) return;
-  if(!IMAGES.length){ status("Add images first."); return; }
+  const now=Date.now();
+  if(now<blockUntil){ return; } // countdown active
+  if(!IMAGES.length){ toast('Add images first'); return; }
   spinning=true;
+  revealNameEl.textContent='';
   playSpinStart();
-  status("Spinning…");
-  animateReels(SPIN_DURATION_MS);
-  // tick sounds across the duration
-  for(let t=0;t<SPIN_DURATION_MS;t+=260){ playTick(t/1000); }
-  const pick = await pickImage();
-  setTimeout(()=>{
-    showReveal(pick);
-    playReveal();
-    spinning=false;
-    status("Result locked.");
-  }, SPIN_DURATION_MS);
-});
 
-function animateReels(ms){
-  const reels = [...document.querySelectorAll('.strip')];
-  reels.forEach((strip,i)=>{
+  // Decide the three final images: center = chosen, left/right = random others
+  const chosen = await pickImage();
+  let others = IMAGES.filter(x=>x.id!==chosen.id);
+  if(others.length<2) others = IMAGES.concat(IMAGES); // fallback if only one image
+  shuffle(others);
+  const leftImg = others[0], rightImg = others[1];
+
+  // Prepare strips so they end on these three images
+  const strips = [...document.querySelectorAll('.strip')];
+  const finals = [leftImg, chosen, rightImg];
+
+  // Build long strips with many items so we can scroll far, ending with finals[i]
+  strips.forEach((strip,i)=>{
+    strip.innerHTML='';
+    const pool = IMAGES.length ? IMAGES.slice() : [];
+    if(!pool.length){ const c=document.createElement('div'); c.className='cell'; c.innerHTML='—'; strip.appendChild(c); return; }
+    // Fill with shuffled items repeatedly to simulate rolling
+    for(let k=0;k<18;k++){
+      const it=pool[(k+i)%pool.length];
+      const cell=document.createElement('div'); cell.className='cell';
+      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
+      strip.appendChild(cell);
+    }
+    // Append our final image as the last cell so it lands visible
+    const end=document.createElement('div'); end.className='cell';
+    const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id);
+    end.appendChild(endImg); strip.appendChild(end);
+    // Start position
     strip.style.transition='none';
     strip.style.transform='translateY(0px)';
-    // Force reflow
-    void strip.offsetHeight;
-    const distance = 120*10*(i+3); // spin differing distances
-    strip.style.transition=`transform ${ms/1000}s cubic-bezier(.22,.61,.36,1)`;
-    strip.style.transform=`translateY(-${distance}px)`;
+    strip.style.filter='blur(6px) brightness(0.9)';
   });
+
+  // Animate with easing and stagger so reels slow down one by one
+  const cellH=160+8; // height + gap approx
+  const distances=[cellH*22, cellH*24, cellH*26]; // different lengths
+  const offsets=[0, 250, 450]; // stagger starts
+  const total=SPIN_DURATION_MS;
+  const ease='cubic-bezier(.12,.62,.22,.99)';
+
+  strips.forEach((strip,i)=>{
+    setTimeout(()=>{
+      strip.style.transition=`transform ${total/1000}s ${ease}, filter ${total/1000}s linear`;
+      strip.style.transform=`translateY(-${distances[i]}px)`;
+    }, offsets[i]);
+  });
+
+  // ticks during first half
+  for(let t=0;t<SPIN_DURATION_MS*0.6;t+=280){ playTick(t/1000); }
+
+  // After animation end, clear blur and show name
+  setTimeout(()=>{
+    strips.forEach(s=>{ s.style.filter='none'; });
+    playReveal();
+    const name = (chosen.description||chosen.category||'');
+    revealNameEl.textContent = name;
+    spinning=false;
+
+    // Start countdown if timer set
+    if(timerMinutes>0){
+      startCountdown(timerMinutes);
+    }
+  }, SPIN_DURATION_MS + Math.max(...offsets) + 50);
+});
+
+/* -------------------- Countdown -------------------- */
+function startCountdown(mins){
+  const duration = mins*60*1000;
+  blockUntil = Date.now()+duration;
+  spinBtn.disabled = true;
+  if(timerId) clearInterval(timerId);
+  updateCountdown();
+  timerId = setInterval(()=>{
+    updateCountdown();
+    if(Date.now()>=blockUntil){
+      clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent='';
+      playTimerChime();
+    }
+  }, 250);
 }
-function showReveal(item){
-  revealEl.innerHTML='';
-  const img = new Image();
-  img.src = OBJECT_URLS.get(item.id);
-  img.alt = item.category||'reveal';
-  revealEl.appendChild(img);
-  const wm = document.createElement('div');
-  wm.className='watermark';
-  wm.textContent = item.category || '—';
-  revealEl.appendChild(wm);
+function updateCountdown(){
+  const remain = Math.max(0, blockUntil - Date.now());
+  const s = Math.ceil(remain/1000);
+  const m = Math.floor(s/60), ss = String(s%60).padStart(2,'0');
+  countdownEl.textContent = `Next spin in ${m}:${ss}`;
 }
 
+/* -------------------- Pick logic -------------------- */
 async function pickImage(){
-  // Priority 1: queue
+  // queue first
   if(rigQueue.length){
-    const id = rigQueue.shift();
-    lsSet(LSK.queue, rigQueue);
-    renderQueue();
-    const it = IMAGES.find(x=>x.id===id);
-    if(it) return it; // if missing, fall through
+    const item = rigQueue.shift();
+    lsSet(LSK.queue,rigQueue); renderQueue();
+    // queue can be either id OR special marker "desc::<text>"
+    if(item.startsWith('desc::')){
+      const d = item.slice(6);
+      const found = IMAGES.find(x=>(x.description||'')===d);
+      if(found) return found;
+    }else{
+      const found = IMAGES.find(x=>x.id===item);
+      if(found) return found;
+    }
   }
-  // Pool considering filter preference (rigCategory) OR UI filter dropdown
-  const activeFilter = rigCategory || filterSel.value || '';
-  const pool = activeFilter ? IMAGES.filter(it=> (it.category===activeFilter)) : IMAGES.slice();
+  // apply category restriction
+  const filter = rigCategory || '';
+  const pool = filter ? IMAGES.filter(it=>it.category===filter) : IMAGES.slice();
   if(!pool.length) return IMAGES[0];
 
-  // Weighted random
-  const weights = pool.map(it=> Math.max(0.0001, it.weight ?? DEFAULT_WEIGHT));
+  const weights = pool.map(it=> Math.max(0.0001, it.weight??DEFAULT_WEIGHT));
   const total = weights.reduce((a,b)=>a+b,0);
   let r = Math.random()*total;
-  for(let i=0;i<pool.length;i++){
-    if((r-=weights[i])<=0) return pool[i];
-  }
+  for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
   return pool[pool.length-1];
 }
 
-/* ========= Filter UI ========= */
-filterSel.addEventListener('change', ()=>{ renderReelStrips(); });
-
-/* ========= Triple-tap + PIN for Rig Menu ========= */
-(function setupSecret(){
-  let taps = [];
-  const zone = titleTap;
-  function isTripleTap(){
-    const now = Date.now();
-    taps = taps.filter(t=> now - t < 600);
-    taps.push(now);
-    return taps.length>=3;
+/* -------------------- Rig controls -------------------- */
+(function secret(){
+  let taps=[];
+  function isTriple(){
+    const now=Date.now(); taps=taps.filter(t=>now-t<600); taps.push(now); return taps.length>=3;
   }
-  // iOS-friendly: listen to touchstart; fall back to click
-  zone.addEventListener('touchstart', async (e)=>{
-    if(isTripleTap()){
-      await openRig();
-      taps = [];
-    }
-  },{passive:true});
-  zone.addEventListener('click', async ()=>{
-    if(isTripleTap()){
-      await openRig();
-      taps = [];
-    }
-  });
-
+  titleTap.addEventListener('touchstart', async ()=>{ if(isTriple()) await openRig(); }, {passive:true});
+  titleTap.addEventListener('click', async ()=>{ if(isTriple()) await openRig(); });
   async function openRig(){
-    const pin = await promptPIN();
-    if(pin!==PIN){ toast("Wrong PIN", true); return; }
+    const pin = await promptPIN(); if(pin!==PIN){ toast('Wrong PIN', true); return; }
     rigDlg.showModal();
   }
 })();
+rigClose.addEventListener('click', ()=>rigDlg.close());
+rigCategorySel.addEventListener('change', ()=>{ rigCategory = rigCategorySel.value||''; lsSet(LSK.rigCat,rigCategory); });
+muteToggle.addEventListener('click', ()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent = isMuted?'Muted':'Sound on'; });
 
-function promptPIN(){
-  return new Promise((resolve)=>{
-    // Minimal inline PIN prompt (no hints)
-    const d=document.createElement('dialog');
-    d.style.border='none'; d.style.borderRadius='12px'; d.style.padding='16px';
-    d.style.background='#11121b'; d.style.color='white';
-    d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
-      <div style="font-weight:600">Enter PIN</div>
-      <input id="pinIn" type="password" inputmode="numeric" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus maxlength="8" />
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button value="cancel">Cancel</button>
-        <button value="ok" class="primary">OK</button>
-      </div>
-    </form>`;
-    document.body.appendChild(d);
-    d.addEventListener('close', ()=>{
-      const val = d.returnValue==='ok' ? d.querySelector('#pinIn').value : null;
-      resolve(val);
-      d.remove();
-    });
-    d.showModal();
+queueAddId.addEventListener('click', ()=>{
+  const id = queueId.value.trim(); if(!id) return;
+  rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue();
+});
+queueAddDesc.addEventListener('click', ()=>{
+  const val = queueByDesc.value; if(!val) return;
+  rigQueue.push('desc::'+val); lsSet(LSK.queue,rigQueue); renderQueue();
+});
+queueClear.addEventListener('click', ()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
+
+function renderQueue(){
+  queueView.innerHTML='';
+  rigQueue.forEach((q,idx)=>{
+    const pill=document.createElement('span'); pill.className='pill';
+    pill.textContent = q.startsWith('desc::') ? `#${idx+1} ${q.slice(6)}` : `#${idx+1} ${q}`;
+    pill.style.cursor='pointer';
+    pill.title='Tap to remove';
+    pill.onclick=()=>{ rigQueue.splice(idx,1); lsSet(LSK.queue,rigQueue); renderQueue(); };
+    queueView.appendChild(pill);
   });
 }
-
-rigClose.addEventListener('click', ()=>rigDlg.close());
-rigCategorySel.addEventListener('change', ()=>{
-  rigCategory = rigCategorySel.value||'';
-  lsSet(LSK.rigCat, rigCategory);
-});
-muteToggle.addEventListener('click', ()=>{
-  isMuted = !isMuted;
-  lsSet(LSK.mute,isMuted);
-  muteState.textContent = isMuted ? "Muted" : "Sound on";
-});
-
-queueAdd.addEventListener('click', ()=>{
-  const id = queueId.value.trim();
-  if(!id) return;
-  rigQueue.push(id);
-  lsSet(LSK.queue, rigQueue);
-  queueId.value='';
-  renderQueue();
-});
-queueClear.addEventListener('click', ()=>{
-  rigQueue.length = 0;
-  lsSet(LSK.queue, rigQueue);
-  renderQueue();
-});
-
-/* ========= Status & Toast ========= */
-function status(msg){ statusEl.textContent = msg; }
-function toast(msg, danger=false){
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.style.position='fixed'; t.style.left='50%'; t.style.bottom='24px'; t.style.transform='translateX(-50%)';
-  t.style.background=danger?'#491a23':'#1a1a28';
-  t.style.border='1px solid #2a2b40'; t.style.padding='10px 14px'; t.style.borderRadius='999px';
-  t.style.zIndex='9999'; t.style.boxShadow='0 10px 30px rgba(0,0,0,.4)';
-  document.body.appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; },1200);
-  setTimeout(()=>t.remove(),1600);
+function refreshQueueDescOptions(){
+  const names = IMAGES.map(x=>x.description||'').filter(Boolean);
+  names.sort((a,b)=>a.localeCompare(b));
+  const uniq=[...new Set(names)];
+  queueByDesc.innerHTML='';
+  const empty=document.createElement('option'); empty.value=''; empty.textContent='Select a name…'; queueByDesc.appendChild(empty);
+  uniq.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; queueByDesc.appendChild(o); });
 }
 
-/* ========= Reset (danger) ========= */
-clearBtn.addEventListener('click', async ()=>{
-  if(!confirm('Remove all images and settings?')) return;
-  await dbClear();
-  IMAGES = [];
-  OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
-  localStorage.removeItem(LSK.weights);
-  localStorage.removeItem(LSK.categories);
-  localStorage.removeItem(LSK.queue);
-  renderThumbs(); renderReelStrips(); renderRigGrid(); renderQueue();
-  revealEl.innerHTML='<div class="watermark">Tap 🎰 Spin</div>';
-  status("Reset complete.");
-});
+/* -------------------- Helpers -------------------- */
+function lsGet(k,f){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):f;}catch{ return f; } }
+function lsSet(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function toast(msg, danger=false){
+  const t=document.createElement('div'); t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});
+  document.body.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; },1200); setTimeout(()=>t.remove(),1600);
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
 
-/* ========= Utility: iOS wake-up for AudioContext ========= */
+/* iOS audio unlock */
 document.addEventListener('touchend', ()=>ensureAudio(), {passive:true});
-
-/* ========= Populate category filter initially ========= */
-(function fillFilter(){
-  // Already added options in init; nothing else for now.
-})();
 </script>
 </body>
 </html>
