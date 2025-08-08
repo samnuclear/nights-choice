@@ -615,6 +615,28 @@ function secretAccess(){
     }
   }
 
+  function registerTap(){
+    const now = Date.now();
+    taps = taps.filter(t => now - t < TAP_WINDOW);
+    taps.push(now);
+    if (taps.length >= 3) { taps = []; openRigSafe(); }
+  }
+
+  function startPress(){
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => { taps = []; openRigSafe(); }, LONG_MS);
+  }
+  function endPress(){ clearTimeout(pressTimer); }
+
+  // Touch (PWA primary)
+  bar.addEventListener('touchstart', startPress, {passive:true});
+  bar.addEventListener('touchend',   (e)=>{ endPress(); registerTap(); }, {passive:true});
+
+  // Mouse/click (Safari tab / desktop)
+  bar.addEventListener('mousedown',  startPress);
+  bar.addEventListener('mouseup',    (e)=>{ endPress(); registerTap(); });
+  bar.addEventListener('click',      registerTap);
+}
 function promptPIN(){return new Promise(res=>{const d=document.createElement('dialog');Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});d.innerHTML=`<form method="dialog" style="display:grid;gap:10px"><div style="font-weight:600">Enter PIN</div><input id="pin" type="password" inputmode="numeric" maxlength="8" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px"><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel">Cancel</button><button value="ok" class="primary">OK</button></div></form>`;document.body.appendChild(d);d.addEventListener('close',()=>{const v=d.returnValue==='ok'?d.querySelector('#pin').value:null;res(v);d.remove()});d.showModal()})}
 
 /* ===== Small helpers ===== */
