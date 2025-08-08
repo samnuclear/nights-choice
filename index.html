@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>The Night’s Choice</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0f">
@@ -15,14 +15,26 @@
     --good:#7cd992; --warn:#ffcf6e; --bad:#ff6e8a;
   }
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  /* Top bar */
   header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
-  .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
-  .title-tappable{font-weight:700;letter-spacing:.3px;font-size:19px;padding:8px 10px;border-radius:8px}
+  .topbar{position:relative;max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;touch-action:manipulation;
+    padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
+  .title-wrap{display:flex;align-items:center;gap:8px}
+  .title-tappable{-webkit-user-select:none;user-select:none;font-weight:700;letter-spacing:.3px;font-size:19px;padding:6px 8px;border-radius:8px}
+  /* Tiny fallback dot (opens Rig instantly) */
+  .rig-mini{width:6px;height:6px;border-radius:999px;border:1px solid #2a2b40;background:#1a1a28;opacity:.7;display:inline-block;margin-top:4px}
+  .rig-mini:active{transform:scale(.9);opacity:1}
+
   .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   button,select,textarea,input{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
   button.primary{background:linear-gradient(180deg,#272737,#1b1b28);border-color:#2b2c3d}
   button:disabled{opacity:.5}
   .pill{background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:6px 10px;font-size:12px;color:#ddd}
+
+  /* Upload: input overlays button so iOS PWA always fires the picker */
+  #uploadWrap{position:relative;overflow:hidden}
+  #uploadWrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;-webkit-appearance:none}
+
   .wrap{max-width:1100px;margin:0 auto;padding:0 14px 60px}
   .machine{margin-top:12px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
   .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -30,14 +42,14 @@
   .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:0;will-change:transform,filter}
   .cell{height:156px;display:flex;align-items:center;justify-content:center}
   .cell img{height:100%;width:100%;object-fit:cover;border-radius:10px}
+
   .reveal-name{margin-top:10px;text-align:center;font-weight:700;color:var(--accent)}
-  .reveal-meta{margin-top:6px;text-align:center;color:var(--muted);font-size:13px}
   .reveal-big{margin-top:8px;border:1px solid #24253a;border-radius:14px;background:#0f0f15;min-height:42vh;display:grid;place-items:center;overflow:hidden}
   .reveal-big img{max-width:100%;max-height:100%;display:block}
-  .bars{margin-top:8px;display:grid;gap:6px}
-  .bar{display:grid;grid-template-columns:98px 1fr;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-  .track{height:10px;border:1px solid #2a2b40;background:#12121b;border-radius:999px;overflow:hidden}
-  .fill{height:100%;width:0;background:linear-gradient(90deg,#6aa7ff,#c38ad9);transition:width .25s}
+  /* Stars under the reveal */
+  .reveal-stars{margin:10px auto 0;max-width:680px;display:grid;gap:6px}
+  .line{display:flex;align-items:center;gap:10px;justify-content:center;font-size:13px;color:var(--muted)}
+  .stars{font-size:16px;letter-spacing:1px}
   .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px}
   .countdown{font-variant-numeric:tabular-nums}
   .hidden{display:none !important}
@@ -65,19 +77,27 @@
 <body>
 <header>
   <div class="topbar">
-    <div id="titleTap" class="title-tappable">The Night’s Choice</div>
+    <div class="title-wrap">
+      <div id="titleTap" class="title-tappable">The Night’s Choice</div>
+      <button id="rigMini" class="rig-mini" aria-label="Rig menu"></button>
+    </div>
     <div class="controls">
-      <input id="fileInput" type="file" accept="image/*" multiple style="position:absolute;left:-9999px">
-      <button id="uploadBtn" class="pill">➕ Upload</button>
+      <!-- Upload with overlaid input (reliable in PWA) -->
+      <button class="pill" id="uploadWrap">➕ Upload
+        <input id="fileInput" type="file" accept="image/*" multiple>
+      </button>
 
+      <!-- Timer -->
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         ⏱️
         <select id="timerSelect" title="Timer">
-          <option value="0">Off</option><option value="1">1 min</option><option value="2">2 min</option>
-          <option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option>
+          <option value="0">Off</option><option value="1">1 min</option>
+          <option value="2">2 min</option><option value="3">3 min</option>
+          <option value="4">4 min</option><option value="5">5 min</option>
         </select>
       </label>
 
+      <!-- Restrict -->
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         🎯
         <select id="mainRestrict" title="Restrict Category"></select>
@@ -97,16 +117,15 @@
     </div>
 
     <div id="revealName" class="reveal-name"></div>
-    <div id="revealMeta" class="reveal-meta"></div>
 
     <div id="revealBig" class="reveal-big hidden">
       <img id="revealImg" alt="">
     </div>
 
-    <div class="bars" id="revealBars" style="display:none">
-      <div class="bar"><div>Difficulty</div><div class="track"><div id="barDiff" class="fill"></div></div></div>
-      <div class="bar"><div>Her-O</div><div class="track"><div id="barHer" class="fill"></div></div></div>
-      <div class="bar"><div>His-O</div><div class="track"><div id="barHim" class="fill"></div></div></div>
+    <div class="reveal-stars">
+      <div class="line"><span>Difficulty</span> <span id="diffStars" class="stars">☆☆☆☆☆</span></div>
+      <div class="line"><span>Her-O</span> <span id="herStars" class="stars">☆☆☆☆☆</span></div>
+      <div class="line"><span>His-O</span> <span id="himStars" class="stars">☆☆☆☆☆</span></div>
     </div>
 
     <div class="toolbar">
@@ -116,13 +135,13 @@
   </section>
 </div>
 
-<!-- Rig (triple-tap title + PIN 1616) -->
+<!-- Rig (double-tap/long-press title for PIN; tiny dot opens instantly) -->
 <dialog id="rig">
   <header>
     <strong>Rig Control</strong>
     <button id="rigClose" class="x">✕</button>
   </header>
-  <div class="body" id="rigBody">
+  <div class="body">
     <div class="section">
       <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
       <div class="inner" id="controlsInner">
@@ -149,48 +168,6 @@
           <button id="queueClear" class="pill">Clear queue</button>
         </div>
         <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="hdr"><strong>Profiles</strong><button class="toggle" data-target="profilesInner">▼</button></div>
-      <div class="inner" id="profilesInner">
-        <div class="row">
-          <label>Active</label>
-          <select id="profileActive"><option value="">None</option><option>A</option><option>B</option><option>C</option></select>
-          <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="profileAutofill" type="checkbox"> Auto-refill queue</label>
-          <button id="profileFillNow" class="pill">Fill queue now</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <div class="pill">Profile A</div>
-          <input id="profAAddId" placeholder="Add ID">
-          <button id="profAAddIdBtn" class="pill">Add</button>
-          <select id="profAByDesc"></select>
-          <button id="profAAddDescBtn" class="pill">Add by Name</button>
-          <button id="profAClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear A</button>
-        </div>
-        <div id="profAView" class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
-
-        <div class="row">
-          <div class="pill">Profile B</div>
-          <input id="profBAddId" placeholder="Add ID">
-          <button id="profBAddIdBtn" class="pill">Add</button>
-          <select id="profBByDesc"></select>
-          <button id="profBAddDescBtn" class="pill">Add by Name</button>
-          <button id="profBClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear B</button>
-        </div>
-        <div id="profBView" class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
-
-        <div class="row">
-          <div class="pill">Profile C</div>
-          <input id="profCAddId" placeholder="Add ID">
-          <button id="profCAddIdBtn" class="pill">Add</button>
-          <select id="profCByDesc"></select>
-          <button id="profCAddDescBtn" class="pill">Add by Name</button>
-          <button id="profCClear" class="pill" style="border-color:#4b1c28;color:#ffb3c0">Clear C</button>
-        </div>
-        <div id="profCView" class="row" style="gap:6px;flex-wrap:wrap"></div>
-        <div class="hint">Each profile holds up to 6 items and persists. Queue is separate and can be cleared.</div>
       </div>
     </div>
 
@@ -240,11 +217,11 @@
 <script>
 /* ===== Config ===== */
 const CATEGORIES=["Missionary","Woman-on-top","Oral for Her","Oral for Him","Sitting","Standing","Side-by-Side","Deep Penetration","69","Rear Entry","BDSM for Lovers","Adventurous"];
-const DEFAULT_WEIGHT=1, SPIN_DURATION_MS=6000, PIN="1616", MAX_PROFILE_ITEMS=6;
+const DEFAULT_WEIGHT=1, SPIN_DURATION_MS=6000, PIN="1616";
 
 /* ===== Storage Keys ===== */
 const DB_NAME='nights-choice-db', DB_STORE='images';
-const LSK={ mute:'nc_mute', rigCat:'nc_rigCat', weights:'nc_weights', queue:'nc_queue', categories:'nc_categories', descriptions:'nc_desc', timer:'nc_timer', ratings:'nc_ratings', profiles:'nc_profiles', profileActive:'nc_profile_active', profileAutofill:'nc_profile_autofill', pwaInit:'nc_pwa_initialized' };
+const LSK={ mute:'nc_mute', rigCat:'nc_rigCat', weights:'nc_weights', queue:'nc_queue', categories:'nc_categories', descriptions:'nc_desc', timer:'nc_timer', ratings:'nc_ratings', pwaInit:'nc_pwa_initialized' };
 
 /* ===== State ===== */
 let db, IMAGES=[], OBJECT_URLS=new Map();
@@ -255,9 +232,6 @@ let weightOverrides=lsGet(LSK.weights,{})||{};
 let categoryOverrides=lsGet(LSK.categories,{})||{};
 let descOverrides=lsGet(LSK.descriptions,{})||{};
 let ratings=lsGet(LSK.ratings,{})||{};
-let profiles=lsGet(LSK.profiles,{A:[],B:[],C:[]})||{A:[],B:[],C:[]};
-let profileActive=lsGet(LSK.profileActive,'')||'';
-let profileAutofill=!!lsGet(LSK.profileAutofill,false);
 let timerMinutes=+lsGet(LSK.timer,0)||0;
 
 /* ===== Audio ===== */
@@ -271,14 +245,15 @@ function playReveal(){ tone(330,0.5,'sine',0.5); tone(880,0.45,'sine',0.4,0.1); 
 async function playTimerChime(){ await resumeAudio(); tone(660,0.35,'sine',0.5,0); tone(990,0.35,'sine',0.5,0.2); }
 
 /* ===== UI Refs ===== */
-const fileInput=q('#fileInput'), uploadBtn=q('#uploadBtn');
+const fileInput=q('#fileInput'), uploadWrap=q('#uploadWrap');
 const reelsEl=q('#reels'), spinBtn=q('#spinBtn');
-const revealNameEl=q('#revealName'), revealMetaEl=q('#revealMeta');
-const revealBig=q('#revealBig'), revealImg=q('#revealImg');
-const barDiff=q('#barDiff'), barHer=q('#barHer'), barHim=q('#barHim'), revealBars=q('#revealBars');
+const revealNameEl=q('#revealName'), revealBig=q('#revealBig'), revealImg=q('#revealImg');
+const diffStarsEl=q('#diffStars'), herStarsEl=q('#herStars'), himStarsEl=q('#himStars');
 const countdownEl=q('#countdown'), skipBtn=q('#skipBtn');
 const timerSelect=q('#timerSelect'), mainRestrict=q('#mainRestrict');
-const titleTap=q('#titleTap'), rigDlg=q('#rig'), rigClose=q('#rigClose');
+const rigDlg=q('#rig'), rigClose=q('#rigClose');
+const rigMini=q('#rigMini'), titleTap=q('#titleTap');
+
 const rigGrid=q('#rigGrid'), rigCategorySel=q('#rigCategory'), queueView=q('#queueView');
 const queueId=q('#queueId'), queueAddId=q('#queueAddId'), queueByDesc=q('#queueByDesc'), queueAddDesc=q('#queueAddDesc'), queueClear=q('#queueClear');
 const muteToggle=q('#muteToggle'), muteState=q('#muteState'), testChime=q('#testChime');
@@ -286,16 +261,8 @@ const exportCopy=q('#exportCopy'), importPaste=q('#importPaste'), resetBtn=q('#r
 const fastTagCategory=q('#fastTagCategory'), fastTagName=q('#fastTagName'), fastTagEnable=q('#fastTagEnable');
 const filterSelect=q('#filterSelect'), filterCategory=q('#filterCategory'), sortSelect=q('#sortSelect');
 const applySetCategory=q('#applySetCategory'), applyIncludeAll=q('#applyIncludeAll'), applyExcludeAll=q('#applyExcludeAll');
-const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames'), gridCount=q('#gridCount');
-const bulkDiff=q('#bulkDiff'), bulkHer=q('#bulkHer'), bulkHim=q('#bulkHim'), applyDiff=q('#applyDiff'), applyHer=q('#applyHer'), applyHim=q('#applyHim');
-const profileActiveSel=q('#profileActive'), profileAutofillChk=q('#profileAutofill'), profileFillNow=q('#profileFillNow');
-const profAView=q('#profAView'), profBView=q('#profBView'), profCView=q('#profCView');
-const profAByDesc=q('#profAByDesc'), profBByDesc=q('#profBByDesc'), profCByDesc=q('#profCByDesc');
-const profAAddId=q('#profAAddId'), profBAddId=q('#profBAddId'), profCAddId=q('#profCAddId');
-const profAAddIdBtn=q('#profAAddIdBtn'), profBAddIdBtn=q('#profBAddIdBtn'), profCAddIdBtn=q('#profCAddIdBtn');
-const profAAddDescBtn=q('#profAAddDescBtn'), profBAddDescBtn=q('#profBAddDescBtn'), profCAddDescBtn=q('#profCAddDescBtn');
-const profAClear=q('#profAClear'), profBClear=q('#profBClear'), profCClear=q('#profCClear');
-
+const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames');
+const gridCount=q('#gridCount');
 /* ===== DB ===== */
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result; if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'}); s.createIndex('category','category'); s.createIndex('ts','ts'); s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE); if(!s.indexNames.contains('hash')) s.createIndex('hash','hash');}}; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
 function dbAddMany(items){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite'),st=tx.objectStore(DB_STORE);items.forEach(it=>st.put(it));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
@@ -305,6 +272,7 @@ function dbClearAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_
 
 /* ===== Helpers ===== */
 function q(s,sc=document){return sc.querySelector(s)}
+function qAll(arr){return arr.map(s=>q(s))}
 function lsGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
 function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v))}
 function toast(msg,danger=false){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s'},1200);setTimeout(()=>t.remove(),1600)}
@@ -329,79 +297,70 @@ async function maybeFirstRunWipe(){
   await maybeFirstRunWipe();
   db=await openDB();
 
-  // Build Restrict selects
+  // Build Restrict selects & category pickers
   function fillRestrict(sel){
-    sel.innerHTML=''; const all=new Option('All categories',''); sel.appendChild(all);
-    const un=new Option('— Unassigned —','__UNASSIGNED__'); sel.appendChild(un);
+    sel.innerHTML=''; sel.appendChild(new Option('All categories','')); sel.appendChild(new Option('— Unassigned —','__UNASSIGNED__'));
     CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
   }
   fillRestrict(mainRestrict);
   rigCategorySel.appendChild(new Option('All categories',''));
   CATEGORIES.forEach(c=>rigCategorySel.appendChild(new Option(c,c)));
-
-  // Category pickers (with Unassigned)
-  function addUnassignedFirst(sel){
-    sel.innerHTML=''; sel.appendChild(new Option('— Unassigned —',''));
-    CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
-  }
+  function addUnassignedFirst(sel){ sel.innerHTML=''; sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c))); }
   addUnassignedFirst(fastTagCategory); addUnassignedFirst(filterCategory);
 
   // Restore
   mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;
   timerSelect.value=String(timerMinutes);
-  q('#muteState').textContent=isMuted?'Muted':'Sound on';
+  muteState.textContent=isMuted?'Muted':'Sound on';
 
-  // Listeners
-  uploadBtn.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',handleUpload);
-  timerSelect.addEventListener('change',()=>{timerMinutes=+timerSelect.value;lsSet(LSK.timer,timerMinutes)});
-  qAll(['#filterSelect','#filterCategory','#sortSelect']).forEach(el=>el.addEventListener('change',renderRig));
-  q('#rigClearCat').addEventListener('click',()=>{rigCategory='';rigCategorySel.value='';mainRestrict.value='';lsSet(LSK.rigCat,rigCategory);toast('Restriction cleared')});
-  rigCategorySel.addEventListener('change',()=>{rigCategory=rigCategorySel.value||'';mainRestrict.value=rigCategory;lsSet(LSK.rigCat,rigCategory)});
-  mainRestrict.addEventListener('change',()=>{rigCategory=mainRestrict.value;rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;lsSet(LSK.rigCat,rigCategory)});
+  // Upload: stop gesture bubbling
+  ['click','touchstart','touchend'].forEach(evt=> uploadWrap.addEventListener(evt,(e)=>e.stopPropagation(),{passive:true}));
+  fileInput.addEventListener('change', handleUpload);
 
-  // Rig dialog open/close (triple-tap or long-press)
-  secretAccess();
+  // Timer
+  timerSelect.addEventListener('change',()=>{ timerMinutes=+timerSelect.value; lsSet(LSK.timer,timerMinutes); });
+
+  // Rig dialog close & backdrop
   rigClose.addEventListener('click',()=>rigDlg.close());
-  rigDlg.addEventListener('click',e=>{ if(e.target===rigDlg) rigDlg.close(); }); // tap backdrop to close
+  rigDlg.addEventListener('click',(e)=>{ if(e.target===rigDlg) rigDlg.close(); });
 
-  // Buttons
-  muteToggle.addEventListener('click',()=>{isMuted=!isMuted;lsSet(LSK.mute,isMuted);q('#muteState').textContent=isMuted?'Muted':'Sound on'});
-  testChime.addEventListener('click',()=>{ensureAudio();resumeAudio().then(()=>playTimerChime())});
-  exportCopy.addEventListener('click',exportToClipboardDialog);
-  importPaste.addEventListener('click',importFromPasteDialog);
-  resetBtn.addEventListener('click',resetAll);
+  // Collapsers
+  document.querySelectorAll('.toggle').forEach(b=>b.addEventListener('click',()=>{
+    const t=document.getElementById(b.dataset.target); if(!t)return; const hid=t.classList.toggle('hidden'); b.textContent=hid?'▲':'▼';
+  }));
+
+  // Filters + restriction sync
+  qAll(['#filterSelect','#filterCategory','#sortSelect']).forEach(el=>el.addEventListener('change',renderRig));
+  document.getElementById('rigClearCat').addEventListener('click',()=>{ rigCategory=''; rigCategorySel.value=''; mainRestrict.value=''; lsSet(LSK.rigCat,rigCategory); toast('Restriction cleared'); });
+  rigCategorySel.addEventListener('change',()=>{ rigCategory=rigCategorySel.value||''; mainRestrict.value=rigCategory; lsSet(LSK.rigCat,rigCategory); });
+  mainRestrict.addEventListener('change',()=>{ rigCategory=mainRestrict.value; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; lsSet(LSK.rigCat,rigCategory); });
+
+  // Sound & chime
+  muteToggle.addEventListener('click',()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent=isMuted?'Muted':'Sound on'; });
+  testChime.addEventListener('click',()=>{ ensureAudio(); resumeAudio().then(()=>playTimerChime()); });
+
+  // Export / Import (text only)
+  exportCopy.addEventListener('click', exportToClipboardDialog);
+  importPaste.addEventListener('click', importFromPasteDialog);
+  resetBtn.addEventListener('click', resetAll);
 
   // Queue
-  queueAddId.addEventListener('click',()=>{const id=queueId.value.trim(); if(!id)return; rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue();});
-  queueAddDesc.addEventListener('click',()=>{const v=queueByDesc.value; if(!v)return; rigQueue.push('desc::'+v); lsSet(LSK.queue,rigQueue); renderQueue();});
-  queueClear.addEventListener('click',()=>{rigQueue.length=0;lsSet(LSK.queue,rigQueue);renderQueue()});
+  queueAddId.addEventListener('click',()=>{ const id=queueId.value.trim(); if(!id)return; rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue(); });
+  queueAddDesc.addEventListener('click',()=>{ const v=queueByDesc.value; if(!v)return; rigQueue.push('desc::'+v); lsSet(LSK.queue,rigQueue); renderQueue(); });
+  queueClear.addEventListener('click',()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
 
-  // Profiles
-  profileActiveSel.value=profileActive; profileAutofillChk.checked=profileAutofill;
-  profileActiveSel.addEventListener('change',()=>{profileActive=profileActiveSel.value;lsSet(LSK.profileActive,profileActive)});
-  profileAutofillChk.addEventListener('change',()=>{profileAutofill=!!profileAutofillChk.checked;lsSet(LSK.profileAutofill,profileAutofill)});
-  profileFillNow.addEventListener('click',fillQueueFromActiveProfile);
-  setupProfileControls('A',profAView,profAByDesc,profAAddId,profAAddIdBtn,profAAddDescBtn,profAClear);
-  setupProfileControls('B',profBView,profBByDesc,profBAddId,profBAddIdBtn,profBAddDescBtn,profBClear);
-  setupProfileControls('C',profCView,profCByDesc,profCAddId,profCAddIdBtn,profCAddDescBtn,profCClear);
+  // Title gesture: double-tap or long-press (PIN)
+  secretAccessOnTitle();
 
-  // Bulk actions
-  applySetCategory.addEventListener('click',()=>{const cat=fastTagCategory.value; getFilteredImages().forEach(it=>{it.category=cat;categoryOverrides[it.id]=cat;dbUpdate(it)}); lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set');});
-  applyIncludeAll.addEventListener('click',()=>{getFilteredImages().forEach(it=>{it.weight=1;weightOverrides[it.id]=1;dbUpdate(it)}); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included')});
-  applyExcludeAll.addEventListener('click',()=>{getFilteredImages().forEach(it=>{it.weight=0;weightOverrides[it.id]=0;dbUpdate(it)}); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded')});
-  applyBatchNames.addEventListener('click',()=>{const names=batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); if(!names.length){toast('No names');return} let i=0; getFilteredImages().forEach(it=>{if(i<names.length){it.description=names[i++];descOverrides[it.id]=it.description;dbUpdate(it)}}); lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied')});
-  applyDiff.addEventListener('click',()=>bulkApplyRating('diff',+bulkDiff.value));
-  applyHer.addEventListener('click',()=>bulkApplyRating('her',+bulkHer.value));
-  applyHim.addEventListener('click',()=>bulkApplyRating('him',+bulkHim.value));
+  // Mini dot: instant open (no PIN)
+  rigMini.addEventListener('click', ()=> rigDlg.showModal());
 
-  await reloadImages(); buildReels(); renderRig(); renderQueue(); renderProfiles();
+  await reloadImages(); buildReels(); renderRig(); renderQueue();
 })();
 
 /* ===== Upload ===== */
 async function handleUpload(ev){
   const files=[...ev.target.files]; if(!files.length) return;
-  ensureAudio();
   const toAdd=[];
   for(const f of files){
     if(!f.type.startsWith('image/')) continue;
@@ -410,8 +369,8 @@ async function handleUpload(ev){
     toAdd.push(it);
   }
   await dbAddMany(toAdd);
-  toAdd.forEach(it=>{categoryOverrides[it.id]='';descOverrides[it.id]='';weightOverrides[it.id]=DEFAULT_WEIGHT;ratings[it.id]={diff:0,her:0,him:0};});
-  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
+  toAdd.forEach(it=>{ categoryOverrides[it.id]=''; weightOverrides[it.id]=DEFAULT_WEIGHT; descOverrides[it.id]=''; ratings[it.id]={diff:0,her:0,him:0}; });
+  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings);
   await reloadImages(); buildReels(); renderRig(); fileInput.value='';
 }
 
@@ -425,14 +384,20 @@ async function reloadImages(){
     if(ratings[it.id]) Object.assign(it,ratings[it.id]);
   });
   OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
-  IMAGES.forEach(it=>OBJECT_URLS.set(it.id,URL.createObjectURL(it.blob)));
-  refreshQueueDescOptions(); refreshProfileDescOptions();
+  IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
+  refreshQueueDescOptions();
 }
 function buildReels(){
-  qAll('.strip').forEach((strip,i)=>{
-    strip.innerHTML=''; const pool=IMAGES.length?IMAGES.slice():[];
-    if(!pool.length){const c=div('cell'); c.textContent='—'; strip.appendChild(c); return;}
-    for(let k=0;k<12;k++){ const it=pool[(k+i)%pool.length]; const cell=div('cell'); const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img); strip.appendChild(cell); }
+  document.querySelectorAll('.strip').forEach((strip,i)=>{
+    strip.innerHTML='';
+    const pool=IMAGES.length?IMAGES.slice():[];
+    if(!pool.length){ const c=document.createElement('div'); c.className='cell'; c.textContent='—'; strip.appendChild(c); return; }
+    for(let k=0;k<12;k++){
+      const it=pool[(k+i)%pool.length];
+      const cell=document.createElement('div'); cell.className='cell';
+      const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
+      strip.appendChild(cell);
+    }
   });
 }
 function getFilteredImages(){
@@ -454,120 +419,131 @@ function renderRig(){
     const card=div('rig-item'); card.dataset.id=it.id;
     const img=new Image(); img.src=OBJECT_URLS.get(it.id);
     const tag=span('tag'); tag.textContent=it.category||'—';
-    const ex=button('exclude-btn pill', (it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude');
-    ex.onclick=(e)=>{e.stopPropagation();toggleExclude(it)};
+    const ex=button('exclude-btn pill',(it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude'); ex.onclick=(e)=>{e.stopPropagation();toggleExclude(it)};
     const meta=div('meta');
     const idrow=div(); idrow.textContent=`ID: ${it.id}`;
-    const row1=div(); const sel=document.createElement('select'); sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c))); sel.value=it.category||''; sel.onchange=async ()=>{it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category||'—'};
-    const w=inputNumber(it.weight??DEFAULT_WEIGHT); w.onchange=()=>{const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'};
+
+    const row1=div();
+    const sel=document.createElement('select');
+    sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
+    sel.value=it.category||''; sel.onchange=async ()=>{ it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category||'—'; };
+    const w=inputNumber(it.weight??DEFAULT_WEIGHT); w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'; };
     row1.append(sel,' ',w);
-    const d=document.createElement('input'); d.placeholder='Name'; d.value=it.description||''; d.onchange=()=>{it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); refreshProfileDescOptions();};
+
+    const d=document.createElement('input'); d.placeholder='Name'; d.value=it.description||''; d.onchange=()=>{ it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); };
+
+    // ratings
     const r1=starRow(it,'diff','Diff'), r2=starRow(it,'her','Her-O'), r3=starRow(it,'him','His-O');
+
     meta.append(idrow,row1,d,r1,r2,r3);
     card.append(img,tag,ex,meta);
-    card.addEventListener('click',()=>{ if(!fastTagEnable.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return;} const cat=fastTagCategory.value, name=(fastTagName.value||'').trim(); it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—'; if(name){it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); refreshProfileDescOptions();} dbUpdate(it); toast('Applied'); });
+
+    // Fast Tag tap
+    card.addEventListener('click', ()=>{
+      if(!fastTagEnable.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
+      const cat=fastTagCategory.value, name=(fastTagName.value||'').trim();
+      it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—';
+      if(name){ it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); }
+      dbUpdate(it); toast('Applied');
+    });
+
     rigGrid.appendChild(card);
   });
 }
 function starRow(it,key,label){
   const row=div('row'); const lbl=span(); lbl.textContent=label+':'; row.append(lbl);
-  for(let i=1;i<=5;i++){ const s=span(); s.textContent='★'; s.style.cursor='pointer'; s.style.opacity= (i<=(it[key]||0)) ? '1':'0.35'; s.onclick=()=>{ it[key]=i; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=i; lsSet(LSK.ratings,ratings); dbUpdate(it); [...row.querySelectorAll('span')].slice(1).forEach((el,idx)=>el.style.opacity=((idx+1)<=i)?'1':'0.35'); }; row.append(s); }
+  for(let i=1;i<=5;i++){ const s=span(); s.textContent='★'; s.style.cursor='pointer'; s.style.opacity=(i<=(it[key]||0))?'1':'0.35';
+    s.onclick=()=>{ it[key]=i; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=i; lsSet(LSK.ratings,ratings); dbUpdate(it);
+      [...row.querySelectorAll('span')].slice(1).forEach((el,idx)=> el.style.opacity=((idx+1)<=i)?'1':'0.35'); };
+    row.append(s);
+  }
   return row;
 }
 function toggleExclude(it){ const nw=(it.weight??DEFAULT_WEIGHT)==0?1:0; it.weight=nw; weightOverrides[it.id]=nw; lsSet(LSK.weights,weightOverrides); renderRig(); }
 
-/* ===== Bulk ===== */
-function bulkApplyRating(key,val){ if(!val){toast('Pick a value');return} getFilteredImages().forEach(it=>{it[key]=val; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=val; dbUpdate(it)}); lsSet(LSK.ratings,ratings); renderRig(); toast('Applied'); }
-
 /* ===== Spin / Animation ===== */
 let spinning=false, blockUntil=0, timerId=null;
-spinBtn.addEventListener('click',async ()=>{
+spinBtn.addEventListener('click', async ()=>{
   ensureAudio(); await resumeAudio();
   if(spinning||Date.now()<blockUntil){return}
   if(!IMAGES.length){toast('Add images first');return}
-  if(!rigQueue.length && profileActive && profileAutofill) fillQueueFromActiveProfile();
 
-  spinning=true; revealNameEl.textContent=''; revealMetaEl.textContent=''; revealBig.classList.add('hidden'); revealBars.style.display='none'; revealImg.removeAttribute('src');
+  spinning=true;
+  revealNameEl.textContent=''; diffStarsEl.textContent='☆☆☆☆☆'; herStarsEl.textContent='☆☆☆☆☆'; himStarsEl.textContent='☆☆☆☆☆';
+  revealBig.classList.add('hidden'); revealImg.removeAttribute('src');
   playSpinStart();
 
   const chosen=await pickImage();
   let others=IMAGES.filter(x=>x.id!==chosen.id); if(others.length<2) others=IMAGES.concat(IMAGES); shuffle(others);
-  const finals=[others[0],chosen,others[1]];
+  const finals=[others[0], chosen, others[1]];
 
   const strips=[...document.querySelectorAll('.strip')];
-  const BASE=20, CELLH=156;
+  const BASE=20, CELLH=156, ease='cubic-bezier(.12,.62,.22,.99)';
   strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    const pool=IMAGES.length?IMAGES.slice():[];
+    const pool=IMAGES.slice();
     for(let k=0;k<BASE;k++){ const it=pool[(k+i)%pool.length]; const cell=div('cell'); const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img); strip.appendChild(cell); }
     const end=div('cell'); const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id); end.appendChild(endImg); strip.appendChild(end);
-    strip.style.transition='none'; strip.style.transform='translateY(0)'; strip.style.filter='blur(6px) brightness(0.9)';
+    strip.style.transition='none'; strip.style.transform='translateY(0px)'; strip.style.filter='blur(6px) brightness(0.9)';
+    const distance=CELLH*BASE;
+    setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, 0);
   });
-  const offsets=[0,250,450], ease='cubic-bezier(.12,.62,.22,.99)';
-  strips.forEach((strip)=>{ const distance=CELLH*BASE; setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, 0); });
   for(let t=0;t<SPIN_DURATION_MS*0.6;t+=280){ playTick(t/1000); }
+
   setTimeout(()=>{
-    strips.forEach(s=>s.style.filter='none'); playReveal();
+    document.querySelectorAll('.strip').forEach(s=>s.style.filter='none');
+    playReveal();
     revealNameEl.textContent=chosen.description||chosen.category||'';
-    revealMetaEl.textContent=`Diff ${stars(chosen.diff||0)} · Her ${stars(chosen.her||0)} · Him ${stars(chosen.him||0)}`;
     revealImg.src=OBJECT_URLS.get(chosen.id);
     revealBig.classList.remove('hidden');
-    setBars(chosen); spinning=false; if(timerMinutes>0) startCountdown(timerMinutes);
-  }, SPIN_DURATION_MS + Math.max(...offsets) + 50);
+    diffStarsEl.textContent=stars(chosen.diff||0);
+    herStarsEl .textContent=stars(chosen.her ||0);
+    himStarsEl .textContent=stars(chosen.him||0);
+    spinning=false;
+    if(timerMinutes>0) startCountdown(timerMinutes);
+  }, SPIN_DURATION_MS + 60);
 });
-function setBars(it){
-  revealBars.style.display='grid';
-  barDiff.style.width = ((it.diff||0)/5*100)+'%';
-  barHer.style.width  = ((it.her ||0)/5*100)+'%';
-  barHim.style.width  = ((it.him ||0)/5*100)+'%';
+async function pickImage(){
+  if(rigQueue.length){
+    const itToken=rigQueue.shift(); lsSet(LSK.queue,rigQueue); renderQueue();
+    const it = itToken.startsWith('desc::') ? IMAGES.find(x=>(x.description||'')===itToken.slice(6)) : IMAGES.find(x=>x.id===itToken);
+    if(it) return it;
+  }
+  let pool=IMAGES.slice();
+  if(rigCategory){ if(rigCategory==='__UNASSIGNED__') pool=pool.filter(i=>!(i.category||'')); else pool=pool.filter(i=>(i.category||'')===rigCategory); }
+  if(!pool.length) return IMAGES[0];
+  const weights=pool.map(it=>Math.max(0.0001, it.weight??DEFAULT_WEIGHT)), total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total; for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
+  return pool[pool.length-1];
 }
 
 /* ===== Countdown + Skip ===== */
 function clearCountdownAndUnlock(){ if(timerId) clearInterval(timerId); timerId=null; blockUntil=0; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; }
-function startCountdown(mins){ const dur=mins*60*1000; blockUntil=Date.now()+dur; spinBtn.disabled=true; if(timerId)clearInterval(timerId); updateCountdown(); skipBtn.style.display='inline-flex'; timerId=setInterval(async ()=>{updateCountdown(); if(Date.now()>=blockUntil){clearInterval(timerId);timerId=null;spinBtn.disabled=false;countdownEl.textContent='';skipBtn.style.display='none'; await playTimerChime();}},250); }
+function startCountdown(mins){ const dur=mins*60*1000; blockUntil=Date.now()+dur; spinBtn.disabled=true; if(timerId)clearInterval(timerId); updateCountdown(); skipBtn.style.display='inline-flex';
+  timerId=setInterval(async ()=>{ updateCountdown(); if(Date.now()>=blockUntil){ clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; await playTimerChime(); } }, 250); }
 function updateCountdown(){ const r=Math.max(0,blockUntil-Date.now()); const s=Math.ceil(r/1000), m=Math.floor(s/60), ss=String(s%60).padStart(2,'0'); countdownEl.textContent=`Next spin in ${m}:${ss}`; }
-skipBtn.addEventListener('click',clearCountdownAndUnlock);
-
-/* ===== Pick logic ===== */
-async function pickImage(){
-  if(rigQueue.length){ const item=rigQueue.shift(); lsSet(LSK.queue,rigQueue); renderQueue(); const it=findByQueueItem(item); if(it) return it; }
-  let pool=IMAGES.slice();
-  if(rigCategory){ if(rigCategory==='__UNASSIGNED__') pool=pool.filter(it=>!(it.category||'')); else pool=pool.filter(it=>(it.category||'')===rigCategory); }
-  if(!pool.length) return IMAGES[0];
-  const weights=pool.map(it=>Math.max(0.0001,it.weight??DEFAULT_WEIGHT)), total=weights.reduce((a,b)=>a+b,0);
-  let r=Math.random()*total; for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
-  return pool[pool.length-1];
-}
-function findByQueueItem(item){ if(item.startsWith('desc::')){ const d=item.slice(6); return IMAGES.find(x=>(x.description||'')===d)||null; } return IMAGES.find(x=>x.id===item)||null; }
+skipBtn.addEventListener('click', clearCountdownAndUnlock);
 
 /* ===== Queue UI ===== */
-function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1);lsSet(LSK.queue,rigQueue);renderQueue()}; queueView.appendChild(pill); }); }
+function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{ const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1); lsSet(LSK.queue,rigQueue); renderQueue();}; queueView.appendChild(pill); }); }
 function refreshQueueDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; queueByDesc.innerHTML=''; queueByDesc.appendChild(new Option('Select name…','')); names.forEach(n=>queueByDesc.appendChild(new Option(n,n))); }
 
-/* ===== Profiles ===== */
-function setupProfileControls(letter,view,byDesc,addIdInput,addIdBtn,addDescBtn,clearBtn){
-  addIdBtn.addEventListener('click',()=>{const v=addIdInput.value.trim(); if(!v)return; addToProfile(letter,v); addIdInput.value='';});
-  addDescBtn.addEventListener('click',()=>{const v=byDesc.value; if(!v)return; addToProfile(letter,'desc::'+v);});
-  clearBtn.addEventListener('click',()=>{profiles[letter]=[];persistProfiles();renderProfiles()});
-}
-function addToProfile(letter,item){ const list=profiles[letter]; if(list.length>=MAX_PROFILE_ITEMS){toast(`Profile ${letter} full`,true);return} list.push(item); persistProfiles(); renderProfiles(); }
-function persistProfiles(){ lsSet(LSK.profiles,profiles); }
-function renderProfiles(){ drawProfile(profiles.A,profAView); drawProfile(profiles.B,profBView); drawProfile(profiles.C,profCView); refreshProfileDescOptions(); }
-function drawProfile(list,view){ view.innerHTML=''; list.forEach((q,i)=>{const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{list.splice(i,1);persistProfiles();renderProfiles()}; view.appendChild(pill); }); }
-function fillQueueFromActiveProfile(){ const p=profiles[profileActiveSel.value||profileActive]; if(!p||!p.length){toast('Active profile empty');return} rigQueue=p.slice(); lsSet(LSK.queue,rigQueue); renderQueue(); toast('Queue filled'); }
-function refreshProfileDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; [q('#profAByDesc'),q('#profBByDesc'),q('#profCByDesc')].forEach(sel=>{ sel.innerHTML=''; sel.appendChild(new Option('Select name…','')); names.forEach(n=>sel.appendChild(new Option(n,n))); }); }
+/* ===== Bulk tools ===== */
+applySetCategory.addEventListener('click',()=>{ const cat=fastTagCategory.value; getFilteredImages().forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); }); lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set');});
+applyIncludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=1; weightOverrides[it.id]=1; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included');});
+applyExcludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=0; weightOverrides[it.id]=0; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded');});
+applyBatchNames.addEventListener('click',()=>{ const names=batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); if(!names.length){toast('No names');return} let i=0; getFilteredImages().forEach(it=>{ if(i<names.length){ it.description=names[i++]; descOverrides[it.id]=it.description; dbUpdate(it); } }); lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied'); });
 
-/* ===== Export / Import (text only) ===== */
+/* ===== Export / Import (text only, hash-keyed) ===== */
 async function exportToClipboardDialog(){
-  // ensure hashes
   for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
-  const items=IMAGES.map(it=>({hash:it.hash, category:it.category||'', description:it.description||'', weight:it.weight??DEFAULT_WEIGHT, diff:it.diff||0, her:it.her||0, him:it.him||0}));
-  const data={version:1, created:new Date().toISOString(), restriction:rigCategory, timer:timerMinutes, items, profiles};
+  const items=IMAGES.map(it=>({hash:it.hash,category:it.category||'',description:it.description||'',weight:it.weight??DEFAULT_WEIGHT,diff:it.diff||0,her:it.her||0,him:it.him||0}));
+  const data={version:1,created:new Date().toISOString(),restriction:rigCategory,timer:timerMinutes,items};
   const json=JSON.stringify(data,null,2);
-  try{ await navigator.clipboard.writeText(json); toast('Copied to clipboard'); }catch{ /* ignore */ }
+  try{ await navigator.clipboard.writeText(json); toast('Copied to clipboard'); }catch{}
   showTextDialog('Metadata (copy / save this text)', json, false, true);
 }
-function importFromPasteDialog(){ showTextDialog('Paste metadata JSON', '', true, false, async (text)=>{ try{ const data=JSON.parse(text); await importMetadataObject(data); toast('Imported'); }catch{ toast('Invalid JSON',true) } }); }
+function importFromPasteDialog(){ showTextDialog('Paste metadata JSON','',true,false, async (txt)=>{ try{ const data=JSON.parse(txt); await importMetadataObject(data); toast('Imported'); }catch{ toast('Invalid JSON',true); } }); }
 async function importMetadataObject(data){
   if(!data.items) throw new Error('bad');
   for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
@@ -578,76 +554,78 @@ async function importMetadataObject(data){
     categoryOverrides[it.id]=it.category; descOverrides[it.id]=it.description; weightOverrides[it.id]=it.weight; ratings[it.id]={diff:it.diff,her:it.her,him:it.him};
     await dbUpdate(it);
   }
-  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
-  if(data.profiles){ profiles=data.profiles; lsSet(LSK.profiles,profiles); }
   if(data.restriction!==undefined){ rigCategory=data.restriction; lsSet(LSK.rigCat,rigCategory); mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; }
   if(data.timer!==undefined){ timerMinutes=+data.timer||0; timerSelect.value=String(timerMinutes); lsSet(LSK.timer,timerMinutes); }
-  await reloadImages(); buildReels(); renderRig(); renderProfiles();
+  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
+  await reloadImages(); buildReels(); renderRig();
 }
 function showTextDialog(title, initialText, allowInput, readOnly, onImport){
-  const d=document.createElement('dialog'); Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff',width:'min(640px,96vw)'}); d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
+  const d=document.createElement('dialog');
+  Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff',width:'min(640px,96vw)'});
+  d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
     <div style="font-weight:600">${title}</div>
     <textarea id="txt" style="width:100%;min-height:260px;background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" ${readOnly?'readonly':''}></textarea>
     <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button value="cancel">Close</button>
-      ${allowInput?'<button value="import" class="primary">Import</button>':''}
+      <button value="cancel">Close</button>${allowInput?'<button value="import" class="primary">Import</button>':''}
     </div></form>`;
-  document.body.appendChild(d); const box=d.querySelector('#txt'); box.value=initialText||''; d.addEventListener('close',async()=>{ if(d.returnValue==='import' && onImport){ await onImport(box.value) } d.remove(); }); d.showModal();
+  document.body.appendChild(d);
+  d.querySelector('#txt').value=initialText||'';
+  d.addEventListener('close',async()=>{ if(d.returnValue==='import' && onImport){ await onImport(d.querySelector('#txt').value); } d.remove(); });
+  d.showModal();
 }
 
-/* ===== Secret access (PIN) ===== */
-function secretAccess(){
-  const bar = document.querySelector('.topbar'); // bigger hit target than just the text
-  const TAP_WINDOW = 700;      // ms for multi-tap
-  const LONG_MS    = 800;      // long-press duration
-  let taps = [], pressTimer = null;
-
-  async function openRigSafe(){
-    try {
-      const pin = await promptPIN(); // uses <dialog>
-      if(pin !== "1616") { toast('Wrong PIN', true); return; }
-      document.getElementById('rig').showModal();
-    } catch (e) {
-      // Fallback: use window.prompt if dialog failed in PWA
-      const pin2 = window.prompt('Enter PIN');
-      if(pin2 === "1616") document.getElementById('rig').showModal();
-      else toast('Wrong PIN', true);
-    }
-  }
-
-  function registerTap(){
-    const now = Date.now();
-    taps = taps.filter(t => now - t < TAP_WINDOW);
-    taps.push(now);
-    if (taps.length >= 3) { taps = []; openRigSafe(); }
-  }
-
-  function startPress(){
-    clearTimeout(pressTimer);
-    pressTimer = setTimeout(() => { taps = []; openRigSafe(); }, LONG_MS);
-  }
-  function endPress(){ clearTimeout(pressTimer); }
-
-  // Touch (PWA primary)
-  bar.addEventListener('touchstart', startPress, {passive:true});
-  bar.addEventListener('touchend',   (e)=>{ endPress(); registerTap(); }, {passive:true});
-
-  // Mouse/click (Safari tab / desktop)
-  bar.addEventListener('mousedown',  startPress);
-  bar.addEventListener('mouseup',    (e)=>{ endPress(); registerTap(); });
-  bar.addEventListener('click',      registerTap);
+/* ===== Secret access on title (double-tap or long-press) ===== */
+function secretAccessOnTitle(){
+  const DT=350, LONG=800;
+  let lastTap=0, pressTimer=null;
+  function onTouchStart(){ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ lastTap=0; openRigSafe(); }, LONG); }
+  function onTouchEnd(e){ clearTimeout(pressTimer); const now=Date.now(); if(now-lastTap<DT){ e.preventDefault(); lastTap=0; openRigSafe(); return;} lastTap=now; }
+  titleTap.addEventListener('touchstart',onTouchStart,{passive:true});
+  titleTap.addEventListener('touchend',onTouchEnd,{passive:false});
+  titleTap.addEventListener('dblclick',(e)=>{ e.preventDefault(); openRigSafe(); });
+  titleTap.addEventListener('mousedown',()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>openRigSafe(), LONG); });
+  titleTap.addEventListener('mouseup',()=> clearTimeout(pressTimer));
 }
-function promptPIN(){return new Promise(res=>{const d=document.createElement('dialog');Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});d.innerHTML=`<form method="dialog" style="display:grid;gap:10px"><div style="font-weight:600">Enter PIN</div><input id="pin" type="password" inputmode="numeric" maxlength="8" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px"><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel">Cancel</button><button value="ok" class="primary">OK</button></div></form>`;document.body.appendChild(d);d.addEventListener('close',()=>{const v=d.returnValue==='ok'?d.querySelector('#pin').value:null;res(v);d.remove()});d.showModal()})}
+async function openRigSafe(){
+  try{
+    const pin = await promptPIN();
+    if(pin !== PIN){ toast('Wrong PIN', true); return; }
+    rigDlg.showModal();
+  }catch{
+    const pin2 = window.prompt('Enter PIN');
+    if(pin2 === PIN) rigDlg.showModal(); else toast('Wrong PIN', true);
+  }
+}
+function promptPIN(){ return new Promise((resolve)=>{ const d=document.createElement('dialog'); Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});
+  d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
+    <div style="font-weight:600">Enter PIN</div>
+    <input id="pinIn" type="password" inputmode="numeric" maxlength="8" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus />
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button value="cancel">Cancel</button>
+      <button value="ok" class="primary">OK</button>
+    </div></form>`;
+  document.body.appendChild(d);
+  d.addEventListener('close',()=>{ const val=d.returnValue==='ok'? d.querySelector('#pinIn').value : null; resolve(val); d.remove(); });
+  d.showModal();
+});}
 
 /* ===== Small helpers ===== */
 function div(c){const e=document.createElement('div'); if(c)e.className=c; return e}
 function span(c){const e=document.createElement('span'); if(c)e.className=c; return e}
 function button(c,t){const e=document.createElement('button'); if(c)e.className=c; if(t)e.textContent=t; return e}
 function inputNumber(val){const e=document.createElement('input'); e.type='number'; e.min='0'; e.step='0.1'; e.style.width='80px'; e.value=val; return e}
-function qAll(arr){return arr.map(s=>q(s))}
 
 /* iOS audio unlock */
 document.addEventListener('touchend',()=>ensureAudio(),{passive:true});
+
+/* Reset all */
+async function resetAll(){
+  if(!confirm('Wipe all local images and settings?')) return;
+  await dbClearAll();
+  weightOverrides={}; categoryOverrides={}; descOverrides={}; ratings={}; rigQueue=[];
+  lsSet(LSK.weights,weightOverrides); lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings); lsSet(LSK.queue,rigQueue);
+  await reloadImages(); buildReels(); renderRig(); renderQueue(); toast('Reset complete');
+}
 </script>
 </body>
 </html>
