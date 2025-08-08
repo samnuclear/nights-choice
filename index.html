@@ -6,34 +6,35 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0b0b0f"> 
+<meta name="theme-color" content="#0b0b0f">
+
+<!-- Force fresh load in Home-Screen app once -->
 <script>
 (function(){
   try{
     var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     if (standalone && !/[\?&]v=/.test(location.search)) {
-      var v = Date.now();
-      var sep = location.search ? '&' : '?';
+      var v = Date.now(), sep = location.search ? '&' : '?';
       location.replace(location.pathname + location.search + sep + 'v=' + v + location.hash);
     }
   }catch(e){}
 })();
 </script>
+
 <style>
   :root{
     --bg:#0b0b0f; --panel:#13131a; --panel2:#181824;
     --accent:#d79ab8; --accent2:#7ad1cc;
     --text:#f2f2f5; --muted:#a9abbb; --line:#24253a;
-    --good:#7cd992; --warn:#ffcf6e; --bad:#ff6e8a;
   }
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
   /* Top bar */
   header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
-  .topbar{position:relative;max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;touch-action:manipulation;
-    padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
+  .topbar{position:relative;max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;touch-action:manipulation;padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
   .title-wrap{display:flex;align-items:center;gap:8px}
   .title-tappable{-webkit-user-select:none;user-select:none;font-weight:700;letter-spacing:.3px;font-size:19px;padding:6px 8px;border-radius:8px}
-  /* Tiny fallback dot (opens Rig instantly) */
+  /* Tiny 6px fallback dot (opens Rig instantly) */
   .rig-mini{width:6px;height:6px;border-radius:999px;border:1px solid #2a2b40;background:#1a1a28;opacity:.7;display:inline-block;margin-top:4px}
   .rig-mini:active{transform:scale(.9);opacity:1}
 
@@ -58,7 +59,6 @@
   .reveal-name{margin-top:10px;text-align:center;font-weight:700;color:var(--accent)}
   .reveal-big{margin-top:8px;border:1px solid #24253a;border-radius:14px;background:#0f0f15;min-height:42vh;display:grid;place-items:center;overflow:hidden}
   .reveal-big img{max-width:100%;max-height:100%;display:block}
-  /* Stars under the reveal */
   .reveal-stars{margin:10px auto 0;max-width:680px;display:grid;gap:6px}
   .line{display:flex;align-items:center;gap:10px;justify-content:center;font-size:13px;color:var(--muted)}
   .stars{font-size:16px;letter-spacing:1px}
@@ -66,15 +66,26 @@
   .countdown{font-variant-numeric:tabular-nums}
   .hidden{display:none !important}
 
-  /* Rig dialog with safe-area padding */
-  dialog#rig{width:min(980px,98vw);max-height:92vh;border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  dialog#rig::backdrop{background:rgba(0,0,0,.6)}
-  #rig header{position:sticky;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 12px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
-  #rig .x{margin-left:auto;min-width:44px;min-height:38px;border-radius:10px}
-  #rig .body{padding:12px 14px;display:block;max-height:calc(92vh - 56px - env(safe-area-inset-top));overflow:auto}
+  /* PWA-safe modal sheet (replaces <dialog>) */
+  .sheet.hidden{display:none!important}
+  .sheet{position:fixed;inset:0;z-index:9999}
+  .sheet .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+  .sheet .panel{
+    position:absolute;inset:auto 0 0 0;
+    max-height:min(92vh,820px);
+    background:linear-gradient(180deg,#13131c,#0c0c12);
+    color:var(--text);border-top-left-radius:16px;border-top-right-radius:16px;
+    border:1px solid #27283c;border-bottom:none;
+    padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -20px 60px rgba(0,0,0,.5)
+  }
+  .sheet header{position:sticky;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 12px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
+  .sheet .x{margin-left:auto;min-width:44px;min-height:38px;border-radius:10px}
+  .sheet .body{padding:12px 14px;max-height:70vh;overflow:auto}
+
   .section{background:#161625;border:1px solid #27283c;border-radius:12px;margin-bottom:10px}
-  .section > .hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #27283c}
-  .section > .hdr button.toggle{margin-left:auto}
+  .section>.hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #27283c}
+  .section>.hdr button.toggle{margin-left:auto}
   .section .inner{padding:10px 12px}
   .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .rig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
@@ -147,84 +158,82 @@
   </section>
 </div>
 
-<!-- Rig (double-tap/long-press title for PIN; tiny dot opens instantly) -->
-<dialog id="rig">
-  <header>
-    <strong>Rig Control</strong>
-    <button id="rigClose" class="x">✕</button>
-  </header>
-  <div class="body">
-    <div class="section">
-      <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
-      <div class="inner" id="controlsInner">
-        <div class="row">
-          <button id="muteToggle" class="pill">Toggle mute</button>
-          <span id="muteState" class="hint">Sound on</span>
-          <button id="testChime" class="pill">🔊 Test chime</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <button id="exportCopy" class="pill">📋 Export → Copy</button>
-          <button id="importPaste" class="pill">📥 Import → Paste</button>
-          <button id="resetBtn" class="pill" style="border-color:#4b1c28;color:#ffb3c0">🗑 Reset (wipe local)</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <label>Restrict</label>
-          <select id="rigCategory"></select>
-          <button id="rigClearCat" class="pill">Clear</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1;min-width:160px">
-          <button id="queueAddId" class="pill">Add</button>
-          <select id="queueByDesc" style="flex:1;min-width:160px"></select>
-          <button id="queueAddDesc" class="pill">Add by Name</button>
-          <button id="queueClear" class="pill">Clear queue</button>
-        </div>
-        <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="hdr"><strong>Bulk tools</strong><button class="toggle" data-target="bulkInner">▼</button></div>
-      <div class="inner" id="bulkInner">
-        <div class="row">
-          <label>Filter:</label>
-          <select id="filterSelect">
-            <option value="">All</option><option value="uncategorized">Uncategorized</option>
-            <option value="unnamed">Unnamed</option><option value="excluded">Excluded (w=0)</option>
-          </select>
-          <select id="filterCategory"><option value="">Category…</option></select>
-          <select id="sortSelect"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="name">Name A→Z</option><option value="category">Category A→Z</option></select>
-        </div>
-        <div class="row" style="margin-top:6px">
-          <label>Set category:</label>
-          <select id="fastTagCategory"></select>
-          <button id="applySetCategory" class="pill">Apply to filtered</button>
-          <button id="applyIncludeAll" class="pill">Include (w=1)</button>
-          <button id="applyExcludeAll" class="pill">Exclude (w=0)</button>
-        </div>
-        <div class="row" style="margin-top:6px">
-          <input id="fastTagName" placeholder="Name (optional)">
-          <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="fastTagEnable" type="checkbox"> Tap cards to apply</label>
-        </div>
-        <div style="margin-top:8px">
-          <div class="hint">Batch names (one per line) apply in current visible order</div>
-          <textarea id="batchNames" style="width:100%;min-height:110px"></textarea>
-          <div class="row" style="margin-top:6px"><button id="applyBatchNames" class="pill">Apply names</button></div>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <label>Difficulty</label><select id="bulkDiff"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyDiff" class="pill">Apply</button>
-          <label>Her-O</label><select id="bulkHer"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyHer" class="pill">Apply</button>
-          <label>His-O</label><select id="bulkHim"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><button id="applyHim" class="pill">Apply</button>
+<!-- Rig SHEET (PWA-safe) -->
+<div id="rigSheet" class="sheet hidden" aria-hidden="true">
+  <div id="rigBackdrop" class="backdrop"></div>
+  <div class="panel">
+    <header>
+      <strong>Rig Control</strong>
+      <button id="rigClose" class="x">✕</button>
+    </header>
+    <div class="body">
+      <div class="section">
+        <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
+        <div class="inner" id="controlsInner">
+          <div class="row">
+            <button id="muteToggle" class="pill">Toggle mute</button>
+            <span id="muteState" class="hint">Sound on</span>
+            <button id="testChime" class="pill">🔊 Test chime</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="exportCopy" class="pill">📋 Export → Copy</button>
+            <button id="importPaste" class="pill">📥 Import → Paste</button>
+            <button id="resetBtn" class="pill" style="border-color:#4b1c28;color:#ffb3c0">🗑 Reset (wipe local)</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <label>Restrict</label>
+            <select id="rigCategory"></select>
+            <button id="rigClearCat" class="pill">Clear</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1;min-width:160px">
+            <button id="queueAddId" class="pill">Add</button>
+            <select id="queueByDesc" style="flex:1;min-width:160px"></select>
+            <button id="queueAddDesc" class="pill">Add by Name</button>
+            <button id="queueClear" class="pill">Clear queue</button>
+          </div>
+          <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
         </div>
       </div>
-    </div>
 
-    <div class="section">
-      <div class="hdr"><strong>Images</strong><span class="hint" id="gridCount"></span></div>
-      <div class="inner"><div id="rigGrid" class="rig-grid"></div></div>
+      <div class="section">
+        <div class="hdr"><strong>Bulk tools</strong><button class="toggle" data-target="bulkInner">▼</button></div>
+        <div class="inner" id="bulkInner">
+          <div class="row">
+            <label>Filter:</label>
+            <select id="filterSelect">
+              <option value="">All</option><option value="uncategorized">Uncategorized</option>
+              <option value="unnamed">Unnamed</option><option value="excluded">Excluded (w=0)</option>
+            </select>
+            <select id="filterCategory"><option value="">Category…</option></select>
+            <select id="sortSelect"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="name">Name A→Z</option><option value="category">Category A→Z</option></select>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <label>Set category:</label>
+            <select id="fastTagCategory"></select>
+            <button id="applySetCategory" class="pill">Apply to filtered</button>
+            <button id="applyIncludeAll" class="pill">Include (w=1)</button>
+            <button id="applyExcludeAll" class="pill">Exclude (w=0)</button>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <input id="fastTagName" placeholder="Name (optional)">
+            <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="fastTagEnable" type="checkbox"> Tap cards to apply</label>
+          </div>
+          <div style="margin-top:8px">
+            <div class="hint">Batch names (one per line) apply in current visible order</div>
+            <textarea id="batchNames" style="width:100%;min-height:110px"></textarea>
+            <div class="row" style="margin-top:6px"><button id="applyBatchNames" class="pill">Apply names</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="hdr"><strong>Images</strong><span class="hint" id="gridCount"></span></div>
+        <div class="inner"><div id="rigGrid" class="rig-grid"></div></div>
+      </div>
     </div>
   </div>
-</dialog>
+</div>
 
 <script>
 /* ===== Config ===== */
@@ -263,8 +272,8 @@ const revealNameEl=q('#revealName'), revealBig=q('#revealBig'), revealImg=q('#re
 const diffStarsEl=q('#diffStars'), herStarsEl=q('#herStars'), himStarsEl=q('#himStars');
 const countdownEl=q('#countdown'), skipBtn=q('#skipBtn');
 const timerSelect=q('#timerSelect'), mainRestrict=q('#mainRestrict');
-const rigDlg=q('#rig'), rigClose=q('#rigClose');
-const rigMini=q('#rigMini'), titleTap=q('#titleTap');
+const rigSheet=q('#rigSheet'), rigBackdrop=q('#rigBackdrop'), rigClose=q('#rigClose');
+const titleTap=q('#titleTap'), rigMini=q('#rigMini');
 
 const rigGrid=q('#rigGrid'), rigCategorySel=q('#rigCategory'), queueView=q('#queueView');
 const queueId=q('#queueId'), queueAddId=q('#queueAddId'), queueByDesc=q('#queueByDesc'), queueAddDesc=q('#queueAddDesc'), queueClear=q('#queueClear');
@@ -273,10 +282,10 @@ const exportCopy=q('#exportCopy'), importPaste=q('#importPaste'), resetBtn=q('#r
 const fastTagCategory=q('#fastTagCategory'), fastTagName=q('#fastTagName'), fastTagEnable=q('#fastTagEnable');
 const filterSelect=q('#filterSelect'), filterCategory=q('#filterCategory'), sortSelect=q('#sortSelect');
 const applySetCategory=q('#applySetCategory'), applyIncludeAll=q('#applyIncludeAll'), applyExcludeAll=q('#applyExcludeAll');
-const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames');
-const gridCount=q('#gridCount');
+const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames'), gridCount=q('#gridCount');
+
 /* ===== DB ===== */
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result; if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'}); s.createIndex('category','category'); s.createIndex('ts','ts'); s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE); if(!s.indexNames.contains('hash')) s.createIndex('hash','hash');}}; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'});s.createIndex('category','category');s.createIndex('ts','ts');s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE);if(!s.indexNames.contains('hash'))s.createIndex('hash','hash');}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 function dbAddMany(items){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite'),st=tx.objectStore(DB_STORE);items.forEach(it=>st.put(it));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
 function dbGetAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readonly'),st=tx.objectStore(DB_STORE),rq=st.getAll();rq.onsuccess=()=>res(rq.result||[]);rq.onerror=()=>rej(rq.error);});}
 function dbUpdate(item){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(item);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
@@ -304,12 +313,16 @@ async function maybeFirstRunWipe(){
   }
 }
 
+/* ===== PWA-safe "modal" controls ===== */
+function openRig(){ rigSheet.classList.remove('hidden'); }
+function closeRig(){ rigSheet.classList.add('hidden'); }
+
 /* ===== Init ===== */
 (async function init(){
   await maybeFirstRunWipe();
   db=await openDB();
 
-  // Build Restrict selects & category pickers
+  // Build Restrict + pickers
   function fillRestrict(sel){
     sel.innerHTML=''; sel.appendChild(new Option('All categories','')); sel.appendChild(new Option('— Unassigned —','__UNASSIGNED__'));
     CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
@@ -322,19 +335,19 @@ async function maybeFirstRunWipe(){
 
   // Restore
   mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;
-  timerSelect.value=String(timerMinutes);
-  muteState.textContent=isMuted?'Muted':'Sound on';
+  q('#timerSelect').value=String(timerMinutes);
+  q('#muteState').textContent=isMuted?'Muted':'Sound on';
 
-  // Upload: stop gesture bubbling
+  // Upload: stop bubbling so gestures never trigger
   ['click','touchstart','touchend'].forEach(evt=> uploadWrap.addEventListener(evt,(e)=>e.stopPropagation(),{passive:true}));
   fileInput.addEventListener('change', handleUpload);
 
   // Timer
   timerSelect.addEventListener('change',()=>{ timerMinutes=+timerSelect.value; lsSet(LSK.timer,timerMinutes); });
 
-  // Rig dialog close & backdrop
-  rigClose.addEventListener('click',()=>rigDlg.close());
-  rigDlg.addEventListener('click',(e)=>{ if(e.target===rigDlg) rigDlg.close(); });
+  // Rig sheet close/backdrop
+  rigClose.addEventListener('click', closeRig);
+  rigBackdrop.addEventListener('click', closeRig);
 
   // Collapsers
   document.querySelectorAll('.toggle').forEach(b=>b.addEventListener('click',()=>{
@@ -343,7 +356,7 @@ async function maybeFirstRunWipe(){
 
   // Filters + restriction sync
   qAll(['#filterSelect','#filterCategory','#sortSelect']).forEach(el=>el.addEventListener('change',renderRig));
-  document.getElementById('rigClearCat').addEventListener('click',()=>{ rigCategory=''; rigCategorySel.value=''; mainRestrict.value=''; lsSet(LSK.rigCat,rigCategory); toast('Restriction cleared'); });
+  q('#rigClearCat').addEventListener('click',()=>{ rigCategory=''; rigCategorySel.value=''; mainRestrict.value=''; lsSet(LSK.rigCat,rigCategory); toast('Restriction cleared'); });
   rigCategorySel.addEventListener('change',()=>{ rigCategory=rigCategorySel.value||''; mainRestrict.value=rigCategory; lsSet(LSK.rigCat,rigCategory); });
   mainRestrict.addEventListener('change',()=>{ rigCategory=mainRestrict.value; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; lsSet(LSK.rigCat,rigCategory); });
 
@@ -361,11 +374,11 @@ async function maybeFirstRunWipe(){
   queueAddDesc.addEventListener('click',()=>{ const v=queueByDesc.value; if(!v)return; rigQueue.push('desc::'+v); lsSet(LSK.queue,rigQueue); renderQueue(); });
   queueClear.addEventListener('click',()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
 
-  // Title gesture: double-tap or long-press (PIN)
+  // Title gesture (PIN via prompt)
   secretAccessOnTitle();
 
-  // Mini dot: instant open (no PIN)
-  rigMini.addEventListener('click', ()=> rigDlg.showModal());
+  // Mini dot: instant open
+  rigMini.addEventListener('click', openRig);
 
   await reloadImages(); buildReels(); renderRig(); renderQueue();
 })();
@@ -452,7 +465,7 @@ function renderRig(){
 
     // Fast Tag tap
     card.addEventListener('click', ()=>{
-      if(!fastTagEnable.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
+      if(!fastTagEnable?.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
       const cat=fastTagCategory.value, name=(fastTagName.value||'').trim();
       it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—';
       if(name){ it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); }
@@ -537,7 +550,7 @@ function updateCountdown(){ const r=Math.max(0,blockUntil-Date.now()); const s=M
 skipBtn.addEventListener('click', clearCountdownAndUnlock);
 
 /* ===== Queue UI ===== */
-function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{ const pill=span('pill'); pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1); lsSet(LSK.queue,rigQueue); renderQueue();}; queueView.appendChild(pill); }); }
+function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{ const pill=document.createElement('span'); pill.className='pill'; pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1); lsSet(LSK.queue,rigQueue); renderQueue();}; queueView.appendChild(pill); }); }
 function refreshQueueDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; queueByDesc.innerHTML=''; queueByDesc.appendChild(new Option('Select name…','')); names.forEach(n=>queueByDesc.appendChild(new Option(n,n))); }
 
 /* ===== Bulk tools ===== */
@@ -572,54 +585,39 @@ async function importMetadataObject(data){
   await reloadImages(); buildReels(); renderRig();
 }
 function showTextDialog(title, initialText, allowInput, readOnly, onImport){
-  const d=document.createElement('dialog');
-  Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff',width:'min(640px,96vw)'});
-  d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
-    <div style="font-weight:600">${title}</div>
+  // Simple textarea overlay (not <dialog>) for copy/paste reliability
+  const sheet=document.createElement('div'); sheet.className='sheet';
+  sheet.innerHTML=`<div class="backdrop"></div>
+  <div class="panel"><header><strong>${title}</strong><button class="x" id="txtClose">✕</button></header>
+  <div class="body">
     <textarea id="txt" style="width:100%;min-height:260px;background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" ${readOnly?'readonly':''}></textarea>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button value="cancel">Close</button>${allowInput?'<button value="import" class="primary">Import</button>':''}
-    </div></form>`;
-  document.body.appendChild(d);
-  d.querySelector('#txt').value=initialText||'';
-  d.addEventListener('close',async()=>{ if(d.returnValue==='import' && onImport){ await onImport(d.querySelector('#txt').value); } d.remove(); });
-  d.showModal();
+    <div class="row" style="justify-content:flex-end;margin-top:8px">
+      <button id="txtCancel" class="pill">Close</button>
+      ${allowInput?'<button id="txtImport" class="pill">Import</button>':''}
+    </div></div></div>`;
+  document.body.appendChild(sheet);
+  sheet.querySelector('#txt').value=initialText||'';
+  const close=()=>sheet.remove();
+  sheet.querySelector('.backdrop').onclick=close; sheet.querySelector('#txtClose').onclick=close; sheet.querySelector('#txtCancel').onclick=close;
+  if(allowInput){ sheet.querySelector('#txtImport').onclick=async()=>{ const v=sheet.querySelector('#txt').value; if(onImport) await onImport(v); close(); }; }
 }
 
-/* ===== Secret access on title (double-tap or long-press) ===== */
+/* ===== Secret access on title (double-tap or long-press) with prompt PIN ===== */
 function secretAccessOnTitle(){
   const DT=350, LONG=800;
   let lastTap=0, pressTimer=null;
-  function onTouchStart(){ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ lastTap=0; openRigSafe(); }, LONG); }
-  function onTouchEnd(e){ clearTimeout(pressTimer); const now=Date.now(); if(now-lastTap<DT){ e.preventDefault(); lastTap=0; openRigSafe(); return;} lastTap=now; }
+  function onTouchStart(){ clearTimeout(pressTimer); pressTimer=setTimeout(async ()=>{ lastTap=0; await openRigWithPIN(); }, LONG); }
+  function onTouchEnd(e){ clearTimeout(pressTimer); const now=Date.now(); if(now-lastTap<DT){ e.preventDefault(); lastTap=0; openRigWithPIN(); return;} lastTap=now; }
   titleTap.addEventListener('touchstart',onTouchStart,{passive:true});
   titleTap.addEventListener('touchend',onTouchEnd,{passive:false});
-  titleTap.addEventListener('dblclick',(e)=>{ e.preventDefault(); openRigSafe(); });
-  titleTap.addEventListener('mousedown',()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>openRigSafe(), LONG); });
+  titleTap.addEventListener('dblclick',(e)=>{ e.preventDefault(); openRigWithPIN(); });
+  titleTap.addEventListener('mousedown',()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>openRigWithPIN(), LONG); });
   titleTap.addEventListener('mouseup',()=> clearTimeout(pressTimer));
 }
-async function openRigSafe(){
-  try{
-    const pin = await promptPIN();
-    if(pin !== PIN){ toast('Wrong PIN', true); return; }
-    rigDlg.showModal();
-  }catch{
-    const pin2 = window.prompt('Enter PIN');
-    if(pin2 === PIN) rigDlg.showModal(); else toast('Wrong PIN', true);
-  }
+async function openRigWithPIN(){
+  const pin = window.prompt('Enter PIN');
+  if(pin===PIN) openRig(); else if(pin!==null) toast('Wrong PIN',true);
 }
-function promptPIN(){ return new Promise((resolve)=>{ const d=document.createElement('dialog'); Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});
-  d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
-    <div style="font-weight:600">Enter PIN</div>
-    <input id="pinIn" type="password" inputmode="numeric" maxlength="8" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus />
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button value="cancel">Cancel</button>
-      <button value="ok" class="primary">OK</button>
-    </div></form>`;
-  document.body.appendChild(d);
-  d.addEventListener('close',()=>{ const val=d.returnValue==='ok'? d.querySelector('#pinIn').value : null; resolve(val); d.remove(); });
-  d.showModal();
-});}
 
 /* ===== Small helpers ===== */
 function div(c){const e=document.createElement('div'); if(c)e.className=c; return e}
