@@ -17,7 +17,7 @@
   header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
   .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 14px 12px}
   .title-tappable{font-weight:700;letter-spacing:.4px;font-size:20px;padding:8px 10px;border-radius:8px}
-  .controls{display:flex;gap:8px;align-items:center}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   label.upload{display:inline-flex;align-items:center;gap:8px;border:1px dashed #34354a;padding:8px 10px;border-radius:10px;background:var(--panel2)}
   input[type=file]{display:none}
   button,select,textarea,input{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
@@ -67,6 +67,8 @@
         <input id="fileInput" type="file" accept="image/*" multiple>
         <span>➕ Upload</span>
       </label>
+
+      <!-- Timer (non-blocking) -->
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         ⏱️
         <select id="timerSelect" title="Timer">
@@ -78,6 +80,13 @@
           <option value="5">5 min</option>
         </select>
       </label>
+
+      <!-- NEW: Main-screen Restrict Category -->
+      <label class="pill" style="display:flex;align-items:center;gap:6px">
+        🎯
+        <select id="mainRestrict" title="Restrict Category"></select>
+      </label>
+
       <button id="spinBtn" class="primary">🎰 Spin</button>
     </div>
   </div>
@@ -212,6 +221,11 @@ const LSK = {
 };
 
 let db, IMAGES=[], OBJECT_URLS=new Map();
+/** rigCategory values:
+ * ''  -> All categories (no restriction)
+ * '__UNASSIGNED__' -> restrict to Unassigned (category '')
+ * '<category name>' -> one of the 12 categories
+ */
 let isMuted = !!lsGet(LSK.mute,false);
 let rigCategory = lsGet(LSK.rigCat,'')||'';
 let rigQueue = lsGet(LSK.queue,[])||[];
@@ -251,8 +265,8 @@ const queueAddDesc = document.getElementById('queueAddDesc');
 const muteToggle = document.getElementById('muteToggle');
 const muteState = document.getElementById('muteState');
 
-const secControls = document.getElementById('secControls');
-const secBulk = document.getElementById('secBulk');
+const mainRestrict = document.getElementById('mainRestrict');
+
 const fastTagCategory = document.getElementById('fastTagCategory');
 const fastTagName = document.getElementById('fastTagName');
 const fastTagEnable = document.getElementById('fastTagEnable');
@@ -308,26 +322,43 @@ function dbUpdate(item){
 (async function init(){
   db = await openDB();
 
-  // Restrict Category dropdown: add All categories first
+  // Build Restrict dropdowns (Rig + Main) and FastTag/Filter category pickers
+  // Rig restrict: All categories (no restriction)
   const allOpt = document.createElement('option');
-  allOpt.value = '';
+  allOpt.value = ''; // '' means NO restriction
   allOpt.textContent = 'All categories';
   rigCategorySel.appendChild(allOpt);
 
-  // Fast Tag + Filter Category pickers get Unassigned first
+  // Main restrict: we need "All categories" + "Unassigned" + the 12 cats
+  const mainAll = document.createElement('option');
+  mainAll.value = '';
+  mainAll.textContent = 'All categories';
+  mainRestrict.appendChild(mainAll);
+
+  const mainUnassigned = document.createElement('option');
+  mainUnassigned.value = '__UNASSIGNED__';
+  mainUnassigned.textContent = '— Unassigned —';
+  mainRestrict.appendChild(mainUnassigned);
+
+  // Fast Tag + Filter category pickers: add Unassigned at top
   const unOpt = document.createElement('option');
   unOpt.value = '';
   unOpt.textContent = '— Unassigned —';
   fastTagCategory.appendChild(unOpt.cloneNode(true));
   filterCategory.appendChild(unOpt.cloneNode(true));
 
-  // Then the 12 categories
+  // Then add the 12 categories to all relevant selects
   CATEGORIES.forEach(c=>{
     const a=document.createElement('option'); a.value=c; a.textContent=c; rigCategorySel.appendChild(a);
     const b=document.createElement('option'); b.value=c; b.textContent=c; fastTagCategory.appendChild(b);
     const c2=document.createElement('option'); c2.value=c; c2.textContent=c; filterCategory.appendChild(c2);
+    const m=document.createElement('option'); m.value=c; m.textContent=c; mainRestrict.appendChild(m);
   });
-  if(rigCategory !== undefined) rigCategorySel.value = rigCategory;
+
+  // Restore persisted restriction to both dropdowns
+  // rigCategory: '' (All), '__UNASSIGNED__' (only unassigned), or one of CATEGORIES
+  rigCategorySel.value = rigCategory === '__UNASSIGNED__' ? '' : rigCategory;
+  mainRestrict.value = rigCategory || '';
 
   // timer
   timerSelect.value = String(timerMinutes);
@@ -350,12 +381,28 @@ function dbUpdate(item){
   filterCategory.addEventListener('change', renderRig);
   sortSelect.addEventListener('change', renderRig);
 
-  // clear restrict
+  // CLEAR restriction in Rig
   document.getElementById('rigClearCat').addEventListener('click', ()=>{
     rigCategory = '';
     rigCategorySel.value = '';
+    mainRestrict.value = '';
     lsSet(LSK.rigCat, rigCategory);
     toast('Category restriction cleared');
+  });
+
+  // Keep Rig and Main Restrict in sync
+  rigCategorySel.addEventListener('change', ()=>{
+    // Rig's '' means All, there's no Unassigned option there
+    rigCategory = rigCategorySel.value || '';
+    mainRestrict.value = rigCategory;
+    lsSet(LSK.rigCat, rigCategory);
+  });
+  mainRestrict.addEventListener('change', ()=>{
+    // Main can choose '__UNASSIGNED__' which means restrict to category ''
+    rigCategory = mainRestrict.value; // could be '', '__UNASSIGNED__', or a real category
+    // Map back to Rig select: show '' (All) or the category; no UI for Unassigned there
+    rigCategorySel.value = (rigCategory === '__UNASSIGNED__') ? '' : rigCategory;
+    lsSet(LSK.rigCat, rigCategory);
   });
 
   await reloadImages();
@@ -404,12 +451,9 @@ function getFilteredImages(){
   if (status === 'unnamed')       list = list.filter(x => !(x.description || '').trim());
   if (status === 'excluded')      list = list.filter(x => (x.weight ?? DEFAULT_WEIGHT) == 0);
 
-  // Category filter (note: '' means Unassigned)
-  if (cat !== '' || cat === '') {
-    // If filterCategory was left at placeholder "Category…" it will be '', but we added Unassigned as '', so:
-    // Only apply category filter if user actually picked one OR picked Unassigned explicitly.
-    const picked = filterCategory.selectedIndex > 0 || cat === '';
-    if (picked) list = list.filter(x => (x.category || '') === cat);
+  // Category filter (note: '' means Unassigned) — only apply if user picked a category option (including Unassigned)
+  if (filterCategory.selectedIndex > 0 || cat === '') {
+    list = list.filter(x => (x.category || '') === cat);
   }
 
   // Sort
@@ -464,14 +508,12 @@ function renderRig(){
       const pickedCat = fastTagCategory.value; // '' means Unassigned (or leave as '')
       const name = (fastTagName.value||'').trim();
 
-      // Set category if user picked something (including Unassigned)
-      if (filterCategory.selectedIndex >= 0 || pickedCat !== undefined) {
-        it.category = pickedCat;
-        categoryOverrides[it.id] = pickedCat;
-        lsSet(LSK.categories, categoryOverrides);
-        sel.value = pickedCat;
-        tag.textContent = pickedCat || '—';
-      }
+      // Always set category to pickedCat (including Unassigned)
+      it.category = pickedCat;
+      categoryOverrides[it.id] = pickedCat;
+      lsSet(LSK.categories, categoryOverrides);
+      sel.value = pickedCat;
+      tag.textContent = pickedCat || '—';
 
       if (name){
         it.description = name;
@@ -498,7 +540,7 @@ function toggleExclude(it){
 
 /* -------------------- Bulk actions -------------------- */
 applySetCategory.addEventListener('click', ()=>{
-  const cat = fastTagCategory.value; if(cat===undefined){ toast('Pick a category'); return; }
+  const cat = fastTagCategory.value; // '' allowed (Unassigned)
   const list = getFilteredImages();
   list.forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); });
   lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set for filtered');
@@ -655,7 +697,8 @@ async function pickImage(){
       if(found) return found;
     }
   }
-  const filter = rigCategory || '';
+  // Apply main/rig restriction
+  let filter = rigCategory === '__UNASSIGNED__' ? '' : rigCategory; // '' here means Unassigned if chosen, or All if rigCategory===''
   const pool = filter ? IMAGES.filter(it=> (it.category||'')===filter) : IMAGES.slice();
   if(!pool.length) return IMAGES[0];
 
@@ -682,7 +725,8 @@ async function pickImage(){
   titleTap.addEventListener('mouseup',    ()=> clearTimeout(pressTimer));
 })();
 rigClose.addEventListener('click', ()=>rigDlg.close());
-rigCategorySel.addEventListener('change', ()=>{ rigCategory = rigCategorySel.value||''; lsSet(LSK.rigCat,rigCategory); });
+// rigCategorySel listener is set in init to sync with mainRestrict
+
 muteToggle.addEventListener('click', ()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent = isMuted?'Muted':'Sound on'; });
 
 queueAddId.addEventListener('click', ()=>{
