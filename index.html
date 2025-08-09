@@ -8,19 +8,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0f">
 
-<!-- Force fresh load in Home-Screen app once -->
-<script>
-(function(){
-  try{
-    var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (standalone && !/[\?&]v=/.test(location.search)) {
-      var v = Date.now(), sep = location.search ? '&' : '?';
-      location.replace(location.pathname + location.search + sep + 'v=' + v + location.hash);
-    }
-  }catch(e){}
-})();
-</script>
-
 <style>
   :root{
     --bg:#0b0b0f; --panel:#13131a; --panel2:#181824;
@@ -66,7 +53,7 @@
   .countdown{font-variant-numeric:tabular-nums}
   .hidden{display:none !important}
 
-  /* PWA-safe modal sheet (replaces <dialog>) */
+  /* Rig sheet (simple overlay) */
   .sheet.hidden{display:none!important}
   .sheet{position:fixed;inset:0;z-index:9999}
   .sheet .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6)}
@@ -158,7 +145,7 @@
   </section>
 </div>
 
-<!-- Rig SHEET (PWA-safe) -->
+<!-- Rig SHEET -->
 <div id="rigSheet" class="sheet hidden" aria-hidden="true">
   <div id="rigBackdrop" class="backdrop"></div>
   <div class="panel">
@@ -174,11 +161,6 @@
             <button id="muteToggle" class="pill">Toggle mute</button>
             <span id="muteState" class="hint">Sound on</span>
             <button id="testChime" class="pill">🔊 Test chime</button>
-          </div>
-          <div class="row" style="margin-top:8px">
-            <button id="exportCopy" class="pill">📋 Export → Copy</button>
-            <button id="importPaste" class="pill">📥 Import → Paste</button>
-            <button id="resetBtn" class="pill" style="border-color:#4b1c28;color:#ffb3c0">🗑 Reset (wipe local)</button>
           </div>
           <div class="row" style="margin-top:8px">
             <label>Restrict</label>
@@ -218,11 +200,6 @@
           <div class="row" style="margin-top:6px">
             <input id="fastTagName" placeholder="Name (optional)">
             <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="fastTagEnable" type="checkbox"> Tap cards to apply</label>
-          </div>
-          <div style="margin-top:8px">
-            <div class="hint">Batch names (one per line) apply in current visible order</div>
-            <textarea id="batchNames" style="width:100%;min-height:110px"></textarea>
-            <div class="row" style="margin-top:6px"><button id="applyBatchNames" class="pill">Apply names</button></div>
           </div>
         </div>
       </div>
@@ -278,11 +255,10 @@ const titleTap=q('#titleTap'), rigMini=q('#rigMini');
 const rigGrid=q('#rigGrid'), rigCategorySel=q('#rigCategory'), queueView=q('#queueView');
 const queueId=q('#queueId'), queueAddId=q('#queueAddId'), queueByDesc=q('#queueByDesc'), queueAddDesc=q('#queueAddDesc'), queueClear=q('#queueClear');
 const muteToggle=q('#muteToggle'), muteState=q('#muteState'), testChime=q('#testChime');
-const exportCopy=q('#exportCopy'), importPaste=q('#importPaste'), resetBtn=q('#resetBtn');
 const fastTagCategory=q('#fastTagCategory'), fastTagName=q('#fastTagName'), fastTagEnable=q('#fastTagEnable');
 const filterSelect=q('#filterSelect'), filterCategory=q('#filterCategory'), sortSelect=q('#sortSelect');
 const applySetCategory=q('#applySetCategory'), applyIncludeAll=q('#applyIncludeAll'), applyExcludeAll=q('#applyExcludeAll');
-const batchNames=q('#batchNames'), applyBatchNames=q('#applyBatchNames'), gridCount=q('#gridCount');
+const gridCount=q('#gridCount');
 
 /* ===== DB ===== */
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'});s.createIndex('category','category');s.createIndex('ts','ts');s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE);if(!s.indexNames.contains('hash'))s.createIndex('hash','hash');}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
@@ -297,29 +273,16 @@ function qAll(arr){return arr.map(s=>q(s))}
 function lsGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
 function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v))}
 function toast(msg,danger=false){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s'},1200);setTimeout(()=>t.remove(),1600)}
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
 function stars(n){return '★'.repeat(n||0)+'☆'.repeat(5-(n||0))}
 async function sha256(blob){const buf=await blob.arrayBuffer();const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 
-/* ===== First-run PWA wipe (start empty) ===== */
-async function maybeFirstRunWipe(){
-  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
-  if(!standalone) return;
-  if(!localStorage.getItem(LSK.pwaInit)){
-    await openDB(); await dbClearAll();
-    const keep=[LSK.pwaInit]; Object.keys(localStorage).forEach(k=>{ if(!keep.includes(k)) localStorage.removeItem(k); });
-    localStorage.setItem(LSK.pwaInit,JSON.stringify(true));
-    toast('Initialized empty — import or upload to begin');
-  }
-}
-
-/* ===== PWA-safe "modal" controls ===== */
+/* ===== PWA modal ===== */
 function openRig(){ rigSheet.classList.remove('hidden'); }
 function closeRig(){ rigSheet.classList.add('hidden'); }
 
 /* ===== Init ===== */
 (async function init(){
-  await maybeFirstRunWipe();
   db=await openDB();
 
   // Build Restrict + pickers
@@ -335,8 +298,8 @@ function closeRig(){ rigSheet.classList.add('hidden'); }
 
   // Restore
   mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;
-  q('#timerSelect').value=String(timerMinutes);
-  q('#muteState').textContent=isMuted?'Muted':'Sound on';
+  timerSelect.value=String(timerMinutes);
+  muteState.textContent=isMuted?'Muted':'Sound on';
 
   // Upload: stop bubbling so gestures never trigger
   ['click','touchstart','touchend'].forEach(evt=> uploadWrap.addEventListener(evt,(e)=>e.stopPropagation(),{passive:true}));
@@ -363,11 +326,6 @@ function closeRig(){ rigSheet.classList.add('hidden'); }
   // Sound & chime
   muteToggle.addEventListener('click',()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent=isMuted?'Muted':'Sound on'; });
   testChime.addEventListener('click',()=>{ ensureAudio(); resumeAudio().then(()=>playTimerChime()); });
-
-  // Export / Import (text only)
-  exportCopy.addEventListener('click', exportToClipboardDialog);
-  importPaste.addEventListener('click', importFromPasteDialog);
-  resetBtn.addEventListener('click', resetAll);
 
   // Queue
   queueAddId.addEventListener('click',()=>{ const id=queueId.value.trim(); if(!id)return; rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue(); });
@@ -465,7 +423,7 @@ function renderRig(){
 
     // Fast Tag tap
     card.addEventListener('click', ()=>{
-      if(!fastTagEnable?.checked){ navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
+      if(!fastTagEnable?.checked){ navigator.clipboard?.writeText(it.id).catch(()=>{}); toast('ID copied'); return; }
       const cat=fastTagCategory.value, name=(fastTagName.value||'').trim();
       it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—';
       if(name){ it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); }
@@ -557,50 +515,6 @@ function refreshQueueDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.desc
 applySetCategory.addEventListener('click',()=>{ const cat=fastTagCategory.value; getFilteredImages().forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); }); lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set');});
 applyIncludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=1; weightOverrides[it.id]=1; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included');});
 applyExcludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=0; weightOverrides[it.id]=0; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded');});
-applyBatchNames.addEventListener('click',()=>{ const names=batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); if(!names.length){toast('No names');return} let i=0; getFilteredImages().forEach(it=>{ if(i<names.length){ it.description=names[i++]; descOverrides[it.id]=it.description; dbUpdate(it); } }); lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied'); });
-
-/* ===== Export / Import (text only, hash-keyed) ===== */
-async function exportToClipboardDialog(){
-  for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
-  const items=IMAGES.map(it=>({hash:it.hash,category:it.category||'',description:it.description||'',weight:it.weight??DEFAULT_WEIGHT,diff:it.diff||0,her:it.her||0,him:it.him||0}));
-  const data={version:1,created:new Date().toISOString(),restriction:rigCategory,timer:timerMinutes,items};
-  const json=JSON.stringify(data,null,2);
-  try{ await navigator.clipboard.writeText(json); toast('Copied to clipboard'); }catch{}
-  showTextDialog('Metadata (copy / save this text)', json, false, true);
-}
-function importFromPasteDialog(){ showTextDialog('Paste metadata JSON','',true,false, async (txt)=>{ try{ const data=JSON.parse(txt); await importMetadataObject(data); toast('Imported'); }catch{ toast('Invalid JSON',true); } }); }
-async function importMetadataObject(data){
-  if(!data.items) throw new Error('bad');
-  for(const it of IMAGES){ if(!it.hash){ it.hash=await sha256(it.blob); await dbUpdate(it); } }
-  const byHash=new Map(IMAGES.map(it=>[it.hash,it]));
-  for(const m of data.items){
-    const it=byHash.get(m.hash); if(!it) continue;
-    it.category=m.category||''; it.description=m.description||''; it.weight=(m.weight!=null)?m.weight:DEFAULT_WEIGHT; it.diff=m.diff||0; it.her=m.her||0; it.him=m.him||0;
-    categoryOverrides[it.id]=it.category; descOverrides[it.id]=it.description; weightOverrides[it.id]=it.weight; ratings[it.id]={diff:it.diff,her:it.her,him:it.him};
-    await dbUpdate(it);
-  }
-  if(data.restriction!==undefined){ rigCategory=data.restriction; lsSet(LSK.rigCat,rigCategory); mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; }
-  if(data.timer!==undefined){ timerMinutes=+data.timer||0; timerSelect.value=String(timerMinutes); lsSet(LSK.timer,timerMinutes); }
-  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.ratings,ratings);
-  await reloadImages(); buildReels(); renderRig();
-}
-function showTextDialog(title, initialText, allowInput, readOnly, onImport){
-  // Simple textarea overlay (not <dialog>) for copy/paste reliability
-  const sheet=document.createElement('div'); sheet.className='sheet';
-  sheet.innerHTML=`<div class="backdrop"></div>
-  <div class="panel"><header><strong>${title}</strong><button class="x" id="txtClose">✕</button></header>
-  <div class="body">
-    <textarea id="txt" style="width:100%;min-height:260px;background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" ${readOnly?'readonly':''}></textarea>
-    <div class="row" style="justify-content:flex-end;margin-top:8px">
-      <button id="txtCancel" class="pill">Close</button>
-      ${allowInput?'<button id="txtImport" class="pill">Import</button>':''}
-    </div></div></div>`;
-  document.body.appendChild(sheet);
-  sheet.querySelector('#txt').value=initialText||'';
-  const close=()=>sheet.remove();
-  sheet.querySelector('.backdrop').onclick=close; sheet.querySelector('#txtClose').onclick=close; sheet.querySelector('#txtCancel').onclick=close;
-  if(allowInput){ sheet.querySelector('#txtImport').onclick=async()=>{ const v=sheet.querySelector('#txt').value; if(onImport) await onImport(v); close(); }; }
-}
 
 /* ===== Secret access on title (double-tap or long-press) with prompt PIN ===== */
 function secretAccessOnTitle(){
@@ -627,15 +541,6 @@ function inputNumber(val){const e=document.createElement('input'); e.type='numbe
 
 /* iOS audio unlock */
 document.addEventListener('touchend',()=>ensureAudio(),{passive:true});
-
-/* Reset all */
-async function resetAll(){
-  if(!confirm('Wipe all local images and settings?')) return;
-  await dbClearAll();
-  weightOverrides={}; categoryOverrides={}; descOverrides={}; ratings={}; rigQueue=[];
-  lsSet(LSK.weights,weightOverrides); lsSet(LSK.categories,categoryOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings); lsSet(LSK.queue,rigQueue);
-  await reloadImages(); buildReels(); renderRig(); renderQueue(); toast('Reset complete');
-}
 </script>
 </body>
 </html>
