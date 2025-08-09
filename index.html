@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>The Night’s Choice</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0f">
-
 <style>
   :root{
     --bg:#0b0b0f; --panel:#13131a; --panel2:#181824;
@@ -15,64 +14,37 @@
     --text:#f2f2f5; --muted:#a9abbb; --line:#24253a;
   }
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-
-  /* Top bar */
   header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.7) 70%,rgba(11,11,15,0));backdrop-filter:blur(8px);border-bottom:1px solid #1b1c2a}
-  .topbar{position:relative;max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;touch-action:manipulation;padding:calc(env(safe-area-inset-top) + 14px) 14px 10px}
-  .title-wrap{display:flex;align-items:center;gap:8px}
-  .title-tappable{-webkit-user-select:none;user-select:none;font-weight:700;letter-spacing:.3px;font-size:19px;padding:6px 8px;border-radius:8px}
-  /* Tiny 6px fallback dot (opens Rig instantly) */
-  .rig-mini{width:6px;height:6px;border-radius:999px;border:1px solid #2a2b40;background:#1a1a28;opacity:.7;display:inline-block;margin-top:4px}
-  .rig-mini:active{transform:scale(.9);opacity:1}
-
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .topbar{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 14px 12px}
+  .title-tappable{font-weight:700;letter-spacing:.4px;font-size:20px;padding:8px 10px;border-radius:8px}
+  .controls{display:flex;gap:8px;align-items:center}
+  label.upload{display:inline-flex;align-items:center;gap:8px;border:1px dashed #34354a;padding:8px 10px;border-radius:10px;background:var(--panel2)}
+  input[type=file]{display:none}
   button,select,textarea,input{background:var(--panel);color:var(--text);border:1px solid #222331;border-radius:10px;padding:10px 12px;font-size:14px}
   button.primary{background:linear-gradient(180deg,#272737,#1b1b28);border-color:#2b2c3d}
   button:disabled{opacity:.5}
   .pill{background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:6px 10px;font-size:12px;color:#ddd}
-
-  /* Upload: input overlays button so iOS PWA always fires the picker */
-  #uploadWrap{position:relative;overflow:hidden}
-  #uploadWrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;-webkit-appearance:none}
-
   .wrap{max-width:1100px;margin:0 auto;padding:0 14px 60px}
-  .machine{margin-top:12px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
-  .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .reel{height:156px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
+  .machine{margin-top:14px;background:radial-gradient(1200px 600px at 50% -200px,#1a1a26,#0e0e14 70%);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02)}
+  .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .reel{height:160px;background:linear-gradient(180deg,#151521,#0f0f16);border:1px solid #23243a;border-radius:12px;overflow:hidden;position:relative}
   .strip{position:absolute;inset:0;display:flex;flex-direction:column;gap:0;will-change:transform,filter}
-  .cell{height:156px;display:flex;align-items:center;justify-content:center}
+  .cell{height:160px;display:flex;align-items:center;justify-content:center}
   .cell img{height:100%;width:100%;object-fit:cover;border-radius:10px}
-
-  .reveal-name{margin-top:10px;text-align:center;font-weight:700;color:var(--accent)}
+  .reveal-name{margin-top:12px;text-align:center;font-weight:700;color:var(--accent)}
   .reveal-big{margin-top:8px;border:1px solid #24253a;border-radius:14px;background:#0f0f15;min-height:42vh;display:grid;place-items:center;overflow:hidden}
   .reveal-big img{max-width:100%;max-height:100%;display:block}
-  .reveal-stars{margin:10px auto 0;max-width:680px;display:grid;gap:6px}
-  .line{display:flex;align-items:center;gap:10px;justify-content:center;font-size:13px;color:var(--muted)}
-  .stars{font-size:16px;letter-spacing:1px}
-  .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px}
+  .toolbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
   .countdown{font-variant-numeric:tabular-nums}
   .hidden{display:none !important}
 
-  /* Rig sheet (simple overlay) */
-  .sheet.hidden{display:none!important}
-  .sheet{position:fixed;inset:0;z-index:9999}
-  .sheet .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6)}
-  .sheet .panel{
-    position:absolute;inset:auto 0 0 0;
-    max-height:min(92vh,820px);
-    background:linear-gradient(180deg,#13131c,#0c0c12);
-    color:var(--text);border-top-left-radius:16px;border-top-right-radius:16px;
-    border:1px solid #27283c;border-bottom:none;
-    padding-bottom:env(safe-area-inset-bottom);
-    box-shadow:0 -20px 60px rgba(0,0,0,.5)
-  }
-  .sheet header{position:sticky;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 12px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
-  .sheet .x{margin-left:auto;min-width:44px;min-height:38px;border-radius:10px}
-  .sheet .body{padding:12px 14px;max-height:70vh;overflow:auto}
-
+  /* Rig dialog mobile-first */
+  dialog#rig{width:min(980px,98vw);max-height:90vh;border:none;border-radius:14px;background:linear-gradient(180deg,#13131c,#0c0c12);color:var(--text);padding:0;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  #rig header{position:sticky;top:0;padding:14px;border-bottom:1px solid #27283c;background:#12121b;display:flex;gap:10px;align-items:center;z-index:2}
+  #rig .body{padding:12px 14px;display:block;max-height:calc(90vh - 56px);overflow:auto}
   .section{background:#161625;border:1px solid #27283c;border-radius:12px;margin-bottom:10px}
-  .section>.hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #27283c}
-  .section>.hdr button.toggle{margin-left:auto}
+  .section > .hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #27283c}
+  .section > .hdr button.toggle{margin-left:auto}
   .section .inner{padding:10px 12px}
   .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .rig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
@@ -81,38 +53,31 @@
   .rig-item .meta{padding:6px 8px;font-size:12px;display:grid;gap:6px}
   .tag{position:absolute;left:6px;top:6px;background:#1a1a28;border:1px solid #2a2b40;border-radius:999px;padding:2px 6px;font-size:11px}
   .exclude-btn{position:absolute;right:6px;top:6px;border-radius:999px;padding:2px 6px;font-size:11px}
+  .ok{color:#7cd992} .warn{color:#ffcf6e} .danger{color:#ff6e8a}
   .hint{font-size:12px;color:var(--muted)}
+  textarea{width:100%;min-height:110px;resize:vertical}
 </style>
 </head>
 <body>
 <header>
   <div class="topbar">
-    <div class="title-wrap">
-      <div id="titleTap" class="title-tappable">The Night’s Choice</div>
-      <button id="rigMini" class="rig-mini" aria-label="Rig menu"></button>
-    </div>
+    <div id="titleTap" class="title-tappable">The Night’s Choice</div>
     <div class="controls">
-      <!-- Upload with overlaid input (reliable in PWA) -->
-      <button class="pill" id="uploadWrap">➕ Upload
+      <label class="upload">
         <input id="fileInput" type="file" accept="image/*" multiple>
-      </button>
-
-      <!-- Timer -->
+        <span>➕ Upload</span>
+      </label>
       <label class="pill" style="display:flex;align-items:center;gap:6px">
         ⏱️
         <select id="timerSelect" title="Timer">
-          <option value="0">Off</option><option value="1">1 min</option>
-          <option value="2">2 min</option><option value="3">3 min</option>
-          <option value="4">4 min</option><option value="5">5 min</option>
+          <option value="0">Off</option>
+          <option value="1">1 min</option>
+          <option value="2">2 min</option>
+          <option value="3">3 min</option>
+          <option value="4">4 min</option>
+          <option value="5">5 min</option>
         </select>
       </label>
-
-      <!-- Restrict -->
-      <label class="pill" style="display:flex;align-items:center;gap:6px">
-        🎯
-        <select id="mainRestrict" title="Restrict Category"></select>
-      </label>
-
       <button id="spinBtn" class="primary">🎰 Spin</button>
     </div>
   </div>
@@ -129,13 +94,7 @@
     <div id="revealName" class="reveal-name"></div>
 
     <div id="revealBig" class="reveal-big hidden">
-      <img id="revealImg" alt="">
-    </div>
-
-    <div class="reveal-stars">
-      <div class="line"><span>Difficulty</span> <span id="diffStars" class="stars">☆☆☆☆☆</span></div>
-      <div class="line"><span>Her-O</span> <span id="herStars" class="stars">☆☆☆☆☆</span></div>
-      <div class="line"><span>His-O</span> <span id="himStars" class="stars">☆☆☆☆☆</span></div>
+      <img id="revealImg" alt="" />
     </div>
 
     <div class="toolbar">
@@ -145,402 +104,592 @@
   </section>
 </div>
 
-<!-- Rig SHEET -->
-<div id="rigSheet" class="sheet hidden" aria-hidden="true">
-  <div id="rigBackdrop" class="backdrop"></div>
-  <div class="panel">
-    <header>
-      <strong>Rig Control</strong>
-      <button id="rigClose" class="x">✕</button>
-    </header>
-    <div class="body">
-      <div class="section">
-        <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
-        <div class="inner" id="controlsInner">
-          <div class="row">
-            <button id="muteToggle" class="pill">Toggle mute</button>
-            <span id="muteState" class="hint">Sound on</span>
-            <button id="testChime" class="pill">🔊 Test chime</button>
-          </div>
-          <div class="row" style="margin-top:8px">
-            <label>Restrict</label>
-            <select id="rigCategory"></select>
-            <button id="rigClearCat" class="pill">Clear</button>
-          </div>
-          <div class="row" style="margin-top:8px">
-            <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1;min-width:160px">
-            <button id="queueAddId" class="pill">Add</button>
-            <select id="queueByDesc" style="flex:1;min-width:160px"></select>
-            <button id="queueAddDesc" class="pill">Add by Name</button>
-            <button id="queueClear" class="pill">Clear queue</button>
-          </div>
-          <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
+<!-- Rig: triple-tap title + PIN 1616 -->
+<dialog id="rig">
+  <header>
+    <strong>Rig Control</strong>
+    <span class="hint">Private</span>
+    <button id="rigClose" style="margin-left:auto">✕</button>
+  </header>
+  <div class="body">
+    <!-- Controls -->
+    <div class="section" id="secControls">
+      <div class="hdr"><strong>Controls</strong><button class="toggle" data-target="controlsInner">▼</button></div>
+      <div class="inner" id="controlsInner">
+        <div class="row" style="margin-bottom:8px">
+          <input id="queueId" type="text" placeholder="Add by Image ID" style="flex:1;min-width:160px">
+          <button id="queueAddId">Add</button>
+          <select id="queueByDesc" style="flex:1;min-width:160px"></select>
+          <button id="queueAddDesc">Add by Name</button>
+          <button id="queueClear" class="warn">Clear queue</button>
+        </div>
+        <div id="queueView" class="row" style="gap:6px;flex-wrap:wrap"></div>
+        <div class="row">
+          <label>Restrict category</label>
+          <select id="rigCategory"></select>
+          <button id="muteToggle">Toggle mute</button>
+          <span id="muteState" class="hint"></span>
         </div>
       </div>
+    </div>
 
-      <div class="section">
-        <div class="hdr"><strong>Bulk tools</strong><button class="toggle" data-target="bulkInner">▼</button></div>
-        <div class="inner" id="bulkInner">
-          <div class="row">
-            <label>Filter:</label>
-            <select id="filterSelect">
-              <option value="">All</option><option value="uncategorized">Uncategorized</option>
-              <option value="unnamed">Unnamed</option><option value="excluded">Excluded (w=0)</option>
-            </select>
-            <select id="filterCategory"><option value="">Category…</option></select>
-            <select id="sortSelect"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="name">Name A→Z</option><option value="category">Category A→Z</option></select>
-          </div>
+    <!-- Bulk tools -->
+    <div class="section" id="secBulk">
+      <div class="hdr"><strong>Bulk tools</strong><button class="toggle" data-target="bulkInner">▼</button></div>
+      <div class="inner" id="bulkInner">
+        <div class="row">
+          <!-- Fast Tag Mode -->
+          <label class="hint">Fast Tag:</label>
+          <select id="fastTagCategory"></select>
+          <input id="fastTagName" type="text" placeholder="Name (optional)">
+          <label class="row" style="gap:6px"><input id="fastTagEnable" type="checkbox"> Enable tap-to-apply</label>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <!-- Filters -->
+          <label>Filter:</label>
+          <select id="filterSelect">
+            <option value="">All</option>
+            <option value="uncategorized">Uncategorized</option>
+            <option value="unnamed">Unnamed</option>
+            <option value="excluded">Excluded (weight=0)</option>
+          </select>
+          <select id="filterCategory">
+            <option value="">Category…</option>
+          </select>
+          <button id="applySetCategory" class="pill">Set category for filtered</button>
+          <button id="applyIncludeAll" class="pill">Include filtered (w=1)</button>
+          <button id="applyExcludeAll" class="pill danger">Exclude filtered (w=0)</button>
+        </div>
+        <div style="margin-top:10px">
+          <div class="hint" style="margin-bottom:6px">Batch names (one per line) → applies in order to current filtered list</div>
+          <textarea id="batchNames" placeholder="e.g.&#10;Lotus&#10;Bridge&#10;Chair"></textarea>
           <div class="row" style="margin-top:6px">
-            <label>Set category:</label>
-            <select id="fastTagCategory"></select>
-            <button id="applySetCategory" class="pill">Apply to filtered</button>
-            <button id="applyIncludeAll" class="pill">Include (w=1)</button>
-            <button id="applyExcludeAll" class="pill">Exclude (w=0)</button>
-          </div>
-          <div class="row" style="margin-top:6px">
-            <input id="fastTagName" placeholder="Name (optional)">
-            <label class="pill" style="display:flex;gap:6px;align-items:center"><input id="fastTagEnable" type="checkbox"> Tap cards to apply</label>
+            <button id="applyBatchNames">Apply names</button>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="section">
-        <div class="hdr"><strong>Images</strong><span class="hint" id="gridCount"></span></div>
-        <div class="inner"><div id="rigGrid" class="rig-grid"></div></div>
+    <!-- Image Grid -->
+    <div class="section">
+      <div class="hdr"><strong>Images</strong><span class="hint" id="gridCount"></span></div>
+      <div class="inner">
+        <div id="rigGrid" class="rig-grid"></div>
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <script>
-/* ===== Config ===== */
-const CATEGORIES=["Missionary","Woman-on-top","Oral for Her","Oral for Him","Sitting","Standing","Side-by-Side","Deep Penetration","69","Rear Entry","BDSM for Lovers","Adventurous"];
-const DEFAULT_WEIGHT=1, SPIN_DURATION_MS=6000, PIN="1616";
+/* -------------------- Config -------------------- */
+const CATEGORIES = [
+ "Missionary","Woman-on-top","Oral for Her","Oral for Him",
+ "Sitting","Standing","Side-by-Side","Deep Penetration",
+ "69","Rear Entry","BDSM for Lovers","Adventurous"
+];
+const DEFAULT_WEIGHT = 1;
+const SPIN_DURATION_MS = 6000;
+const PIN = "1616";
 
-/* ===== Storage Keys ===== */
-const DB_NAME='nights-choice-db', DB_STORE='images';
-const LSK={ mute:'nc_mute', rigCat:'nc_rigCat', weights:'nc_weights', queue:'nc_queue', categories:'nc_categories', descriptions:'nc_desc', timer:'nc_timer', ratings:'nc_ratings', pwaInit:'nc_pwa_initialized' };
+/* -------------------- Storage -------------------- */
+const DB_NAME = 'nights-choice-db';
+const DB_STORE = 'images';
+const LSK = {
+  mute:'nc_mute',
+  rigCat:'nc_rigCat',
+  weights:'nc_weights',
+  queue:'nc_queue',
+  categories:'nc_categories',
+  descriptions:'nc_desc',
+  timer:'nc_timer'
+};
 
-/* ===== State ===== */
 let db, IMAGES=[], OBJECT_URLS=new Map();
-let isMuted=!!lsGet(LSK.mute,false);
-let rigCategory=lsGet(LSK.rigCat,'')||'';
-let rigQueue=lsGet(LSK.queue,[])||[];
-let weightOverrides=lsGet(LSK.weights,{})||{};
-let categoryOverrides=lsGet(LSK.categories,{})||{};
-let descOverrides=lsGet(LSK.descriptions,{})||{};
-let ratings=lsGet(LSK.ratings,{})||{};
-let timerMinutes=+lsGet(LSK.timer,0)||0;
+let isMuted = !!lsGet(LSK.mute,false);
+let rigCategory = lsGet(LSK.rigCat,'')||'';
+let rigQueue = lsGet(LSK.queue,[])||[];
+let weightOverrides = lsGet(LSK.weights,{})||{};
+let categoryOverrides = lsGet(LSK.categories,{})||{};
+let descOverrides = lsGet(LSK.descriptions,{})||{};
+let timerMinutes = +lsGet(LSK.timer,0)||0;
 
-/* ===== Audio ===== */
+/* -------------------- Audio -------------------- */
 let audioCtx=null;
 function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch{} } }
-async function resumeAudio(){ try{ ensureAudio(); if(audioCtx && audioCtx.state!=='running') await audioCtx.resume(); }catch{} }
-function tone(freq,dur=0.4,type='sine',gain=0.5,when=0){ if(isMuted||!audioCtx)return; const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime+when); g.gain.setValueAtTime(0.0001,audioCtx.currentTime+when); g.gain.exponentialRampToValueAtTime(gain,audioCtx.currentTime+when+0.02); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+when+dur); o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime+when); o.stop(audioCtx.currentTime+when+dur+0.05);}
-function playSpinStart(){ tone(220,0.65,'sawtooth',0.35); tone(660,0.2,'sawtooth',0.2,0.2); }
-function playTick(t=0){ tone(700,0.12,'triangle',0.3,t); }
-function playReveal(){ tone(330,0.5,'sine',0.5); tone(880,0.45,'sine',0.4,0.1); }
-async function playTimerChime(){ await resumeAudio(); tone(660,0.35,'sine',0.5,0); tone(990,0.35,'sine',0.5,0.2); }
+function playSpinStart(){ if(isMuted||!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(220,audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(660,audioCtx.currentTime+0.4); g.gain.setValueAtTime(0.0001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.35,audioCtx.currentTime+0.05); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.6); o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.65); }
+function playTick(t=0){ if(isMuted||!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(700,audioCtx.currentTime+t); g.gain.setValueAtTime(0.0001,audioCtx.currentTime+t); g.gain.exponentialRampToValueAtTime(0.3,audioCtx.currentTime+t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+t+0.1); o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+0.12); }
+function playReveal(){ if(isMuted||!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='sine'; o.frequency.setValueAtTime(330,audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(880,audioCtx.currentTime+0.35); g.gain.setValueAtTime(0.0001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.5,audioCtx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.45); o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5); }
+function playTimerChime(){ if(isMuted||!audioCtx) return; const now=audioCtx.currentTime; [[660,0],[990,0.2]].forEach(([f,dt])=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='sine'; o.frequency.setValueAtTime(f,now+dt); g.gain.setValueAtTime(0.0001,now+dt); g.gain.exponentialRampToValueAtTime(0.5,now+dt+0.02); g.gain.exponentialRampToValueAtTime(0.0001,now+dt+0.35); o.connect(g).connect(audioCtx.destination); o.start(now+dt); o.stop(now+dt+0.4); }); }
 
-/* ===== UI Refs ===== */
-const fileInput=q('#fileInput'), uploadWrap=q('#uploadWrap');
-const reelsEl=q('#reels'), spinBtn=q('#spinBtn');
-const revealNameEl=q('#revealName'), revealBig=q('#revealBig'), revealImg=q('#revealImg');
-const diffStarsEl=q('#diffStars'), herStarsEl=q('#herStars'), himStarsEl=q('#himStars');
-const countdownEl=q('#countdown'), skipBtn=q('#skipBtn');
-const timerSelect=q('#timerSelect'), mainRestrict=q('#mainRestrict');
-const rigSheet=q('#rigSheet'), rigBackdrop=q('#rigBackdrop'), rigClose=q('#rigClose');
-const titleTap=q('#titleTap'), rigMini=q('#rigMini');
+/* -------------------- UI refs -------------------- */
+const fileInput = document.getElementById('fileInput');
+const reelsEl = document.getElementById('reels');
+const spinBtn = document.getElementById('spinBtn');
+const revealNameEl = document.getElementById('revealName');
+const revealBig = document.getElementById('revealBig');
+const revealImg = document.getElementById('revealImg');
+const countdownEl = document.getElementById('countdown');
+const skipBtn = document.getElementById('skipBtn');
+const timerSelect = document.getElementById('timerSelect');
+const titleTap = document.getElementById('titleTap');
+const rigDlg = document.getElementById('rig');
+const rigClose = document.getElementById('rigClose');
+const rigGrid = document.getElementById('rigGrid');
+const rigCategorySel = document.getElementById('rigCategory');
+const queueView = document.getElementById('queueView');
+const queueId = document.getElementById('queueId');
+const queueAddId = document.getElementById('queueAddId');
+const queueByDesc = document.getElementById('queueByDesc');
+const queueAddDesc = document.getElementById('queueAddDesc');
+const muteToggle = document.getElementById('muteToggle');
+const muteState = document.getElementById('muteState');
 
-const rigGrid=q('#rigGrid'), rigCategorySel=q('#rigCategory'), queueView=q('#queueView');
-const queueId=q('#queueId'), queueAddId=q('#queueAddId'), queueByDesc=q('#queueByDesc'), queueAddDesc=q('#queueAddDesc'), queueClear=q('#queueClear');
-const muteToggle=q('#muteToggle'), muteState=q('#muteState'), testChime=q('#testChime');
-const fastTagCategory=q('#fastTagCategory'), fastTagName=q('#fastTagName'), fastTagEnable=q('#fastTagEnable');
-const filterSelect=q('#filterSelect'), filterCategory=q('#filterCategory'), sortSelect=q('#sortSelect');
-const applySetCategory=q('#applySetCategory'), applyIncludeAll=q('#applyIncludeAll'), applyExcludeAll=q('#applyExcludeAll');
-const gridCount=q('#gridCount');
+const secControls = document.getElementById('secControls');
+const secBulk = document.getElementById('secBulk');
+const fastTagCategory = document.getElementById('fastTagCategory');
+const fastTagName = document.getElementById('fastTagName');
+const fastTagEnable = document.getElementById('fastTagEnable');
+const filterSelect = document.getElementById('filterSelect');
+const filterCategory = document.getElementById('filterCategory');
+const applySetCategory = document.getElementById('applySetCategory');
+const applyIncludeAll = document.getElementById('applyIncludeAll');
+const applyExcludeAll = document.getElementById('applyExcludeAll');
+const batchNames = document.getElementById('batchNames');
+const applyBatchNames = document.getElementById('applyBatchNames');
+const gridCount = document.getElementById('gridCount');
 
-/* ===== DB ===== */
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);r.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains(DB_STORE)){const s=db.createObjectStore(DB_STORE,{keyPath:'id'});s.createIndex('category','category');s.createIndex('ts','ts');s.createIndex('hash','hash');}else{const s=e.target.transaction.objectStore(DB_STORE);if(!s.indexNames.contains('hash'))s.createIndex('hash','hash');}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
-function dbAddMany(items){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite'),st=tx.objectStore(DB_STORE);items.forEach(it=>st.put(it));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
-function dbGetAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readonly'),st=tx.objectStore(DB_STORE),rq=st.getAll();rq.onsuccess=()=>res(rq.result||[]);rq.onerror=()=>rej(rq.error);});}
-function dbUpdate(item){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(item);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
-function dbClearAll(){return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
-
-/* ===== Helpers ===== */
-function q(s,sc=document){return sc.querySelector(s)}
-function qAll(arr){return arr.map(s=>q(s))}
-function lsGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
-function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function toast(msg,danger=false){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s'},1200);setTimeout(()=>t.remove(),1600)}
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
-function stars(n){return '★'.repeat(n||0)+'☆'.repeat(5-(n||0))}
-async function sha256(blob){const buf=await blob.arrayBuffer();const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
-
-/* ===== PWA modal ===== */
-function openRig(){ rigSheet.classList.remove('hidden'); }
-function closeRig(){ rigSheet.classList.add('hidden'); }
-
-/* ===== Init ===== */
-(async function init(){
-  db=await openDB();
-
-  // Build Restrict + pickers
-  function fillRestrict(sel){
-    sel.innerHTML=''; sel.appendChild(new Option('All categories','')); sel.appendChild(new Option('— Unassigned —','__UNASSIGNED__'));
-    CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
-  }
-  fillRestrict(mainRestrict);
-  rigCategorySel.appendChild(new Option('All categories',''));
-  CATEGORIES.forEach(c=>rigCategorySel.appendChild(new Option(c,c)));
-  function addUnassignedFirst(sel){ sel.innerHTML=''; sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c))); }
-  addUnassignedFirst(fastTagCategory); addUnassignedFirst(filterCategory);
-
-  // Restore
-  mainRestrict.value=rigCategory; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory;
-  timerSelect.value=String(timerMinutes);
-  muteState.textContent=isMuted?'Muted':'Sound on';
-
-  // Upload: stop bubbling so gestures never trigger
-  ['click','touchstart','touchend'].forEach(evt=> uploadWrap.addEventListener(evt,(e)=>e.stopPropagation(),{passive:true}));
-  fileInput.addEventListener('change', handleUpload);
-
-  // Timer
-  timerSelect.addEventListener('change',()=>{ timerMinutes=+timerSelect.value; lsSet(LSK.timer,timerMinutes); });
-
-  // Rig sheet close/backdrop
-  rigClose.addEventListener('click', closeRig);
-  rigBackdrop.addEventListener('click', closeRig);
-
-  // Collapsers
-  document.querySelectorAll('.toggle').forEach(b=>b.addEventListener('click',()=>{
-    const t=document.getElementById(b.dataset.target); if(!t)return; const hid=t.classList.toggle('hidden'); b.textContent=hid?'▲':'▼';
-  }));
-
-  // Filters + restriction sync
-  qAll(['#filterSelect','#filterCategory','#sortSelect']).forEach(el=>el.addEventListener('change',renderRig));
-  q('#rigClearCat').addEventListener('click',()=>{ rigCategory=''; rigCategorySel.value=''; mainRestrict.value=''; lsSet(LSK.rigCat,rigCategory); toast('Restriction cleared'); });
-  rigCategorySel.addEventListener('change',()=>{ rigCategory=rigCategorySel.value||''; mainRestrict.value=rigCategory; lsSet(LSK.rigCat,rigCategory); });
-  mainRestrict.addEventListener('change',()=>{ rigCategory=mainRestrict.value; rigCategorySel.value=(rigCategory==='__UNASSIGNED__')?'':rigCategory; lsSet(LSK.rigCat,rigCategory); });
-
-  // Sound & chime
-  muteToggle.addEventListener('click',()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent=isMuted?'Muted':'Sound on'; });
-  testChime.addEventListener('click',()=>{ ensureAudio(); resumeAudio().then(()=>playTimerChime()); });
-
-  // Queue
-  queueAddId.addEventListener('click',()=>{ const id=queueId.value.trim(); if(!id)return; rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue(); });
-  queueAddDesc.addEventListener('click',()=>{ const v=queueByDesc.value; if(!v)return; rigQueue.push('desc::'+v); lsSet(LSK.queue,rigQueue); renderQueue(); });
-  queueClear.addEventListener('click',()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
-
-  // Title gesture (PIN via prompt)
-  secretAccessOnTitle();
-
-  // Mini dot: instant open
-  rigMini.addEventListener('click', openRig);
-
-  await reloadImages(); buildReels(); renderRig(); renderQueue();
-})();
-
-/* ===== Upload ===== */
-async function handleUpload(ev){
-  const files=[...ev.target.files]; if(!files.length) return;
-  const toAdd=[];
-  for(const f of files){
-    if(!f.type.startsWith('image/')) continue;
-    const id=crypto.randomUUID(), blob=f.slice(0,f.size,f.type), hash=await sha256(blob);
-    const it={id,blob,hash,category:'',weight:DEFAULT_WEIGHT,ts:Date.now(),description:'',diff:0,her:0,him:0};
-    toAdd.push(it);
-  }
-  await dbAddMany(toAdd);
-  toAdd.forEach(it=>{ categoryOverrides[it.id]=''; weightOverrides[it.id]=DEFAULT_WEIGHT; descOverrides[it.id]=''; ratings[it.id]={diff:0,her:0,him:0}; });
-  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.descriptions,descOverrides); lsSet(LSK.ratings,ratings);
-  await reloadImages(); buildReels(); renderRig(); fileInput.value='';
+/* -------------------- DB -------------------- */
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded = (ev)=>{
+      const db=ev.target.result;
+      if(!db.objectStoreNames.contains(DB_STORE)){
+        const store = db.createObjectStore(DB_STORE,{keyPath:'id'});
+        store.createIndex('category','category',{unique:false});
+        store.createIndex('ts','ts',{unique:false});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+function dbAddMany(items){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    const st=tx.objectStore(DB_STORE);
+    items.forEach(it=>st.put(it));
+    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
+  });
+}
+function dbGetAll(){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readonly');
+    const st=tx.objectStore(DB_STORE);
+    const rq=st.getAll(); rq.onsuccess=()=>resolve(rq.result||[]); rq.onerror=()=>reject(rq.error);
+  });
+}
+function dbUpdate(item){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite'); tx.objectStore(DB_STORE).put(item);
+    tx.oncomplete=()=>resolve(); tx.onerror=()=>reject(tx.error);
+  });
 }
 
-/* ===== Load/Render ===== */
+/* -------------------- Init -------------------- */
+(async function init(){
+  db = await openDB();
+
+  // Populate selects
+  CATEGORIES.forEach(c=>{
+    const ca=document.createElement('option'); ca.value=c; ca.textContent=c; rigCategorySel.appendChild(ca);
+    const cb=document.createElement('option'); cb.value=c; cb.textContent=c; fastTagCategory.appendChild(cb);
+    const cc=document.createElement('option'); cc.value=c; cc.textContent=c; filterCategory.appendChild(cc);
+  });
+  if(rigCategory) rigCategorySel.value = rigCategory;
+
+  // timer
+  timerSelect.value = String(timerMinutes);
+  timerSelect.addEventListener('change', ()=>{ timerMinutes = +timerSelect.value; lsSet(LSK.timer,timerMinutes); });
+
+  muteState.textContent = isMuted ? "Muted" : "Sound on";
+
+  // collapsible
+  document.querySelectorAll('.toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = document.getElementById(btn.dataset.target);
+      if(!target) return;
+      const isHidden = target.classList.toggle('hidden');
+      btn.textContent = isHidden ? '▲' : '▼';
+    });
+  });
+
+  await reloadImages();
+  buildReels();
+  renderRig();
+  renderQueue();
+})();
+
+/* -------------------- Load/Render -------------------- */
 async function reloadImages(){
-  IMAGES=await dbGetAll();
+  IMAGES = await dbGetAll();
   IMAGES.forEach(it=>{
-    if(weightOverrides[it.id]!=null) it.weight=weightOverrides[it.id];
-    if(categoryOverrides[it.id]!==undefined) it.category=categoryOverrides[it.id];
-    if(descOverrides[it.id]!==undefined) it.description=descOverrides[it.id];
-    if(ratings[it.id]) Object.assign(it,ratings[it.id]);
+    if(weightOverrides[it.id] != null) it.weight = weightOverrides[it.id];
+    if(categoryOverrides[it.id]) it.category = categoryOverrides[it.id];
+    if(descOverrides[it.id]) it.description = descOverrides[it.id];
   });
   OBJECT_URLS.forEach(URL.revokeObjectURL); OBJECT_URLS.clear();
   IMAGES.forEach(it=>OBJECT_URLS.set(it.id, URL.createObjectURL(it.blob)));
-  refreshQueueDescOptions();
 }
 function buildReels(){
-  document.querySelectorAll('.strip').forEach((strip,i)=>{
+  const strips = reelsEl.querySelectorAll('.strip');
+  strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    const pool=IMAGES.length?IMAGES.slice():[];
-    if(!pool.length){ const c=document.createElement('div'); c.className='cell'; c.textContent='—'; strip.appendChild(c); return; }
+    const pool = IMAGES.length ? IMAGES.slice() : [];
+    if(!pool.length){
+      const c=document.createElement('div'); c.className='cell'; c.innerHTML='—'; strip.appendChild(c);
+      return;
+    }
     for(let k=0;k<12;k++){
-      const it=pool[(k+i)%pool.length];
+      const it = pool[(k+i)%pool.length];
       const cell=document.createElement('div'); cell.className='cell';
-      const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
+      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
       strip.appendChild(cell);
     }
   });
 }
 function getFilteredImages(){
-  const status=filterSelect.value, cat=filterCategory.value, sort=sortSelect.value;
-  let list=IMAGES.slice();
-  if(status==='uncategorized') list=list.filter(x=>!(x.category||'').trim());
-  if(status==='unnamed') list=list.filter(x=>!(x.description||'').trim());
-  if(status==='excluded') list=list.filter(x=>(x.weight??DEFAULT_WEIGHT)==0);
-  if(filterCategory.selectedIndex>0 || cat==='') list=list.filter(x=>(x.category||'')===cat);
-  if(sort==='newest') list.sort((a,b)=>(b.ts||0)-(a.ts||0));
-  if(sort==='oldest') list.sort((a,b)=>(a.ts||0)-(b.ts||0));
-  if(sort==='name') list.sort((a,b)=>(a.description||'').localeCompare(b.description||''));
-  if(sort==='category') list.sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  const f = filterSelect.value;
+  const cat = filterCategory.value;
+  let list = IMAGES.slice();
+  if(f==='uncategorized') list = list.filter(x=>!x.category);
+  if(f==='unnamed') list = list.filter(x=>!(x.description||'').trim());
+  if(f==='excluded') list = list.filter(x=>(x.weight??DEFAULT_WEIGHT)==0);
+  if(cat) list = list.filter(x=>x.category===cat);
   return list;
 }
 function renderRig(){
-  const list=getFilteredImages(); gridCount.textContent=`(${list.length} shown of ${IMAGES.length})`; rigGrid.innerHTML='';
+  const list = getFilteredImages();
+  gridCount.textContent = `(${list.length} shown of ${IMAGES.length})`;
+  rigGrid.innerHTML='';
   list.forEach(it=>{
-    const card=div('rig-item'); card.dataset.id=it.id;
-    const img=new Image(); img.src=OBJECT_URLS.get(it.id);
-    const tag=span('tag'); tag.textContent=it.category||'—';
-    const ex=button('exclude-btn pill',(it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude'); ex.onclick=(e)=>{e.stopPropagation();toggleExclude(it)};
-    const meta=div('meta');
-    const idrow=div(); idrow.textContent=`ID: ${it.id}`;
+    const card=document.createElement('div'); card.className='rig-item'; card.dataset.id=it.id;
 
-    const row1=div();
-    const sel=document.createElement('select');
-    sel.appendChild(new Option('— Unassigned —','')); CATEGORIES.forEach(c=>sel.appendChild(new Option(c,c)));
-    sel.value=it.category||''; sel.onchange=async ()=>{ it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category||'—'; };
-    const w=inputNumber(it.weight??DEFAULT_WEIGHT); w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'; };
+    const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id);
+    const tag=document.createElement('span'); tag.className='tag'; tag.textContent=it.category||'—';
+    const ex=document.createElement('button'); ex.className='exclude-btn pill'; ex.textContent=(it.weight??DEFAULT_WEIGHT)==0?'Include':'Exclude';
+    ex.addEventListener('click', (e)=>{ e.stopPropagation(); toggleExclude(it); });
+
+    const meta=document.createElement('div'); meta.className='meta';
+    const idrow=document.createElement('div'); idrow.textContent=`ID: ${it.id}`;
+    const row1=document.createElement('div'); // category + weight
+    const sel=document.createElement('select'); CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    sel.value = it.category||'Missionary';
+    sel.onchange=async ()=>{ it.category=sel.value; categoryOverrides[it.id]=it.category; lsSet(LSK.categories,categoryOverrides); await dbUpdate(it); tag.textContent=it.category; };
+    const w=document.createElement('input'); w.type='number'; w.min='0'; w.step='0.1'; w.style.width='80px'; w.value=it.weight??DEFAULT_WEIGHT;
+    w.onchange=()=>{ const val=Math.max(0,parseFloat(w.value)||0); it.weight=val; weightOverrides[it.id]=val; lsSet(LSK.weights,weightOverrides); ex.textContent=val==0?'Include':'Exclude'; };
     row1.append(sel,' ',w);
 
-    const d=document.createElement('input'); d.placeholder='Name'; d.value=it.description||''; d.onchange=()=>{ it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); };
+    const d=document.createElement('input'); d.type='text'; d.placeholder='Description / Name'; d.value=it.description||'';
+    d.onchange=()=>{ it.description=d.value.trim(); descOverrides[it.id]=it.description; lsSet(LSK.descriptions,descOverrides); refreshQueueDescOptions(); };
 
-    // ratings
-    const r1=starRow(it,'diff','Diff'), r2=starRow(it,'her','Her-O'), r3=starRow(it,'him','His-O');
+    meta.append(idrow,row1,d);
+    card.append(img, tag, ex, meta);
 
-    meta.append(idrow,row1,d,r1,r2,r3);
-    card.append(img,tag,ex,meta);
+    // Fast Tag Mode tap (live-sync chip + dropdown + name, no re-render)
+card.addEventListener('click', ()=>{
+  if(!fastTagEnable.checked) { navigator.clipboard?.writeText(it.id); toast('ID copied'); return; }
 
-    // Fast Tag tap
-    card.addEventListener('click', ()=>{
-      if(!fastTagEnable?.checked){ navigator.clipboard?.writeText(it.id).catch(()=>{}); toast('ID copied'); return; }
-      const cat=fastTagCategory.value, name=(fastTagName.value||'').trim();
-      it.category=cat; categoryOverrides[it.id]=cat; lsSet(LSK.categories,categoryOverrides); sel.value=cat; tag.textContent=cat||'—';
-      if(name){ it.description=name; descOverrides[it.id]=name; lsSet(LSK.descriptions,descOverrides); d.value=name; refreshQueueDescOptions(); }
-      dbUpdate(it); toast('Applied');
-    });
+  const cat = fastTagCategory.value || it.category || 'Missionary';
+  const name = (fastTagName.value||'').trim();
+
+  // Update in-memory + persist
+  it.category = cat;
+  categoryOverrides[it.id] = cat;
+  lsSet(LSK.categories, categoryOverrides);
+
+  if(name){
+    it.description = name;
+    descOverrides[it.id] = name;
+    lsSet(LSK.descriptions, descOverrides);
+  }
+
+  dbUpdate(it); // async, no await
+
+  // Live visual sync (no flicker)
+  tag.textContent = it.category; // chip
+  sel.value = it.category;       // dropdown under image
+  if(name){ d.value = it.description; } // name field
+
+  // Keep the queue-by-name dropdown up-to-date
+  refreshQueueDescOptions();
+
+  toast('Applied');
+});
 
     rigGrid.appendChild(card);
   });
+  refreshQueueDescOptions();
 }
-function starRow(it,key,label){
-  const row=div('row'); const lbl=span(); lbl.textContent=label+':'; row.append(lbl);
-  for(let i=1;i<=5;i++){ const s=span(); s.textContent='★'; s.style.cursor='pointer'; s.style.opacity=(i<=(it[key]||0))?'1':'0.35';
-    s.onclick=()=>{ it[key]=i; if(!ratings[it.id]) ratings[it.id]={}; ratings[it.id][key]=i; lsSet(LSK.ratings,ratings); dbUpdate(it);
-      [...row.querySelectorAll('span')].slice(1).forEach((el,idx)=> el.style.opacity=((idx+1)<=i)?'1':'0.35'); };
-    row.append(s);
-  }
-  return row;
+function toggleExclude(it){
+  const newW = (it.weight??DEFAULT_WEIGHT)==0 ? 1 : 0;
+  it.weight = newW;
+  weightOverrides[it.id]=newW; lsSet(LSK.weights,weightOverrides);
+  renderRig();
 }
-function toggleExclude(it){ const nw=(it.weight??DEFAULT_WEIGHT)==0?1:0; it.weight=nw; weightOverrides[it.id]=nw; lsSet(LSK.weights,weightOverrides); renderRig(); }
 
-/* ===== Spin / Animation ===== */
+/* -------------------- Bulk actions -------------------- */
+applySetCategory.addEventListener('click', ()=>{
+  const cat = fastTagCategory.value; if(!cat){ toast('Pick a category'); return; }
+  const list = getFilteredImages();
+  list.forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); });
+  lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set for filtered');
+});
+applyIncludeAll.addEventListener('click', ()=>{
+  const list = getFilteredImages(); list.forEach(it=>{ it.weight=1; weightOverrides[it.id]=1; dbUpdate(it); });
+  lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included filtered');
+});
+applyExcludeAll.addEventListener('click', ()=>{
+  const list = getFilteredImages(); list.forEach(it=>{ it.weight=0; weightOverrides[it.id]=0; dbUpdate(it); });
+  lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded filtered');
+});
+applyBatchNames.addEventListener('click', ()=>{
+  const names = batchNames.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(!names.length){ toast('No names provided'); return; }
+  const list = getFilteredImages();
+  let i=0;
+  list.forEach(it=>{
+    if(i<names.length){ it.description = names[i++]; descOverrides[it.id]=it.description; dbUpdate(it); }
+  });
+  lsSet(LSK.descriptions,descOverrides); renderRig(); toast('Names applied');
+});
+
+/* -------------------- Upload -------------------- */
+fileInput.addEventListener('change', async (ev)=>{
+  const files=[...ev.target.files]; if(!files.length) return;
+  ensureAudio();
+  const toAdd=[];
+  for(const f of files){
+    if(!f.type.startsWith('image/')) continue;
+    const id=crypto.randomUUID();
+    const blob=f.slice(0, f.size, f.type);
+    const it={ id, blob, category:'Missionary', weight:DEFAULT_WEIGHT, ts:Date.now(), description:'' };
+    toAdd.push(it);
+  }
+  await dbAddMany(toAdd);
+  toAdd.forEach(it=>{
+    categoryOverrides[it.id]=it.category; weightOverrides[it.id]=it.weight; descOverrides[it.id]=it.description;
+  });
+  lsSet(LSK.categories,categoryOverrides); lsSet(LSK.weights,weightOverrides); lsSet(LSK.descriptions,descOverrides);
+  await reloadImages(); buildReels(); renderRig(); fileInput.value='';
+});
+
+/* -------------------- Spin / Animation -------------------- */
 let spinning=false, blockUntil=0, timerId=null;
+
 spinBtn.addEventListener('click', async ()=>{
-  ensureAudio(); await resumeAudio();
-  if(spinning||Date.now()<blockUntil){return}
-  if(!IMAGES.length){toast('Add images first');return}
+  ensureAudio();
+  if(spinning) return;
+  const now=Date.now();
+  if(now<blockUntil){ return; }
+  if(!IMAGES.length){ toast('Add images first'); return; }
 
   spinning=true;
-  revealNameEl.textContent=''; diffStarsEl.textContent='☆☆☆☆☆'; herStarsEl.textContent='☆☆☆☆☆'; himStarsEl.textContent='☆☆☆☆☆';
-  revealBig.classList.add('hidden'); revealImg.removeAttribute('src');
+  revealNameEl.textContent='';
+  revealBig.classList.add('hidden');
+  revealImg.removeAttribute('src');
   playSpinStart();
 
-  const chosen=await pickImage();
-  let others=IMAGES.filter(x=>x.id!==chosen.id); if(others.length<2) others=IMAGES.concat(IMAGES); shuffle(others);
-  const finals=[others[0], chosen, others[1]];
+  const chosen = await pickImage();
+  let others = IMAGES.filter(x=>x.id!==chosen.id);
+  if(others.length<2) others = IMAGES.concat(IMAGES);
+  shuffle(others);
+  const leftImg = others[0], rightImg = others[1];
 
-  const strips=[...document.querySelectorAll('.strip')];
-  const BASE=20, CELLH=156, ease='cubic-bezier(.12,.62,.22,.99)';
+  const strips = [...document.querySelectorAll('.strip')];
+  const finals = [leftImg, chosen, rightImg];
+
+  const BASE=20, CELLH=160;
   strips.forEach((strip,i)=>{
     strip.innerHTML='';
-    const pool=IMAGES.slice();
-    for(let k=0;k<BASE;k++){ const it=pool[(k+i)%pool.length]; const cell=div('cell'); const img=new Image(); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img); strip.appendChild(cell); }
-    const end=div('cell'); const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id); end.appendChild(endImg); strip.appendChild(end);
-    strip.style.transition='none'; strip.style.transform='translateY(0px)'; strip.style.filter='blur(6px) brightness(0.9)';
-    const distance=CELLH*BASE;
-    setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, 0);
+    const pool = IMAGES.length ? IMAGES.slice() : [];
+    for(let k=0;k<BASE;k++){
+      const it=pool[(k+i)%pool.length];
+      const cell=document.createElement('div'); cell.className='cell';
+      const img=document.createElement('img'); img.src=OBJECT_URLS.get(it.id); cell.appendChild(img);
+      strip.appendChild(cell);
+    }
+    const end=document.createElement('div'); end.className='cell';
+    const endImg=new Image(); endImg.src=OBJECT_URLS.get(finals[i].id);
+    end.appendChild(endImg); strip.appendChild(end);
+
+    strip.style.transition='none';
+    strip.style.transform='translateY(0px)';
+    strip.style.filter='blur(6px) brightness(0.9)';
   });
+
+  const offsets=[0, 250, 450];
+  const ease='cubic-bezier(.12,.62,.22,.99)';
+
+  strips.forEach((strip,i)=>{
+    const distance = CELLH * (BASE); // land with final visible
+    setTimeout(()=>{ strip.style.transition=`transform ${SPIN_DURATION_MS/1000}s ${ease}, filter ${SPIN_DURATION_MS/1000}s linear`; strip.style.transform=`translateY(-${distance}px)`; }, offsets[i]);
+  });
+
   for(let t=0;t<SPIN_DURATION_MS*0.6;t+=280){ playTick(t/1000); }
 
   setTimeout(()=>{
-    document.querySelectorAll('.strip').forEach(s=>s.style.filter='none');
+    strips.forEach(s=>{ s.style.filter='none'; });
     playReveal();
-    revealNameEl.textContent=chosen.description||chosen.category||'';
-    revealImg.src=OBJECT_URLS.get(chosen.id);
+    const name = (chosen.description||chosen.category||'');
+    revealNameEl.textContent = name;
+    revealImg.src = OBJECT_URLS.get(chosen.id);
     revealBig.classList.remove('hidden');
-    diffStarsEl.textContent=stars(chosen.diff||0);
-    herStarsEl .textContent=stars(chosen.her ||0);
-    himStarsEl .textContent=stars(chosen.him||0);
     spinning=false;
-    if(timerMinutes>0) startCountdown(timerMinutes);
-  }, SPIN_DURATION_MS + 60);
+
+    if(timerMinutes>0){ startCountdown(timerMinutes); }
+  }, SPIN_DURATION_MS + Math.max(...offsets) + 50);
 });
+
+/* -------------------- Countdown + Skip -------------------- */
+function clearCountdownAndUnlock(){
+  if(timerId) clearInterval(timerId);
+  timerId = null;
+  blockUntil = 0;
+  spinBtn.disabled = false;
+  countdownEl.textContent = '';
+  skipBtn.style.display = 'none';
+}
+function startCountdown(mins){
+  const duration = mins*60*1000;
+  blockUntil = Date.now()+duration;
+  spinBtn.disabled = true;
+  if(timerId) clearInterval(timerId);
+  updateCountdown();
+  skipBtn.style.display = 'inline-flex';
+  timerId = setInterval(()=>{
+    updateCountdown();
+    if(Date.now()>=blockUntil){
+      clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; playTimerChime();
+    }
+  }, 250);
+}
+function updateCountdown(){
+  const remain = Math.max(0, blockUntil - Date.now());
+  const s = Math.ceil(remain/1000);
+  const m = Math.floor(s/60), ss = String(s%60).padStart(2,'0');
+  countdownEl.textContent = `Next spin in ${m}:${ss}`;
+}
+skipBtn.addEventListener('click', clearCountdownAndUnlock);
+
+/* -------------------- Pick logic -------------------- */
 async function pickImage(){
   if(rigQueue.length){
-    const itToken=rigQueue.shift(); lsSet(LSK.queue,rigQueue); renderQueue();
-    const it = itToken.startsWith('desc::') ? IMAGES.find(x=>(x.description||'')===itToken.slice(6)) : IMAGES.find(x=>x.id===itToken);
-    if(it) return it;
+    const item = rigQueue.shift();
+    lsSet(LSK.queue,rigQueue); renderQueue();
+    if(item.startsWith('desc::')){
+      const d = item.slice(6);
+      const found = IMAGES.find(x=>(x.description||'')===d);
+      if(found) return found;
+    }else{
+      const found = IMAGES.find(x=>x.id===item);
+      if(found) return found;
+    }
   }
-  let pool=IMAGES.slice();
-  if(rigCategory){ if(rigCategory==='__UNASSIGNED__') pool=pool.filter(i=>!(i.category||'')); else pool=pool.filter(i=>(i.category||'')===rigCategory); }
+  const filter = rigCategory || '';
+  const pool = filter ? IMAGES.filter(it=>it.category===filter) : IMAGES.slice();
   if(!pool.length) return IMAGES[0];
-  const weights=pool.map(it=>Math.max(0.0001, it.weight??DEFAULT_WEIGHT)), total=weights.reduce((a,b)=>a+b,0);
-  let r=Math.random()*total; for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
+
+  const weights = pool.map(it=> Math.max(0.0001, it.weight??DEFAULT_WEIGHT));
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<pool.length;i++){ if((r-=weights[i])<=0) return pool[i]; }
   return pool[pool.length-1];
 }
 
-/* ===== Countdown + Skip ===== */
-function clearCountdownAndUnlock(){ if(timerId) clearInterval(timerId); timerId=null; blockUntil=0; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; }
-function startCountdown(mins){ const dur=mins*60*1000; blockUntil=Date.now()+dur; spinBtn.disabled=true; if(timerId)clearInterval(timerId); updateCountdown(); skipBtn.style.display='inline-flex';
-  timerId=setInterval(async ()=>{ updateCountdown(); if(Date.now()>=blockUntil){ clearInterval(timerId); timerId=null; spinBtn.disabled=false; countdownEl.textContent=''; skipBtn.style.display='none'; await playTimerChime(); } }, 250); }
-function updateCountdown(){ const r=Math.max(0,blockUntil-Date.now()); const s=Math.ceil(r/1000), m=Math.floor(s/60), ss=String(s%60).padStart(2,'0'); countdownEl.textContent=`Next spin in ${m}:${ss}`; }
-skipBtn.addEventListener('click', clearCountdownAndUnlock);
+/* -------------------- Rig controls -------------------- */
+(function secret(){
+  const TAP_WINDOW = 800, LONG_PRESS_MS = 900;
+  let taps = [], pressTimer=null;
 
-/* ===== Queue UI ===== */
-function renderQueue(){ queueView.innerHTML=''; rigQueue.forEach((q,i)=>{ const pill=document.createElement('span'); pill.className='pill'; pill.textContent=q.startsWith('desc::')?`#${i+1} ${q.slice(6)}`:`#${i+1} ${q}`; pill.style.cursor='pointer'; pill.title='Remove'; pill.onclick=()=>{rigQueue.splice(i,1); lsSet(LSK.queue,rigQueue); renderQueue();}; queueView.appendChild(pill); }); }
-function refreshQueueDescOptions(){ const names=[...new Set(IMAGES.map(x=>x.description||'').filter(Boolean).sort((a,b)=>a.localeCompare(b)))]; queueByDesc.innerHTML=''; queueByDesc.appendChild(new Option('Select name…','')); names.forEach(n=>queueByDesc.appendChild(new Option(n,n))); }
+  function isTriple(){ const now=Date.now(); taps=taps.filter(t=>now-t<TAP_WINDOW); taps.push(now); return taps.length>=3; }
+  async function tryOpenRig(){ const pin = await promptPIN(); if(pin!==PIN){ toast('Wrong PIN', true); return; } rigDlg.showModal(); }
 
-/* ===== Bulk tools ===== */
-applySetCategory.addEventListener('click',()=>{ const cat=fastTagCategory.value; getFilteredImages().forEach(it=>{ it.category=cat; categoryOverrides[it.id]=cat; dbUpdate(it); }); lsSet(LSK.categories,categoryOverrides); renderRig(); toast('Category set');});
-applyIncludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=1; weightOverrides[it.id]=1; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Included');});
-applyExcludeAll.addEventListener('click',()=>{ getFilteredImages().forEach(it=>{ it.weight=0; weightOverrides[it.id]=0; dbUpdate(it); }); lsSet(LSK.weights,weightOverrides); renderRig(); toast('Excluded');});
+  titleTap.addEventListener('touchend', async ()=>{ if(isTriple()) { taps=[]; await tryOpenRig(); } }, {passive:true});
+  titleTap.addEventListener('click',     async ()=>{ if(isTriple()) { taps=[]; await tryOpenRig(); } });
+  titleTap.addEventListener('touchstart', ()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ taps=[]; tryOpenRig(); }, LONG_PRESS_MS); }, {passive:true});
+  titleTap.addEventListener('touchend',   ()=> clearTimeout(pressTimer), {passive:true});
+  titleTap.addEventListener('mousedown',  ()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>{ taps=[]; tryOpenRig(); }, LONG_PRESS_MS); });
+  titleTap.addEventListener('mouseup',    ()=> clearTimeout(pressTimer));
+})();
+rigClose.addEventListener('click', ()=>rigDlg.close());
+rigCategorySel.addEventListener('change', ()=>{ rigCategory = rigCategorySel.value||''; lsSet(LSK.rigCat,rigCategory); });
+muteToggle.addEventListener('click', ()=>{ isMuted=!isMuted; lsSet(LSK.mute,isMuted); muteState.textContent = isMuted?'Muted':'Sound on'; });
 
-/* ===== Secret access on title (double-tap or long-press) with prompt PIN ===== */
-function secretAccessOnTitle(){
-  const DT=350, LONG=800;
-  let lastTap=0, pressTimer=null;
-  function onTouchStart(){ clearTimeout(pressTimer); pressTimer=setTimeout(async ()=>{ lastTap=0; await openRigWithPIN(); }, LONG); }
-  function onTouchEnd(e){ clearTimeout(pressTimer); const now=Date.now(); if(now-lastTap<DT){ e.preventDefault(); lastTap=0; openRigWithPIN(); return;} lastTap=now; }
-  titleTap.addEventListener('touchstart',onTouchStart,{passive:true});
-  titleTap.addEventListener('touchend',onTouchEnd,{passive:false});
-  titleTap.addEventListener('dblclick',(e)=>{ e.preventDefault(); openRigWithPIN(); });
-  titleTap.addEventListener('mousedown',()=>{ clearTimeout(pressTimer); pressTimer=setTimeout(()=>openRigWithPIN(), LONG); });
-  titleTap.addEventListener('mouseup',()=> clearTimeout(pressTimer));
+queueAddId.addEventListener('click', ()=>{
+  const id = queueId.value.trim(); if(!id) return;
+  rigQueue.push(id); lsSet(LSK.queue,rigQueue); queueId.value=''; renderQueue();
+});
+queueAddDesc.addEventListener('click', ()=>{
+  const val = queueByDesc.value; if(!val) return;
+  rigQueue.push('desc::'+val); lsSet(LSK.queue,rigQueue); renderQueue();
+});
+queueClear.addEventListener('click', ()=>{ rigQueue.length=0; lsSet(LSK.queue,rigQueue); renderQueue(); });
+
+function renderQueue(){
+  queueView.innerHTML='';
+  rigQueue.forEach((q,idx)=>{
+    const pill=document.createElement('span'); pill.className='pill';
+    pill.textContent = q.startsWith('desc::') ? `#${idx+1} ${q.slice(6)}` : `#${idx+1} ${q}`;
+    pill.style.cursor='pointer';
+    pill.title='Tap to remove';
+    pill.onclick=()=>{ rigQueue.splice(idx,1); lsSet(LSK.queue,rigQueue); renderQueue(); };
+    queueView.appendChild(pill);
+  });
 }
-async function openRigWithPIN(){
-  const pin = window.prompt('Enter PIN');
-  if(pin===PIN) openRig(); else if(pin!==null) toast('Wrong PIN',true);
+function refreshQueueDescOptions(){
+  const names = IMAGES.map(x=>x.description||'').filter(Boolean);
+  names.sort((a,b)=>a.localeCompare(b));
+  const uniq=[...new Set(names)];
+  queueByDesc.innerHTML='';
+  const empty=document.createElement('option'); empty.value=''; empty.textContent='Select a name…'; queueByDesc.appendChild(empty);
+  uniq.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; queueByDesc.appendChild(o); });
 }
 
-/* ===== Small helpers ===== */
-function div(c){const e=document.createElement('div'); if(c)e.className=c; return e}
-function span(c){const e=document.createElement('span'); if(c)e.className=c; return e}
-function button(c,t){const e=document.createElement('button'); if(c)e.className=c; if(t)e.textContent=t; return e}
-function inputNumber(val){const e=document.createElement('input'); e.type='number'; e.min='0'; e.step='0.1'; e.style.width='80px'; e.value=val; return e}
+/* -------------------- Helpers -------------------- */
+function lsGet(k,f){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):f;}catch{ return f; } }
+function lsSet(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function toast(msg, danger=false){
+  const t=document.createElement('div'); t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:danger?'#491a23':'#1a1a28',border:'1px solid #2a2b40',padding:'10px 14px',borderRadius:'999px',zIndex:9999,boxShadow:'0 10px 30px rgba(0,0,0,.4)'});
+  document.body.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; },1200); setTimeout(()=>t.remove(),1600);
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+/* Minimal inline PIN prompt */
+function promptPIN(){
+  return new Promise((resolve)=>{
+    const d=document.createElement('dialog');
+    Object.assign(d.style,{border:'none',borderRadius:'12px',padding:'16px',background:'#11121b',color:'#fff'});
+    d.innerHTML=`<form method="dialog" style="display:grid;gap:10px">
+      <div style="font-weight:600">Enter PIN</div>
+      <input id="pinIn" type="password" inputmode="numeric" style="background:#0c0d15;color:#fff;border:1px solid #2b2c3e;border-radius:8px;padding:10px" autofocus maxlength="8" />
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button value="cancel">Cancel</button>
+        <button value="ok" class="primary">OK</button>
+      </div>
+    </form>`;
+    document.body.appendChild(d);
+    d.addEventListener('close', ()=>{
+      const val = d.returnValue==='ok' ? d.querySelector('#pinIn').value : null;
+      resolve(val); d.remove();
+    });
+    d.showModal();
+  });
+}
 
 /* iOS audio unlock */
-document.addEventListener('touchend',()=>ensureAudio(),{passive:true});
+document.addEventListener('touchend', ()=>ensureAudio(), {passive:true});
 </script>
 </body>
 </html>
